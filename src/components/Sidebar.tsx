@@ -3,7 +3,7 @@ import { useStore, Conversation } from "../stores/store";
 import { SettingsDialog } from "./SettingsDialog";
 import { SearchDialog } from "./SearchDialog";
 import { ConfirmDialog } from "./ui/confirm-dialog";
-// ExportDialog imported for future use
+import { ExportDialog } from "./ExportDialog";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -14,6 +14,7 @@ import {
   MoreVertical,
   Trash2,
   MessageSquare,
+  Download,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -38,6 +39,8 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [conversationToExport, setConversationToExport] = useState<Conversation | null>(null);
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -82,6 +85,11 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
 
   const handleNewChat = () => {
     createConversation();
+  };
+
+  const handleExport = (conversation: Conversation) => {
+    setConversationToExport(conversation);
+    setExportDialogOpen(true);
   };
 
   return (
@@ -170,6 +178,7 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
             onSelect={selectConversation}
             onDelete={deleteConversation}
             onPin={pinConversation}
+            onExport={handleExport}
           />
         )}
 
@@ -181,6 +190,7 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
             onSelect={selectConversation}
             onDelete={deleteConversation}
             onPin={pinConversation}
+            onExport={handleExport}
           />
         )}
 
@@ -221,6 +231,16 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
         onRerunSetup={onRerunSetup}
       />
       <SearchDialog open={searchDialogOpen} onClose={() => setSearchDialogOpen(false)} />
+      {conversationToExport && (
+        <ExportDialog
+          open={exportDialogOpen}
+          onClose={() => {
+            setExportDialogOpen(false);
+            setConversationToExport(null);
+          }}
+          conversation={conversationToExport}
+        />
+      )}
     </div>
   );
 }
@@ -298,7 +318,7 @@ function ConversationItem({
     setShowMenu(false);
   };
 
-  const _handleExport = () => {
+  const handleExport = () => {
     onExport();
     setShowMenu(false);
   };
