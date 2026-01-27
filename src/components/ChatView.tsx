@@ -281,8 +281,8 @@ export function ChatView() {
               {currentConversation.messages.map((message, index) => (
                 <div
                   key={message.id}
-                  className="animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: `${Math.min(index * 50, 500)}ms` }}
+                  className="animate-message-in"
+                  style={{ animationDelay: `${Math.min(index * 50, 500)}ms`, animationFillMode: 'backwards' }}
                 >
                   <MessageBubble 
                     message={message} 
@@ -330,24 +330,29 @@ export function ChatView() {
         </div>
       )}
 
-      {/* Error banner */}
+      {/* Error banner (P0: improved visual hierarchy) */}
       {error && (
-        <div className="px-4 py-3 bg-destructive/10 border-t border-destructive/20 animate-in slide-in-from-bottom duration-200">
+        <div 
+          className="px-4 py-3 bg-destructive/10 border-t-2 border-destructive/40 animate-in slide-in-from-bottom duration-200"
+          role="alert"
+          aria-live="assertive"
+        >
           <div className="max-w-3xl mx-auto flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-              <AlertTriangle className="w-5 h-5 flex-shrink-0 text-destructive mt-0.5" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-destructive" strokeWidth={2.5} />
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-destructive mb-0.5">Message Send Failed</p>
-                <p className="text-xs text-destructive/80 break-words">{error}</p>
+                <p className="text-sm font-semibold text-destructive mb-1">Message Send Failed</p>
+                <p className="text-xs text-destructive/80 break-words leading-relaxed">{error}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {lastFailedMessage && (
                 <Button
                   onClick={handleRetry}
-                  variant="outline"
+                  variant="destructive"
                   size="sm"
-                  className="text-destructive border-destructive hover:bg-destructive/10"
                   leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
                   aria-label="Retry sending message"
                 >
@@ -359,7 +364,7 @@ export function ChatView() {
                   setError(null);
                   setLastFailedMessage(null);
                 }}
-                className="flex-shrink-0 p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/50"
+                className="flex-shrink-0 p-1.5 text-destructive hover:text-destructive/80 hover:bg-destructive/20 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/50"
                 aria-label="Dismiss error"
               >
                 <X className="w-4 h-4" />
