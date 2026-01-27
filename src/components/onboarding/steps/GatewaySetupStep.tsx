@@ -29,30 +29,55 @@ interface ConnectResult {
 
 type ConnectionState = "idle" | "detecting" | "testing" | "success" | "error";
 
-// Derive a helpful hint based on error content
-function getErrorHint(errorStr: string): string {
+// Derive a helpful hint and actionable fix based on error content
+function getErrorHint(errorStr: string): { hint: string; action?: string; command?: string } {
   const lower = errorStr.toLowerCase();
   
   if (lower.includes("401") || lower.includes("403") || lower.includes("unauthorized") || lower.includes("forbidden")) {
-    return "The authentication token may be wrong or missing.";
+    return {
+      hint: "The authentication token is wrong or missing.",
+      action: "Where to find your token",
+      command: "clawdbot gateway status"
+    };
   }
   if (lower.includes("400") || lower.includes("bad request")) {
-    return "Check your Gateway URL format (should be ws:// or wss://).";
+    return {
+      hint: "The URL format looks incorrect.",
+      action: "Should start with ws:// or wss://"
+    };
   }
   if (lower.includes("404") || lower.includes("not found")) {
-    return "The Gateway endpoint was not found. Check the URL.";
+    return {
+      hint: "The Gateway endpoint was not found.",
+      action: "Try the default: ws://localhost:18789"
+    };
   }
   if (lower.includes("connection refused") || lower.includes("econnrefused")) {
-    return "Make sure Gateway is running and the URL is correct.";
+    return {
+      hint: "Gateway is not running or not reachable.",
+      action: "Start Gateway with",
+      command: "clawdbot gateway start"
+    };
   }
   if (lower.includes("timeout") || lower.includes("timed out")) {
-    return "The connection timed out. Check if the Gateway is reachable.";
+    return {
+      hint: "Connection timed out — Gateway may be down.",
+      action: "Check Gateway status",
+      command: "clawdbot gateway status"
+    };
   }
   if (lower.includes("network") || lower.includes("dns") || lower.includes("resolve")) {
-    return "Can't reach the Gateway. Check your network connection.";
+    return {
+      hint: "Can't reach the Gateway server.",
+      action: "Check your network connection or firewall settings"
+    };
   }
   
-  return "Make sure Gateway is running and the URL is correct.";
+  return {
+    hint: "Gateway connection failed.",
+    action: "Make sure Gateway is running",
+    command: "clawdbot gateway start"
+  };
 }
 
 // Format raw error message for display
@@ -74,8 +99,9 @@ export function GatewaySetupStep({
   const [isVisible, setIsVisible] = useState(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [errorHint, setErrorHint] = useState<string>("");
+  const [errorHint, setErrorHint] = useState<{ hint: string; action?: string; command?: string } | null>(null);
   const [autoDetected, setAutoDetected] = useState(false);
+  const [suggestedPort, setSuggestedPort] = useState<string | null>(null);
   const [protocolNotice, setProtocolNotice] = useState<string>("");
   const { updateSettings } = useStore();
 
@@ -89,7 +115,9 @@ export function GatewaySetupStep({
   const autoDetectGateway = async () => {
     setConnectionState("detecting");
     setErrorMessage("");
+    setErrorHint(null);
     setProtocolNotice("");
+    setSuggestedPort(null);
     
     const commonUrls = [
       "ws://localhost:18789",
@@ -114,6 +142,13 @@ export function GatewaySetupStep({
         // Auto-save settings with the working URL
         updateSettings({ gatewayUrl: actualUrl, gatewayToken: "" });
         
+        // Save progress
+        localStorage.setItem('molt-onboarding-progress', JSON.stringify({
+          step: 'setup-complete',
+          gatewayUrl: actualUrl,
+          timestamp: Date.now()
+        }));
+        
         // Auto-advance after a moment
         setTimeout(() => {
           onSuccess();
@@ -130,18 +165,32 @@ export function GatewaySetupStep({
   };
 
   const handleTestConnection = async () => {
-    if (!gatewayUrl.trim()) {
+    // Auto-fix: Trim whitespace from inputs
+    const trimmedUrl = gatewayUrl.trim();
+    const trimmedToken = gatewayToken.trim();
+    
+    if (!trimmedUrl) {
       setErrorMessage("Please enter a Gateway URL");
       return;
     }
 
+    // Apply trimmed values
+    if (trimmedUrl !== gatewayUrl) {
+      onGatewayUrlChange(trimmedUrl);
+    }
+    if (trimmedToken !== gatewayToken) {
+      onGatewayTokenChange(trimmedToken);
+    }
+
     setConnectionState("testing");
     setErrorMessage("");
+    setErrorHint(null);
     setProtocolNotice("");
+    setSuggestedPort(null);
 
     try {
       await invoke("disconnect");
-      const result = await invoke<ConnectResult>("connect", { url: gatewayUrl, token: gatewayToken });
+      const result = await invoke<ConnectResult>("connect", { url: trimmedUrl, token: trimmedToken });
       
       // Success!
       setConnectionState("success");
@@ -153,7 +202,15 @@ export function GatewaySetupStep({
         setProtocolNotice(`Connected using ${actualUrl.startsWith("wss://") ? "wss://" : "ws://"} (auto-detected)`);
       }
       
-      updateSettings({ gatewayUrl: actualUrl, gatewayToken });
+      updateSettings({ gatewayUrl: actualUrl, gatewayToken: trimmedToken });
+
+      // Save progress
+      localStorage.setItem('molt-onboarding-progress', JSON.stringify({
+        step: 'setup-complete',
+        gatewayUrl: actualUrl,
+        gatewayToken: trimmedToken,
+        timestamp: Date.now()
+      }));
 
       // Fetch models
       try {
@@ -176,6 +233,14 @@ export function GatewaySetupStep({
       const formattedError = formatErrorMessage(err);
       setErrorMessage(formattedError);
       setErrorHint(getErrorHint(formattedError));
+      
+      // Auto-suggest port fix if port looks wrong
+      if (trimmedUrl.includes("localhost") || trimmedUrl.includes("127.0.0.1")) {
+        const currentPort = trimmedUrl.match(/:(\d+)/)?.[1];
+        if (currentPort && currentPort !== "18789" && currentPort !== "8789") {
+          setSuggestedPort("18789");
+        }
+      }
     }
   };
 
@@ -335,9 +400,9 @@ export function GatewaySetupStep({
               />
             </div>
 
-            {/* Error message */}
+            {/* Error message with actionable fixes */}
             {connectionState === "error" && errorMessage && (
-              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-3">
                 <div className="flex items-start gap-3">
                   <svg
                     className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
@@ -352,17 +417,59 @@ export function GatewaySetupStep({
                       d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-red-600 dark:text-red-400">
-                      Failed to connect: {errorMessage}
+                      {errorMessage}
                     </p>
                     {errorHint && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        {errorHint}
+                        {errorHint.hint}
                       </p>
                     )}
                   </div>
                 </div>
+
+                {/* Actionable fix */}
+                {errorHint?.action && (
+                  <div className="pl-8 space-y-2">
+                    <p className="text-sm font-medium text-foreground">
+                      {errorHint.action}:
+                    </p>
+                    {errorHint.command && (
+                      <div className="flex items-center gap-2 bg-black/80 dark:bg-black/60 rounded p-2 font-mono text-xs text-green-400">
+                        <code className="flex-1">{errorHint.command}</code>
+                        <button
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(errorHint.command!);
+                            } catch (err) {
+                              console.error("Failed to copy:", err);
+                            }
+                          }}
+                          className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] font-medium text-white transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Port suggestion */}
+                {suggestedPort && (
+                  <div className="pl-8">
+                    <button
+                      onClick={() => {
+                        const newUrl = gatewayUrl.replace(/:\d+/, `:${suggestedPort}`);
+                        onGatewayUrlChange(newUrl);
+                        setSuggestedPort(null);
+                      }}
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      Try default port {suggestedPort} instead? →
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

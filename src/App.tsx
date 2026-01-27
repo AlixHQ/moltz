@@ -59,14 +59,11 @@ export default function App() {
     // Otherwise, load normally
     const loadData = async () => {
       try {
-        const { conversations } = await loadPersistedData();
+        // Load settings from localStorage + keychain
+        await useStore.getState().loadSettings();
         
-        // Load settings from localStorage (not encrypted)
-        const savedSettings = localStorage.getItem('molt-settings');
-        if (savedSettings) {
-          const parsedSettings = JSON.parse(savedSettings);
-          useStore.getState().updateSettings(parsedSettings);
-        }
+        // Load conversations from IndexedDB
+        const { conversations } = await loadPersistedData();
 
         // Restore conversations to store
         if (conversations.length > 0) {

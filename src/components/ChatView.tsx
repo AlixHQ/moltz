@@ -3,6 +3,14 @@ import { invoke } from "@tauri-apps/api/core";
 import { useStore } from "../stores/store";
 import { ChatInput } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
+import {
+  ArrowDown,
+  AlertTriangle,
+  X,
+  MessageSquare,
+} from "lucide-react";
+import { MessageSkeleton } from "./ui/skeleton";
+import { Button } from "./ui/button";
 
 export function ChatView() {
   const { currentConversation, addMessage, connected, settings } = useStore();

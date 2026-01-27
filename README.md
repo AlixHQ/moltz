@@ -1,190 +1,334 @@
-# Molt Client
+# Molt
 
-A native cross-platform client for [Moltbot](https://github.com/moltbot/moltbot) — ChatGPT-style interface for your personal AI assistant.
-
-Built with **Tauri** for lightweight, native performance on macOS, Windows, and Linux.
+**A native, lightweight desktop client for Clawdbot** — ChatGPT-style interface for your personal AI assistant, built with Tauri for true native performance.
 
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)
 ![Tauri](https://img.shields.io/badge/tauri-v2-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Features
+<div align="center">
+  <img src="docs/screenshot.png" alt="Molt Screenshot" width="800" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+</div>
 
-- 🚀 **Lightweight** — ~10MB binary (not Electron!)
-- 🎨 **Native feel** — Uses system webview, respects OS conventions
-- 💬 **Streaming responses** — See AI responses as they're generated
-- 📎 **File attachments** — Upload images, PDFs, and documents
-- 🎤 **Voice messages** — Record and send audio
-- 🧠 **Thinking mode** — Enable extended reasoning for complex tasks
-- 🌙 **Dark/Light mode** — Auto-follows system appearance
-- 📚 **Large history** — Local storage handles unlimited conversations
-- ⚡ **Model picker** — Choose from available AI models
-- 📋 **Code highlighting** — Syntax-colored code blocks with copy button
-- 📌 **Pinned chats** — Keep important conversations at the top
-- 🔒 **Privacy first** — Your data stays on your device
+---
 
-## Screenshots
+## 🦞 What is Molt?
 
-*Coming soon*
+Molt is a native desktop application that connects to your Clawdbot Gateway, providing a fast, beautiful interface for chatting with Claude and other AI models. Unlike browser-based or Electron apps, Molt uses your operating system's native webview, resulting in:
 
-## Requirements
+- **~10MB binary** (not 300MB like Electron!)
+- **Minimal RAM usage** (~50MB vs 500MB)
+- **Native look & feel** on every platform
+- **Secure credential storage** via OS keychain
 
-### Runtime
-- macOS 10.15+ / Windows 10+ / Linux (with WebKit2GTK)
-- Running [Moltbot Gateway](https://docs.clawd.bot/gateway)
+Think of it as "ChatGPT for Clawdbot" — but better, because it's yours.
 
-### Development
-- [Rust](https://rustup.rs/) (latest stable)
-- [Node.js](https://nodejs.org/) 18+
-- Platform-specific dependencies (see below)
+---
 
-#### macOS
-```bash
-xcode-select --install
+## ✨ Features
+
+### 🚀 Performance
+- **Lightning fast** — Native binary with zero bloat
+- **Streaming responses** — See AI responses as they're generated in real-time
+- **Instant search** — Full-text search across all conversations with highlighting
+- **Smart caching** — Local IndexedDB storage for instant conversation loading
+
+### 💬 Conversations
+- **Unlimited chat history** — All conversations stored locally with encryption
+- **Pin important chats** — Keep your most-used conversations at the top
+- **Auto-generated titles** — First message becomes the conversation title
+- **Rich markdown** — Code blocks with syntax highlighting, tables, lists, and more
+
+### 🔒 Security & Privacy
+- **End-to-end encryption** — All conversations encrypted at rest using AES-GCM 256-bit
+- **OS keychain integration** — Master keys stored securely in macOS Keychain, Windows Credential Manager, or Linux Secret Service
+- **Zero cloud storage** — Your data never leaves your device
+- **Secure WebSocket** — Automatic wss:// fallback for secure connections
+
+### 🎨 User Experience
+- **Dark/Light/System themes** — Automatically follows your OS preference
+- **Keyboard shortcuts** — Navigate like a power user (see [Features](#keyboard-shortcuts))
+- **Model picker** — Switch between Claude, GPT, Gemini, and more
+- **Thinking mode** — Enable extended reasoning for complex tasks
+- **Responsive design** — Works beautifully on any screen size
+
+### 🔧 Developer Features
+- **TypeScript** — Full type safety throughout the codebase
+- **React 18** — Modern React with hooks and concurrent rendering
+- **Zustand** — Lightweight state management (no Redux complexity)
+- **Dexie** — IndexedDB wrapper for powerful local storage
+- **Tauri v2** — Rust-based framework for maximum performance and security
+
+---
+
+## 📦 Installation
+
+### Download Pre-built Binaries
+
+**Windows:**
+```powershell
+# Download from GitHub Releases
+# https://github.com/dokterdok/molt-client/releases
+
+# Or use winget (if published)
+winget install Molt.Client
 ```
 
-#### Windows
+**macOS:**
 ```bash
-# Install Visual Studio Build Tools
-winget install Microsoft.VisualStudio.2022.BuildTools
+# Download .dmg from GitHub Releases
+# https://github.com/dokterdok/molt-client/releases
+
+# Or use Homebrew (if published)
+brew install molt-client
 ```
 
-#### Linux (Debian/Ubuntu)
+**Linux:**
 ```bash
-sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file \
-  libssl-dev libayatana-appindicator3-dev librsvg2-dev
+# Download .AppImage from GitHub Releases
+# https://github.com/dokterdok/molt-client/releases
+
+# Make executable and run
+chmod +x Molt-1.0.0.AppImage
+./Molt-1.0.0.AppImage
 ```
 
-## Installation
+### Build from Source
 
-### From Releases
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions.
 
-Download the latest release for your platform from the [Releases](https://github.com/dokterdok/molt-client/releases) page.
+---
 
-### From Source
+## 🚀 Quick Start
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/dokterdok/molt-client.git
-   cd molt-client
-   ```
+### Prerequisites
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+1. **Clawdbot Gateway** must be running
+   - See [SETUP.md](SETUP.md) for detailed installation guide
+   - Default: `ws://localhost:18789`
 
-3. Run in development mode:
-   ```bash
-   npm run tauri dev
-   ```
+2. **Authentication token** (if required)
+   - Check your Gateway config
+   - Run `clawdbot gateway status` to verify
 
-4. Build for production:
-   ```bash
-   npm run tauri build
-   ```
+### First Launch
 
-## Configuration
+1. **Launch Molt** — The app will guide you through initial setup
 
-On first launch, configure your Moltbot Gateway connection:
+2. **Configure Gateway connection:**
+   - Enter Gateway URL (e.g., `ws://localhost:18789`)
+   - Enter auth token (if your Gateway requires it)
+   - Click "Test Connection" to verify
+   
+3. **Start chatting!**
+   - Press **⌘N** (Mac) or **Ctrl+N** (Windows/Linux) to create a new conversation
+   - Type your message and press **Enter**
 
-1. Open Settings (gear icon)
-2. Enter your Gateway URL (default: `ws://localhost:18789`)
-3. Enter your auth token (from `clawdbot.json`)
+### First Message
 
-## Architecture
+Try something like:
+```
+Hello! Can you explain what Molt is and what you can help me with?
+```
+
+Molt will connect to your Clawdbot Gateway and stream Claude's response in real-time.
+
+---
+
+## ⚙️ Configuration
+
+### Gateway Connection
+
+**Open Settings:** Press **⌘,** (Mac) or **Ctrl+,** (Windows/Linux)
+
+- **Gateway URL:** WebSocket endpoint for your Clawdbot Gateway
+  - Format: `ws://hostname:port` or `wss://hostname:port`
+  - Default: `ws://localhost:18789`
+  - Auto-fallback: If `ws://` fails, Molt tries `wss://` automatically
+  
+- **Auth Token:** Optional authentication token
+  - Required if your Gateway has auth enabled
+  - Stored securely in OS keychain
+  - Get from `~/.config/clawdbot/clawdbot.json` or your Gateway admin
+
+### Chat Settings
+
+- **Default Model:** Choose from available models (Claude, GPT, Gemini, etc.)
+  - Models are fetched from your Gateway automatically
+  - Falls back to common models if Gateway doesn't respond
+  
+- **Thinking Mode:** Enable extended reasoning by default
+  - Useful for complex tasks requiring deeper analysis
+  - Can be toggled per-conversation
+
+### Appearance
+
+- **Theme:** Light, Dark, or System (follows OS preference)
+
+---
+
+## 🎹 Keyboard Shortcuts
+
+### Global
+
+| Shortcut | Action |
+|----------|--------|
+| **⌘N** / **Ctrl+N** | New conversation |
+| **⌘K** / **Ctrl+K** | Search messages |
+| **⌘,** / **Ctrl+,** | Open settings |
+| **⌘\\** / **Ctrl+\\** | Toggle sidebar |
+
+### Chat Input
+
+| Shortcut | Action |
+|----------|--------|
+| **Enter** | Send message |
+| **Shift+Enter** | New line |
+| **Esc** | Clear input |
+
+### Conversation List
+
+| Shortcut | Action |
+|----------|--------|
+| **↑** / **↓** | Navigate conversations |
+| **Enter** | Open conversation |
+| **Delete** | Delete conversation |
+
+---
+
+## 🏗️ Architecture
+
+Molt is built with a modern, maintainable architecture:
 
 ```
 molt-client/
-├── src/                    # React frontend
-│   ├── components/         # UI components
-│   │   ├── ChatView.tsx    # Main chat interface
-│   │   ├── Sidebar.tsx     # Conversation list
-│   │   ├── MessageBubble.tsx
-│   │   └── ChatInput.tsx
-│   ├── stores/             # Zustand state management
-│   ├── hooks/              # React hooks
-│   └── lib/                # Utilities
-├── src-tauri/              # Rust backend
+├── src/                          # React frontend
+│   ├── components/               # UI components
+│   │   ├── ChatView.tsx         # Main chat interface
+│   │   ├── Sidebar.tsx          # Conversation list
+│   │   ├── MessageBubble.tsx    # Individual messages
+│   │   ├── ChatInput.tsx        # Message input
+│   │   ├── SettingsDialog.tsx   # Settings UI
+│   │   └── ui/                  # Reusable UI primitives
+│   ├── stores/                  # Zustand state management
+│   │   └── store.ts            # Global app state
+│   ├── lib/                     # Utilities & core logic
+│   │   ├── db.ts               # IndexedDB (Dexie)
+│   │   ├── encryption.ts       # AES-GCM encryption
+│   │   └── persistence.ts      # Data sync layer
+│   └── App.tsx                 # Root component
+├── src-tauri/                   # Rust backend
 │   ├── src/
-│   │   ├── lib.rs          # App entry point
-│   │   └── gateway.rs      # WebSocket client
-│   ├── Cargo.toml          # Rust dependencies
-│   └── tauri.conf.json     # Tauri configuration
-└── package.json            # Node dependencies
+│   │   ├── lib.rs              # Tauri app setup
+│   │   ├── gateway.rs          # WebSocket client
+│   │   └── keychain.rs         # OS credential storage
+│   ├── Cargo.toml              # Rust dependencies
+│   └── tauri.conf.json         # Tauri configuration
+└── package.json                # Node dependencies
 ```
 
-## Tech Stack
+### Tech Stack
 
-- **[Tauri v2](https://v2.tauri.app/)** — Rust-based app framework
-- **[React 18](https://react.dev/)** — UI framework
-- **[TypeScript](https://www.typescriptlang.org/)** — Type safety
-- **[Tailwind CSS](https://tailwindcss.com/)** — Styling
-- **[Zustand](https://zustand-demo.pmnd.rs/)** — State management
-- **[Vite](https://vitejs.dev/)** — Build tool
+| Layer | Technology | Why? |
+|-------|-----------|------|
+| **Framework** | Tauri v2 | Rust-based, tiny binaries, native performance |
+| **Frontend** | React 18 + TypeScript | Type-safe, modern, widely supported |
+| **Styling** | Tailwind CSS | Utility-first, consistent design system |
+| **State** | Zustand | Lightweight, no boilerplate, great DX |
+| **Storage** | IndexedDB (Dexie) | Unlimited storage, full-text search |
+| **Encryption** | Web Crypto API (AES-GCM) | Browser-native, battle-tested |
+| **Keychain** | keyring-rs | Cross-platform OS credential storage |
+| **WebSocket** | tokio-tungstenite | Async Rust WebSocket client |
 
-## Development
+---
 
-### Commands
+## 📚 Documentation
+
+- **[SETUP.md](SETUP.md)** — Detailed setup guide (Gateway installation, troubleshooting)
+- **[FEATURES.md](FEATURES.md)** — Complete feature documentation
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** — Developer guide (building, architecture, PRs)
+- **[SECURITY.md](SECURITY.md)** — Security details (encryption, data storage)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Quick start for contributors:**
 
 ```bash
-# Start dev server
+# Clone the repo
+git clone https://github.com/dokterdok/molt-client.git
+cd molt-client
+
+# Install dependencies
+npm install
+
+# Run in development mode
 npm run tauri dev
-
-# Build production binary
-npm run tauri build
-
-# Lint
-npm run lint
-
-# Format
-npm run format
-
-# Run tests
-npm test
 ```
 
-### Project Setup
+---
 
-The frontend is a standard Vite + React + TypeScript setup. The backend is Rust with Tauri.
+## 🛣️ Roadmap
 
-Key files:
-- `src-tauri/src/gateway.rs` — WebSocket connection to Moltbot Gateway
-- `src/stores/store.ts` — Application state (conversations, messages, settings)
-- `src/components/` — React components
+- [x] Basic chat interface
+- [x] Streaming responses
+- [x] Conversation management
+- [x] End-to-end encryption
+- [x] Full-text search
+- [x] Multiple model support
+- [x] Dark/light themes
+- [x] Keyboard shortcuts
+- [ ] Voice input/output
+- [ ] Image attachments
+- [ ] Export conversations (Markdown, PDF)
+- [ ] Conversation sharing
+- [ ] System tray integration
+- [ ] Mobile apps (Tauri v2 mobile support)
+- [ ] Plugins/extensions
 
-## Roadmap
+---
 
-- [ ] Voice recording and playback
-- [ ] Image generation display
-- [ ] Markdown table rendering
-- [ ] Search within conversations
-- [ ] Export conversations
-- [ ] Keyboard shortcuts
-- [ ] System tray (macOS/Windows/Linux)
-- [ ] iOS/Android support (Tauri v2 mobile)
-- [ ] GitHub Actions CI/CD
+## 🐛 Known Issues
 
-## Contributing
+- **File attachments:** UI exists but not yet functional (planned for v1.1)
+- **Voice input:** Not yet implemented
+- **Image generation:** Not yet supported
 
-Contributions welcome! Please read our [Contributing Guide](CONTRIBUTING.md) first.
+See [GitHub Issues](https://github.com/dokterdok/molt-client/issues) for full list and workarounds.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+---
 
-## License
+## 📝 License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
-## Acknowledgments
+---
 
-- [Moltbot](https://github.com/moltbot/moltbot) — The AI gateway this client connects to
-- [Tauri](https://tauri.app/) — Making native apps lightweight again
+## 🙏 Acknowledgments
+
+- **[Clawdbot](https://github.com/clawdbot/clawdbot)** — The AI gateway powering Molt
+- **[Tauri](https://tauri.app/)** — Making native apps lightweight again
+- **[Anthropic](https://anthropic.com/)** — Claude API
 - The open source community
 
 ---
 
-Made with 🦞 by the Moltbot community
+## 💬 Support
+
+- **Issues:** [GitHub Issues](https://github.com/dokterdok/molt-client/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/dokterdok/molt-client/discussions)
+- **Email:** support@molt.dev
+
+---
+
+<div align="center">
+  <p>Made with 🦞 by the Molt community</p>
+  <p>
+    <a href="https://github.com/dokterdok/molt-client">GitHub</a> •
+    <a href="https://molt.dev">Website</a> •
+    <a href="https://twitter.com/moltclient">Twitter</a>
+  </p>
+</div>

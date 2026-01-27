@@ -4,6 +4,17 @@ import { SettingsDialog } from "./SettingsDialog";
 import { SearchDialog } from "./SearchDialog";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import {
+  Plus,
+  Search,
+  Settings,
+  Pin,
+  MoreVertical,
+  Trash2,
+  MessageSquare,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { ConversationSkeleton } from "./ui/skeleton";
 
 // Check if running on macOS (for traffic light padding)
 const isMacOS = typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac");
@@ -107,32 +118,32 @@ export function Sidebar({ onToggle: _onToggle }: SidebarProps) {
 
       {/* New chat button */}
       <div className="px-3 pb-3">
-        <button
+        <Button
           onClick={handleNewChat}
-          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50"
+          variant="primary"
+          size="md"
+          className="w-full justify-start"
+          leftIcon={<Plus className="w-4 h-4" />}
           aria-label="Create new conversation"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
           <span className="flex-1 text-left">New Chat</span>
           <kbd className="text-xs opacity-70 font-mono">⌘N</kbd>
-        </button>
+        </Button>
       </div>
 
       {/* Search button */}
       <div className="px-3 pb-2">
-        <button
+        <Button
           onClick={() => setSearchDialogOpen(true)}
-          className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-border bg-background/50 hover:bg-muted/50 transition-colors text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+          variant="outline"
+          size="sm"
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          leftIcon={<Search className="w-4 h-4" />}
           aria-label="Search messages"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
           <span className="flex-1 text-left">Search messages...</span>
           <kbd className="text-xs font-mono">⌘K</kbd>
-        </button>
+        </Button>
       </div>
 
       {/* Quick filter */}
@@ -152,12 +163,6 @@ export function Sidebar({ onToggle: _onToggle }: SidebarProps) {
         {pinnedConversations.length > 0 && (
           <ConversationSection
             title="Pinned"
-            icon={
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M5 5a2 2 0 012-2h6a2 2 0 012 2v2a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-                <path d="M8 10h4v7l-2-2-2 2v-7z" />
-              </svg>
-            }
             conversations={pinnedConversations}
             currentId={currentConversationId}
             onSelect={selectConversation}
@@ -179,9 +184,7 @@ export function Sidebar({ onToggle: _onToggle }: SidebarProps) {
 
         {filteredConversations.length === 0 && (
           <div className="flex flex-col items-center justify-center text-muted-foreground text-sm py-12 px-4">
-            <svg className="w-12 h-12 mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+            <MessageSquare className="w-12 h-12 mb-3 opacity-30" strokeWidth={1.5} />
             {searchQuery ? (
               <p>No conversations match "{searchQuery}"</p>
             ) : (
@@ -196,28 +199,17 @@ export function Sidebar({ onToggle: _onToggle }: SidebarProps) {
 
       {/* Footer */}
       <div className="p-3 border-t border-border space-y-1">
-        <button 
+        <Button
           onClick={() => setSettingsOpen(true)}
-          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          leftIcon={<Settings className="w-4 h-4" />}
           aria-label="Open settings"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
           <span className="flex-1 text-left">Settings</span>
           <kbd className="text-xs font-mono opacity-50">⌘,</kbd>
-        </button>
+        </Button>
       </div>
 
       {/* Dialogs */}
@@ -249,7 +241,7 @@ function ConversationSection({
   return (
     <div className="mb-4">
       <h3 className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-        {icon}
+        {icon || (title === "Pinned" ? <Pin className="w-3 h-3" /> : null)}
         {title}
       </h3>
       <div className="space-y-0.5">
@@ -338,18 +330,12 @@ function ConversationItem({
           title={conversation.isPinned ? "Unpin conversation" : "Pin conversation"}
           aria-label={conversation.isPinned ? "Unpin conversation" : "Pin conversation"}
         >
-          <svg 
+          <Pin 
             className={cn(
               "w-3.5 h-3.5",
-              conversation.isPinned ? "text-orange-500" : "text-muted-foreground"
-            )} 
-            fill={conversation.isPinned ? "currentColor" : "none"}
-            stroke="currentColor" 
-            viewBox="0 0 20 20"
-          >
-            <path d="M5 5a2 2 0 012-2h6a2 2 0 012 2v2a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-            <path d="M8 10h4v7l-2-2-2 2v-7z" />
-          </svg>
+              conversation.isPinned ? "text-orange-500 fill-current" : "text-muted-foreground"
+            )}
+          />
         </button>
         <button
           onClick={(e) => {
@@ -361,9 +347,7 @@ function ConversationItem({
           aria-expanded={showMenu}
           aria-haspopup="menu"
         >
-          <svg className="w-3.5 h-3.5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-          </svg>
+          <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />
         </button>
       </div>
 
@@ -380,10 +364,7 @@ function ConversationItem({
                 setShowMenu(false);
               }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 20 20">
-                <path d="M5 5a2 2 0 012-2h6a2 2 0 012 2v2a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-                <path d="M8 10h4v7l-2-2-2 2v-7z" />
-              </svg>
+              <Pin className="w-4 h-4" />
               {conversation.isPinned ? "Unpin" : "Pin"}
             </button>
             <div className="h-px bg-border my-1" />
@@ -395,9 +376,7 @@ function ConversationItem({
                 setShowMenu(false);
               }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <Trash2 className="w-4 h-4" />
               Delete
             </button>
           </div>

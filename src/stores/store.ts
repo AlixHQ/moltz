@@ -5,6 +5,7 @@ import {
   updatePersistedConversation,
   persistMessage
 } from "../lib/persistence";
+import { getGatewayToken, setGatewayToken } from "../lib/keychain";
 
 export interface Message {
   id: string;
@@ -88,7 +89,8 @@ interface Store {
 
   // Settings
   settings: Settings;
-  updateSettings: (settings: Partial<Settings>) => void;
+  updateSettings: (settings: Partial<Settings>) => Promise<void>;
+  loadSettings: () => Promise<void>;
 }
 
 const generateId = () => crypto.randomUUID();
@@ -302,22 +304,77 @@ export const useStore = create<Store>()((set, get) => ({
 
       // Settings
       settings: {
-        gatewayUrl: "ws://localhost:18789",
+        gatewayUrl: "ws://localhost:18789", // Default for local development
         gatewayToken: "",
         defaultModel: "anthropic/claude-sonnet-4-5",
         thinkingDefault: false,
         theme: "system",
       },
 
-      updateSettings: (updates) => {
+      updateSettings: async (updates) => {
         set((state) => ({
           settings: { ...state.settings, ...updates },
         }));
         
-        // Persist settings to localStorage (settings are not encrypted)
+        // Persist settings to localStorage (excluding token - stored in keychain)
         if (typeof window !== 'undefined') {
           const currentSettings = get().settings;
-          localStorage.setItem('molt-settings', JSON.stringify({ ...currentSettings, ...updates }));
+          const settingsToSave = { ...currentSettings, ...updates };
+          
+          // Save token to OS keychain (secure)
+          if (updates.gatewayToken !== undefined) {
+            try {
+              await setGatewayToken(updates.gatewayToken);
+            } catch (err) {
+              console.error('Failed to save token to keychain:', err);
+            }
+          }
+          
+          // Save other settings to localStorage (token excluded)
+          const { gatewayToken, ...settingsWithoutToken } = settingsToSave;
+          localStorage.setItem('molt-settings', JSON.stringify(settingsWithoutToken));
         }
       },
+
+      loadSettings: async () => {
+        if (typeof window === 'undefined') return;
+        
+        try {
+          // Load settings from localStorage
+          const savedSettings = localStorage.getItem('molt-settings');
+          let settings = get().settings;
+          
+          if (savedSettings) {
+            const parsed = JSON.parse(savedSettings);
+            
+            // MIGRATION: If token is still in localStorage, move it to keychain
+            if (parsed.gatewayToken) {
+              try {
+                await setGatewayToken(parsed.gatewayToken);
+                // Remove token from localStorage after migration
+                delete parsed.gatewayToken;
+                localStorage.setItem('molt-settings', JSON.stringify(parsed));
+                console.log('Migrated gateway token to OS keychain');
+              } catch (err) {
+                console.error('Failed to migrate token to keychain:', err);
+              }
+            }
+            
+            settings = { ...settings, ...parsed };
+          }
+          
+          // Load token from OS keychain (secure)
+          try {
+            const token = await getGatewayToken();
+            settings = { ...settings, gatewayToken: token };
+          } catch (err) {
+            console.error('Failed to load token from keychain:', err);
+          }
+          
+          set({ settings });
+        } catch (err) {
+          console.error('Failed to load settings:', err);
+        }
+      },
+    }));
     }));
