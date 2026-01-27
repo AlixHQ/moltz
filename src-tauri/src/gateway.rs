@@ -2,12 +2,9 @@
 
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 use tauri::{AppHandle, Emitter, State};
 use tokio::sync::{mpsc, Mutex, RwLock};
 use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
-use url::Url;
-use uuid::Uuid;
 
 /// Connection state managed by Tauri
 #[derive(Default)]
@@ -34,7 +31,7 @@ pub struct ChatParams {
 }
 
 /// Stream chunk from Gateway
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct StreamChunk {
     #[serde(rename = "requestId")]
     pub request_id: Option<String>,
@@ -45,14 +42,14 @@ pub struct StreamChunk {
 }
 
 /// Response from Gateway
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct GatewayResponse {
     pub id: Option<String>,
     pub result: Option<serde_json::Value>,
     pub error: Option<GatewayError>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct GatewayError {
     pub code: i32,
     pub message: String,
@@ -68,10 +65,9 @@ pub async fn connect(
 ) -> Result<bool, String> {
     // Build WebSocket URL with auth
     let ws_url = format!("{}?token={}", url, token);
-    let url = Url::parse(&ws_url).map_err(|e| e.to_string())?;
 
-    // Connect to WebSocket
-    let (ws_stream, _) = connect_async(url)
+    // Connect to WebSocket (pass the string directly)
+    let (ws_stream, _) = connect_async(&ws_url)
         .await
         .map_err(|e| format!("Failed to connect: {}", e))?;
 
@@ -91,7 +87,7 @@ pub async fn connect(
     let app_clone = app.clone();
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
-            if let Err(e) = write.send(WsMessage::Text(msg)).await {
+            if let Err(e) = write.send(WsMessage::Text(msg.into())).await {
                 eprintln!("Failed to send message: {}", e);
                 let _ = app_clone.emit("gateway:error", e.to_string());
                 break;
@@ -105,19 +101,20 @@ pub async fn connect(
         while let Some(msg) = read.next().await {
             match msg {
                 Ok(WsMessage::Text(text)) => {
+                    let text_str = text.to_string();
                     // Try to parse as stream chunk or response
-                    if let Ok(chunk) = serde_json::from_str::<StreamChunk>(&text) {
+                    if let Ok(chunk) = serde_json::from_str::<StreamChunk>(&text_str) {
                         if let Some(content) = &chunk.content {
                             let _ = app_clone.emit("gateway:stream", content.clone());
                         }
                         if chunk.done == Some(true) {
                             let _ = app_clone.emit("gateway:complete", ());
                         }
-                    } else if let Ok(response) = serde_json::from_str::<GatewayResponse>(&text) {
+                    } else if let Ok(response) = serde_json::from_str::<GatewayResponse>(&text_str) {
                         let _ = app_clone.emit("gateway:response", response);
                     } else {
                         // Raw message
-                        let _ = app_clone.emit("gateway:message", text);
+                        let _ = app_clone.emit("gateway:message", text_str);
                     }
                 }
                 Ok(WsMessage::Close(_)) => {
@@ -153,7 +150,7 @@ pub async fn send_message(
     let sender = state.sender.lock().await;
     let sender = sender.as_ref().ok_or("Not connected")?;
 
-    let request_id = Uuid::new_v4().to_string();
+    let request_id = uuid::Uuid::new_v4().to_string();
 
     let request = GatewayRequest {
         id: request_id.clone(),

@@ -4,19 +4,22 @@
 
 mod gateway;
 
-use tauri::Manager;
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_shell::init())
-        #[cfg(not(any(target_os = "android", target_os = "ios")))]
-        .plugin(tauri_plugin_window_state::Builder::new().build())
+        .plugin(tauri_plugin_shell::init());
+
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        builder = builder.plugin(tauri_plugin_window_state::Builder::new().build());
+    }
+
+    builder
         .setup(|app| {
-            // Initialize gateway state
+            use tauri::Manager;
             app.manage(gateway::GatewayState::default());
             Ok(())
         })
