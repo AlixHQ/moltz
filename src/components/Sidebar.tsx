@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useStore, Conversation } from "../stores/store";
 import { SettingsDialog } from "./SettingsDialog";
 import { SearchDialog } from "./SearchDialog";
+import { ConfirmDialog } from "./ui/confirm-dialog";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -14,7 +15,6 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { Button } from "./ui/button";
-import { ConversationSkeleton } from "./ui/skeleton";
 
 // Check if running on macOS (for traffic light padding)
 const isMacOS = typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac");

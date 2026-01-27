@@ -341,8 +341,18 @@ export default function App() {
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    // Clear progress
+    localStorage.removeItem('molt-onboarding-progress');
     // Trigger a connection attempt with new settings
     setIsConnecting(true);
+  };
+
+  const handleRerunSetup = () => {
+    // Clear onboarding flags to trigger setup again
+    localStorage.removeItem('molt-onboarding-completed');
+    localStorage.removeItem('molt-onboarding-skipped');
+    localStorage.removeItem('molt-onboarding-progress');
+    setShowOnboarding(true);
   };
 
   // Show onboarding flow if needed
@@ -380,7 +390,10 @@ export default function App() {
           role="navigation"
           aria-label="Conversation sidebar"
         >
-          <Sidebar onToggle={() => setSidebarOpen(!sidebarOpen)} />
+          <Sidebar 
+            onToggle={() => setSidebarOpen(!sidebarOpen)}
+            onRerunSetup={handleRerunSetup}
+          />
         </div>
       </div>
 

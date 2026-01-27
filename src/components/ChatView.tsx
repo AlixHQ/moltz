@@ -8,17 +8,19 @@ import {
   AlertTriangle,
   X,
   MessageSquare,
+  StopCircle,
+  RotateCcw,
 } from "lucide-react";
-import { MessageSkeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 
 export function ChatView() {
-  const { currentConversation, addMessage, connected, settings } = useStore();
+  const { currentConversation, addMessage, connected, settings, completeCurrentMessage, currentStreamingMessageId } = useStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [lastFailedMessage, setLastFailedMessage] = useState<{ content: string; attachments: File[] } | null>(null);
 
   // Auto-scroll to bottom on new messages (only if already near bottom)
   useEffect(() => {
@@ -39,9 +41,24 @@ export function ChatView() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleStopGenerating = () => {
+    if (currentStreamingMessageId) {
+      completeCurrentMessage();
+      setIsSending(false);
+    }
+  };
+
+  const handleRetry = () => {
+    if (lastFailedMessage) {
+      handleSendMessage(lastFailedMessage.content, lastFailedMessage.attachments);
+      setLastFailedMessage(null);
+    }
+  };
+
   const handleSendMessage = async (content: string, attachments: File[]) => {
     if (!currentConversation || isSending) return;
     setError(null);
+    setLastFailedMessage(null);
     setIsSending(true);
 
     try {
@@ -76,9 +93,10 @@ export function ChatView() {
       console.error("Failed to send message:", err);
       const errorMsg = err.toString().replace("Error: ", "");
       setError(errorMsg);
+      setLastFailedMessage({ content, attachments });
       
-      // Auto-dismiss error after 10 seconds
-      setTimeout(() => setError(null), 10000);
+      // Auto-dismiss error after 15 seconds
+      setTimeout(() => setError(null), 15000);
     } finally {
       setIsSending(false);
     }
@@ -118,8 +136,24 @@ export function ChatView() {
         </div>
       </div>
 
+      {/* Stop generating button */}
+      {currentStreamingMessageId && (
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <Button
+            onClick={handleStopGenerating}
+            variant="destructive"
+            size="sm"
+            className="shadow-lg hover:shadow-xl hover:scale-105"
+            leftIcon={<StopCircle className="w-4 h-4" />}
+            aria-label="Stop generating response"
+          >
+            Stop generating
+          </Button>
+        </div>
+      )}
+
       {/* Scroll to bottom button */}
-      {!isNearBottom && hasMessages && (
+      {!isNearBottom && hasMessages && !currentStreamingMessageId && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <Button
             onClick={scrollToBottom}
@@ -145,13 +179,30 @@ export function ChatView() {
                 <p className="text-xs text-destructive/80 break-words">{error}</p>
               </div>
             </div>
-            <button
-              onClick={() => setError(null)}
-              className="flex-shrink-0 p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/50"
-              aria-label="Dismiss error"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              {lastFailedMessage && (
+                <Button
+                  onClick={handleRetry}
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive border-destructive hover:bg-destructive/10"
+                  leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+                  aria-label="Retry sending message"
+                >
+                  Retry
+                </Button>
+              )}
+              <button
+                onClick={() => {
+                  setError(null);
+                  setLastFailedMessage(null);
+                }}
+                className="flex-shrink-0 p-1 text-destructive hover:text-destructive/80 hover:bg-destructive/10 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/50"
+                aria-label="Dismiss error"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}

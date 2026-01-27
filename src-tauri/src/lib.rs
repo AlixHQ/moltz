@@ -4,6 +4,7 @@
 
 mod gateway;
 mod keychain;
+mod discovery;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -33,6 +34,7 @@ pub fn run() {
             keychain::keychain_get,
             keychain::keychain_set,
             keychain::keychain_delete,
+            discovery::discover_gateways,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -110,16 +110,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                             >
                               {copiedCode === code ? (
                                 <>
-                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
+                                  <Check className="w-3.5 h-3.5" strokeWidth={2} />
                                   Copied!
                                 </>
                               ) : (
                                 <>
-                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                  </svg>
+                                  <Copy className="w-3.5 h-3.5" strokeWidth={2} />
                                   Copy
                                 </>
                               )}
@@ -190,9 +186,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               title="Copy message"
               aria-label="Copy message to clipboard"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
+              <Copy className="w-4 h-4" strokeWidth={2} />
             </button>
           </div>
         )}
@@ -201,9 +195,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {message.sources && message.sources.length > 0 && (
           <div className="mt-3 p-3 bg-muted/30 rounded-lg border border-border">
             <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
+              <LinkIcon className="w-3.5 h-3.5" strokeWidth={2} />
               Sources
             </h4>
             <div className="space-y-1">
@@ -225,9 +217,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Model badge */}
         {message.modelUsed && (
           <span className="mt-2 text-xs text-muted-foreground inline-flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-            </svg>
+            <Cpu className="w-3 h-3" strokeWidth={2} />
             {message.modelUsed.split('/').pop()}
           </span>
         )}
