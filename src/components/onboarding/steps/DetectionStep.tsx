@@ -210,7 +210,7 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
             </div>
             <h2 className="text-4xl font-bold mb-3">Gateway Found!</h2>
             <p className="text-lg text-muted-foreground">
-              We detected a Clawdbot Gateway at:
+              We detected a Moltbot Gateway at:
             </p>
           </div>
 
@@ -275,7 +275,7 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
           </div>
           <h2 className="text-4xl font-bold mb-3">Looking for Gateway...</h2>
           <p className="text-lg text-muted-foreground">
-            Checking common ports for Clawdbot Gateway
+            Checking common ports for Moltbot Gateway
           </p>
         </div>
 

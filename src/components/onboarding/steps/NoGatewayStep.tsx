@@ -9,9 +9,9 @@ interface NoGatewayStepProps {
 }
 
 const INSTALL_COMMANDS = {
-  windows: "npm install -g clawdbot",
-  macos: "npm install -g clawdbot",
-  linux: "npm install -g clawdbot",
+  windows: "npm install -g moltbot",
+  macos: "npm install -g moltbot",
+  linux: "npm install -g moltbot",
 };
 
 export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip }: NoGatewayStepProps) {
@@ -44,8 +44,8 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8">
-      <div className="max-w-2xl w-full space-y-8">
+    <div className="flex-1 flex flex-col items-center p-8 overflow-y-auto">
+      <div className="max-w-2xl w-full space-y-8 my-auto">
         {/* Header */}
         <div
           className={cn(
@@ -58,11 +58,11 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
           </div>
           <h2 className="text-4xl font-bold mb-3">Gateway Not Found</h2>
           <p className="text-lg text-muted-foreground">
-            No worries! Let's get you set up with Clawdbot Gateway
+            No worries! Let's get you set up with Moltbot Gateway
           </p>
         </div>
 
-        {/* What is Clawdbot? */}
+        {/* What is Moltbot? */}
         <div
           className={cn(
             "p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 transition-all duration-700 delay-200 ease-out",
@@ -70,10 +70,10 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
           )}
         >
           <h3 className="font-semibold text-lg mb-3 text-blue-600 dark:text-blue-400">
-            What is Clawdbot?
+            What is Moltbot?
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-            Clawdbot is the <strong>local server</strong> that powers Molt. Think of it like your personal AI assistant's brain — 
+            Moltbot is the <strong>local server</strong> that powers Molt. Think of it like your personal AI assistant's brain — 
             it runs on your computer, keeps your data private, and connects Molt to your calendar, email, files, and more.
           </p>
           <ul className="space-y-2 text-sm text-muted-foreground">
@@ -108,7 +108,7 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
                 1
               </div>
               <div className="flex-1">
-                <p className="font-medium mb-2">Install Clawdbot Gateway</p>
+                <p className="font-medium mb-2">Install Moltbot Gateway</p>
                 <div className="flex items-center gap-2 bg-black/80 dark:bg-black/60 rounded-lg p-3 font-mono text-sm text-green-400">
                   <code className="flex-1">{INSTALL_COMMANDS[platform]}</code>
                   <button
@@ -131,7 +131,7 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
               <div className="flex-1">
                 <p className="font-medium mb-2">Start the Gateway</p>
                 <div className="bg-black/80 dark:bg-black/60 rounded-lg p-3 font-mono text-sm text-green-400">
-                  <code>clawdbot gateway start</code>
+                  <code>Moltbot gateway start</code>
                 </div>
               </div>
             </div>
@@ -154,7 +154,7 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
             <p className="text-sm text-muted-foreground">
               <strong>Need help?</strong> Check the{" "}
               <a
-                href="https://github.com/yusefmosiah/Clawdbot#installation"
+                href="https://github.com/yusefmosiah/Moltbot#installation"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
