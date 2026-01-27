@@ -20,6 +20,7 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
   const [currentUrl, setCurrentUrl] = useState<string>("");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [foundUrl, setFoundUrl] = useState<string | null>(null); // NEW: Hold found URL for confirmation
   
   // Track mounted state to prevent updates after unmount
   const isMountedRef = useRef(true);
@@ -83,18 +84,18 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
             return;
           }
           
-          // Success! Gateway found
+          // Success! Gateway found - but don't auto-proceed, let user confirm
           clearTimeout(globalTimeout);
-          console.log('[DetectionStep] Gateway found! Waiting 300ms...');
-          await new Promise(resolve => setTimeout(resolve, 300));
+          console.log('[DetectionStep] Gateway found! Showing confirmation...');
           
           if (isCancelledRef.current || !isMountedRef.current) {
-            console.log('[DetectionStep] Cancelled or unmounted after wait');
+            console.log('[DetectionStep] Cancelled or unmounted after connect success');
             return;
           }
           
-          console.log('[DetectionStep] Calling onGatewayFound with:', result.used_url);
-          onGatewayFound(result.used_url);
+          // Show confirmation UI instead of auto-proceeding
+          console.log('[DetectionStep] Setting foundUrl for confirmation:', result.used_url);
+          setFoundUrl(result.used_url);
           return;
         } catch (err) {
           console.log(`[DetectionStep] Connect failed for ${url}:`, err);
@@ -171,6 +172,82 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
     onSkip();
   }, [onSkip]);
 
+  // Handler for confirming the found URL
+  const handleConfirmUrl = useCallback(() => {
+    console.log('[DetectionStep] User confirmed URL:', foundUrl);
+    if (foundUrl) {
+      onGatewayFound(foundUrl);
+    }
+  }, [foundUrl, onGatewayFound]);
+
+  // Handler for entering URL manually instead
+  const handleEnterManually = useCallback(() => {
+    console.log('[DetectionStep] User chose to enter manually');
+    onSkip();
+  }, [onSkip]);
+
+  // If we found a Gateway, show confirmation UI
+  if (foundUrl) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8">
+        <div className="max-w-xl w-full space-y-8">
+          {/* Success header */}
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 shadow-xl shadow-green-500/20 mb-6">
+              <svg
+                className="w-10 h-10 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h2 className="text-4xl font-bold mb-3">Gateway Found!</h2>
+            <p className="text-lg text-muted-foreground">
+              We detected a Clawdbot Gateway at:
+            </p>
+          </div>
+
+          {/* Found URL display */}
+          <div className="p-6 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
+            <p className="font-mono text-lg text-green-600 dark:text-green-400">
+              {foundUrl}
+            </p>
+          </div>
+
+          {/* Confirmation question */}
+          <div className="text-center">
+            <p className="text-muted-foreground mb-6">
+              Is this the Gateway you want to connect to?
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={handleConfirmUrl}
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              >
+                Yes, connect to this Gateway
+              </button>
+              <button
+                onClick={handleEnterManually}
+                className="px-6 py-3 rounded-xl border border-border bg-background hover:bg-muted font-medium transition-all duration-200"
+              >
+                No, enter URL manually
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default: scanning UI
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8">
       <div className="max-w-xl w-full space-y-8">

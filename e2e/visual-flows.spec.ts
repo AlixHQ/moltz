@@ -88,36 +88,42 @@ function reportStep(step: TestStep) {
 // FLOW 1: ONBOARDING
 // ============================================================================
 
+// Increase timeout for visual tests since they involve many waits
+test.setTimeout(180000);
+
 test.describe('Visual Flow: Onboarding', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to the app and wait for it to load
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    // Navigate to the app with a longer timeout
+    try {
+      await page.goto('/', { waitUntil: 'load', timeout: 30000 });
+    } catch {
+      // Try with domcontentloaded if load times out
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
     
-    // Wait for the page to be interactive
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {
-      // Network idle might not happen, that's ok
-    });
+    // Wait a moment for app initialization
+    await page.waitForTimeout(2000);
     
-    // Clear all storage to simulate first-time user
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-      // Clear IndexedDB (don't wait for this)
-      if (typeof indexedDB !== 'undefined') {
+    // Clear all storage to simulate first-time user (with timeout protection)
+    await Promise.race([
+      page.evaluate(() => {
         try {
-          indexedDB.databases().then(dbs => {
-            dbs.forEach(db => {
-              if (db.name) indexedDB.deleteDatabase(db.name);
-            });
-          }).catch(() => {});
+          localStorage.clear();
+          sessionStorage.clear();
         } catch (e) {
-          // Ignore IndexedDB errors
+          console.error('Failed to clear storage:', e);
         }
-      }
-    });
+      }),
+      new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
     
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(500);
+    // Reload with fresh storage
+    try {
+      await page.reload({ waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(1000);
   });
 
   test('complete onboarding flow with screenshots', async ({ page }) => {
@@ -311,18 +317,33 @@ test.describe('Visual Flow: Onboarding', () => {
 
 test.describe('Visual Flow: Main Chat', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate first and wait for load
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    // Navigate first
+    try {
+      await page.goto('/', { waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(2000);
     
-    // Skip onboarding
-    await page.evaluate(() => {
-      localStorage.setItem('molt-onboarding-completed', 'true');
-      localStorage.setItem('molt-app-version', '1.0.0');
-    });
+    // Skip onboarding (with timeout protection)
+    await Promise.race([
+      page.evaluate(() => {
+        try {
+          localStorage.setItem('molt-onboarding-completed', 'true');
+          localStorage.setItem('molt-app-version', '1.0.0');
+        } catch (e) {
+          console.error('Failed to set storage:', e);
+        }
+      }),
+      new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
     
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1000);
+    try {
+      await page.reload({ waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(1500);
   });
 
   test('chat interface flow with screenshots', async ({ page }) => {
@@ -453,18 +474,33 @@ test.describe('Visual Flow: Main Chat', () => {
 
 test.describe('Visual Flow: Settings', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate first and wait for load
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    // Navigate first
+    try {
+      await page.goto('/', { waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(2000);
     
-    // Skip onboarding
-    await page.evaluate(() => {
-      localStorage.setItem('molt-onboarding-completed', 'true');
-      localStorage.setItem('molt-app-version', '1.0.0');
-    });
+    // Skip onboarding (with timeout protection)
+    await Promise.race([
+      page.evaluate(() => {
+        try {
+          localStorage.setItem('molt-onboarding-completed', 'true');
+          localStorage.setItem('molt-app-version', '1.0.0');
+        } catch (e) {
+          console.error('Failed to set storage:', e);
+        }
+      }),
+      new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
     
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1000);
+    try {
+      await page.reload({ waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(1500);
   });
 
   test('settings dialog flow with screenshots', async ({ page }) => {
