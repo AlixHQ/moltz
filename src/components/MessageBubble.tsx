@@ -1,5 +1,5 @@
 ﻿import { useState, useRef, useEffect, KeyboardEvent, ReactNode, isValidElement } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize from "rehype-sanitize";
@@ -334,7 +334,7 @@ export function MessageBubble({ message, onEdit, onRegenerate, isLastAssistantMe
                       </div>
                     );
                   },
-                }}
+                } as Partial<Components>}
               >
                 {message.content}
               </ReactMarkdown>

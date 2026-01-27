@@ -83,26 +83,6 @@ export function ChatView() {
     }
   };
 
-  // Handle editing a user message - checks for subsequent messages and shows confirmation
-  const handleEditMessage = useCallback((messageId: string, newContent: string) => {
-    if (!currentConversation || isSending || currentStreamingMessageId) return;
-
-    // Find the message index
-    const messageIndex = currentConversation.messages.findIndex(m => m.id === messageId);
-    if (messageIndex === -1) return;
-
-    // Check for subsequent messages
-    const subsequentCount = currentConversation.messages.length - messageIndex - 1;
-    
-    if (subsequentCount > 0) {
-      // Show confirmation dialog
-      setPendingEdit({ messageId, newContent, subsequentCount });
-    } else {
-      // No subsequent messages, proceed directly
-      executeEdit(messageId, newContent);
-    }
-  }, [currentConversation, isSending, currentStreamingMessageId, executeEdit]);
-
   // Actually execute the edit (after confirmation if needed)
   const executeEdit = useCallback(async (messageId: string, newContent: string) => {
     if (!currentConversation) return;
@@ -143,6 +123,26 @@ export function ChatView() {
       setIsSending(false);
     }
   }, [currentConversation, settings.defaultModel, deleteMessagesAfter, updateMessage, addMessage]);
+
+  // Handle editing a user message - checks for subsequent messages and shows confirmation
+  const handleEditMessage = useCallback((messageId: string, newContent: string) => {
+    if (!currentConversation || isSending || currentStreamingMessageId) return;
+
+    // Find the message index
+    const messageIndex = currentConversation.messages.findIndex(m => m.id === messageId);
+    if (messageIndex === -1) return;
+
+    // Check for subsequent messages
+    const subsequentCount = currentConversation.messages.length - messageIndex - 1;
+    
+    if (subsequentCount > 0) {
+      // Show confirmation dialog
+      setPendingEdit({ messageId, newContent, subsequentCount });
+    } else {
+      // No subsequent messages, proceed directly
+      executeEdit(messageId, newContent);
+    }
+  }, [currentConversation, isSending, currentStreamingMessageId, executeEdit]);
 
   const handleConfirmEdit = useCallback(() => {
     if (pendingEdit) {

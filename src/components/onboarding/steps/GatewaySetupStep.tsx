@@ -501,7 +501,9 @@ export function GatewaySetupStep({
                         <button
                           onClick={async () => {
                             try {
-                              await navigator.clipboard.writeText(errorHint.command);
+                              if (errorHint.command) {
+                                await navigator.clipboard.writeText(errorHint.command);
+                              }
                             } catch (err) {
                               console.error("Failed to copy:", err);
                             }

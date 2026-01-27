@@ -73,6 +73,21 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
+  // Fetch models callback
+  const fetchModels = useCallback(async () => {
+    setModelsLoading(true);
+    try {
+      const models = await invoke<ModelInfo[]>("get_models");
+      if (models && models.length > 0) {
+        setAvailableModels(models);
+      }
+    } catch {
+      // Could not fetch models from Gateway, using fallbacks
+    } finally {
+      setModelsLoading(false);
+    }
+  }, [setModelsLoading, setAvailableModels]);
+
   // Fetch models when dialog opens and connected
   useEffect(() => {
     if (open && connected) {
@@ -117,20 +132,6 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
       setProtocolNotice(null);
     }
   };
-
-  const fetchModels = useCallback(async () => {
-    setModelsLoading(true);
-    try {
-      const models = await invoke<ModelInfo[]>("get_models");
-      if (models && models.length > 0) {
-        setAvailableModels(models);
-      }
-    } catch {
-      // Could not fetch models from Gateway, using fallbacks
-    } finally {
-      setModelsLoading(false);
-    }
-  }, [setModelsLoading, setAvailableModels]);
 
   const handleSave = async () => {
     // Validate URL before saving
