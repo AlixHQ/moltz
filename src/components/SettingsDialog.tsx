@@ -25,9 +25,14 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const [connectionStatus, setConnectionStatus] = useState<"idle" | "connecting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
+  // Only sync form data when dialog opens, not when settings reference changes
+  // This prevents reverting edits when the store updates during typing
   useEffect(() => {
-    setFormData(settings);
-  }, [settings, open]);
+    if (open) {
+      setFormData(settings);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // Fetch models when dialog opens and connected
   useEffect(() => {
