@@ -17,6 +17,13 @@ const isMacOS = typeof navigator !== "undefined" && navigator.platform.toLowerCa
 // Exponential backoff delays: 5s → 10s → 30s → 60s (capped)
 const BACKOFF_DELAYS = [5, 10, 30, 60];
 
+// Result from the connect command
+interface ConnectResult {
+  success: boolean;
+  used_url: string;
+  protocol_switched: boolean;
+}
+
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -148,10 +155,16 @@ export default function App() {
       setReconnectAttempts(attempts);
 
       try {
-        await invoke("connect", { 
+        const result = await invoke<ConnectResult>("connect", { 
           url: settings.gatewayUrl, 
           token: settings.gatewayToken 
         });
+        
+        // If protocol was switched, update settings with the working URL
+        if (result.protocol_switched) {
+          useStore.getState().updateSettings({ gatewayUrl: result.used_url });
+        }
+        
         // Fetch available models after connection
         try {
           const models = await invoke<any[]>("get_models");
@@ -165,7 +178,8 @@ export default function App() {
         
         // Show success on reconnection (not initial)
         if (attempts > 1) {
-          showSuccess("Reconnected to Gateway");
+          const protocolMsg = result.protocol_switched ? ` (using ${result.used_url.startsWith("wss://") ? "wss://" : "ws://"})` : "";
+          showSuccess(`Reconnected to Gateway${protocolMsg}`);
           attempts = 0;
           setReconnectAttempts(0);
         }
@@ -259,12 +273,19 @@ export default function App() {
           setRetryCountdown(null);
           setIsConnecting(true);
           try {
-            await invoke("connect", { 
+            const result = await invoke<ConnectResult>("connect", { 
               url: settings.gatewayUrl, 
               token: settings.gatewayToken 
             });
+            
+            // If protocol was switched, update settings with the working URL
+            if (result.protocol_switched) {
+              useStore.getState().updateSettings({ gatewayUrl: result.used_url });
+            }
+            
             if (!showOnboarding) {
-              showSuccess("Reconnected to Gateway");
+              const protocolMsg = result.protocol_switched ? ` (using ${result.used_url.startsWith("wss://") ? "wss://" : "ws://"})` : "";
+              showSuccess(`Reconnected to Gateway${protocolMsg}`);
             }
             disconnectAttempts = 0;
           } catch (err) {

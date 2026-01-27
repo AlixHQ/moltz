@@ -20,6 +20,13 @@ interface GatewaySetupStepProps {
   onSkip: () => void;
 }
 
+// Result from the connect command
+interface ConnectResult {
+  success: boolean;
+  used_url: string;
+  protocol_switched: boolean;
+}
+
 type ConnectionState = "idle" | "detecting" | "testing" | "success" | "error";
 
 // Derive a helpful hint based on error content
@@ -69,6 +76,7 @@ export function GatewaySetupStep({
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [errorHint, setErrorHint] = useState<string>("");
   const [autoDetected, setAutoDetected] = useState(false);
+  const [protocolNotice, setProtocolNotice] = useState<string>("");
   const { updateSettings } = useStore();
 
   useEffect(() => {
@@ -81,6 +89,7 @@ export function GatewaySetupStep({
   const autoDetectGateway = async () => {
     setConnectionState("detecting");
     setErrorMessage("");
+    setProtocolNotice("");
     
     const commonUrls = [
       "ws://localhost:18789",
@@ -90,14 +99,20 @@ export function GatewaySetupStep({
 
     for (const url of commonUrls) {
       try {
-        await invoke("connect", { url, token: "" });
+        const result = await invoke<ConnectResult>("connect", { url, token: "" });
         // Success! Gateway found
-        onGatewayUrlChange(url);
+        const actualUrl = result.used_url;
+        onGatewayUrlChange(actualUrl);
         setAutoDetected(true);
         setConnectionState("success");
         
-        // Auto-save settings
-        updateSettings({ gatewayUrl: url, gatewayToken: "" });
+        // Show protocol notice if it switched
+        if (result.protocol_switched) {
+          setProtocolNotice(`Using ${actualUrl.startsWith("wss://") ? "wss://" : "ws://"} (auto-detected)`);
+        }
+        
+        // Auto-save settings with the working URL
+        updateSettings({ gatewayUrl: actualUrl, gatewayToken: "" });
         
         // Auto-advance after a moment
         setTimeout(() => {
@@ -122,14 +137,23 @@ export function GatewaySetupStep({
 
     setConnectionState("testing");
     setErrorMessage("");
+    setProtocolNotice("");
 
     try {
       await invoke("disconnect");
-      await invoke("connect", { url: gatewayUrl, token: gatewayToken });
+      const result = await invoke<ConnectResult>("connect", { url: gatewayUrl, token: gatewayToken });
       
       // Success!
       setConnectionState("success");
-      updateSettings({ gatewayUrl, gatewayToken });
+      
+      // If protocol was switched, update the URL and show notice
+      const actualUrl = result.used_url;
+      if (result.protocol_switched) {
+        onGatewayUrlChange(actualUrl);
+        setProtocolNotice(`Connected using ${actualUrl.startsWith("wss://") ? "wss://" : "ws://"} (auto-detected)`);
+      }
+      
+      updateSettings({ gatewayUrl: actualUrl, gatewayToken });
 
       // Fetch models
       try {
@@ -231,6 +255,11 @@ export function GatewaySetupStep({
                 <p className="text-sm text-muted-foreground">
                   {autoDetected ? "Auto-detected at" : "Connected to"} {gatewayUrl}
                 </p>
+                {protocolNotice && (
+                  <p className="text-xs text-green-600/80 dark:text-green-400/80 mt-1">
+                    {protocolNotice}
+                  </p>
+                )}
               </div>
             </div>
           </div>

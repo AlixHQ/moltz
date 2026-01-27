@@ -55,6 +55,45 @@ pub struct GatewayError {
     pub message: String,
 }
 
+/// Result of a connection attempt with protocol info
+#[derive(Debug, Serialize, Clone)]
+pub struct ConnectResult {
+    pub success: bool,
+    pub used_url: String,
+    pub protocol_switched: bool,
+}
+
+/// Try to connect with protocol fallback (ws:// <-> wss://)
+async fn try_connect_with_fallback(url: &str, token: &str) -> Result<(tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>, String, bool), String> {
+    let ws_url = format!("{}?token={}", url, token);
+    
+    // First, try the URL as provided
+    match connect_async(&ws_url).await {
+        Ok((stream, _)) => return Ok((stream, url.to_string(), false)),
+        Err(first_err) => {
+            // Try alternate protocol
+            let alternate_url = if url.starts_with("ws://") {
+                url.replacen("ws://", "wss://", 1)
+            } else if url.starts_with("wss://") {
+                url.replacen("wss://", "ws://", 1)
+            } else {
+                // Not a WebSocket URL, can't switch protocol
+                return Err(format!("Failed to connect: {}", first_err));
+            };
+            
+            let alternate_ws_url = format!("{}?token={}", alternate_url, token);
+            
+            match connect_async(&alternate_ws_url).await {
+                Ok((stream, _)) => Ok((stream, alternate_url, true)),
+                Err(_) => {
+                    // Both failed, return original error
+                    Err(format!("Failed to connect: {}", first_err))
+                }
+            }
+        }
+    }
+}
+
 /// Connect to Moltbot Gateway
 #[tauri::command]
 pub async fn connect(
@@ -62,14 +101,9 @@ pub async fn connect(
     state: State<'_, GatewayState>,
     url: String,
     token: String,
-) -> Result<bool, String> {
-    // Build WebSocket URL with auth
-    let ws_url = format!("{}?token={}", url, token);
-
-    // Connect to WebSocket (pass the string directly)
-    let (ws_stream, _) = connect_async(&ws_url)
-        .await
-        .map_err(|e| format!("Failed to connect: {}", e))?;
+) -> Result<ConnectResult, String> {
+    // Try to connect with protocol fallback
+    let (ws_stream, used_url, protocol_switched) = try_connect_with_fallback(&url, &token).await?;
 
     let (mut write, mut read) = ws_stream.split();
 
@@ -80,8 +114,8 @@ pub async fn connect(
     *state.sender.lock().await = Some(tx);
     *state.connected.write().await = true;
 
-    // Emit connection event
-    let _ = app.emit("gateway:connected", ());
+    // Emit connection event with the URL that worked
+    let _ = app.emit("gateway:connected", used_url.clone());
 
     // Spawn task to handle outgoing messages
     let app_clone = app.clone();
@@ -130,7 +164,11 @@ pub async fn connect(
         }
     });
 
-    Ok(true)
+    Ok(ConnectResult {
+        success: true,
+        used_url,
+        protocol_switched,
+    })
 }
 
 /// Disconnect from Gateway
