@@ -52,11 +52,11 @@ export class MoltzerDB extends Dexie {
     this.messages.hook('creating', function (_primKey, obj) {
       // Create searchable words from content
       if (obj.content) {
-        (obj as any).searchWords = extractSearchWords(obj.content);
+        obj.searchWords = extractSearchWords(obj.content);
       }
     });
 
-    this.messages.hook('updating', function (modifications: any, _primKey, _obj) {
+    this.messages.hook('updating', function (modifications: Partial<DBMessage>, _primKey, _obj) {
       if (modifications.content) {
         return { ...modifications, searchWords: extractSearchWords(modifications.content) };
       }
@@ -104,7 +104,7 @@ export async function searchMessages(
   const allMessages = await collection.toArray();
   
   return allMessages.filter(msg => {
-    const msgWords = (msg as any).searchWords as string[] || [];
+    const msgWords = msg.searchWords || [];
     // All query words must be present in message
     return words.every(word => 
       msgWords.some(msgWord => msgWord.includes(word))

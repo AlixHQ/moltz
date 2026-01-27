@@ -1,3 +1,16 @@
+/**
+ * Global State Management for Moltzer Client
+ * 
+ * Uses Zustand for lightweight, performant state management.
+ * All state updates automatically persist to IndexedDB via the persistence layer.
+ * 
+ * State structure:
+ * - Connection: Gateway connection status and available models
+ * - Conversations: All chat conversations with messages
+ * - Settings: User preferences and configuration
+ * - UI: Sidebar visibility and other UI state
+ */
+
 import { create } from "zustand";
 import { 
   persistConversation, 
@@ -7,6 +20,9 @@ import {
 } from "../lib/persistence";
 import { getGatewayToken, setGatewayToken } from "../lib/keychain";
 
+/**
+ * Single message in a conversation
+ */
 export interface Message {
   id: string;
   role: "user" | "assistant" | "system";
@@ -20,6 +36,9 @@ export interface Message {
   modelUsed?: string;
 }
 
+/**
+ * File attachment for a message
+ */
 export interface Attachment {
   id: string;
   filename: string;
@@ -28,12 +47,18 @@ export interface Attachment {
   url?: string;
 }
 
+/**
+ * Source citation for a message (e.g., from web search)
+ */
 export interface Source {
   title: string;
   url?: string;
   snippet?: string;
 }
 
+/**
+ * Complete conversation with all messages
+ */
 export interface Conversation {
   id: string;
   title: string;
@@ -45,6 +70,9 @@ export interface Conversation {
   isPinned: boolean;
 }
 
+/**
+ * Information about an available AI model
+ */
 export interface ModelInfo {
   id: string;           // e.g., "anthropic/claude-sonnet-4-5"
   name: string;         // e.g., "Claude Sonnet 4.5"
@@ -52,6 +80,9 @@ export interface ModelInfo {
   isDefault?: boolean;
 }
 
+/**
+ * User settings and preferences
+ */
 export interface Settings {
   gatewayUrl: string;
   gatewayToken: string;
@@ -60,9 +91,15 @@ export interface Settings {
   theme: "light" | "dark" | "system";
 }
 
+/**
+ * Main application store
+ * Contains all global state and actions
+ */
 interface Store {
-  // Connection
+  // Connection state
+  /** Is the Gateway WebSocket connection active? */
   connected: boolean;
+  /** Update connection status */
   setConnected: (connected: boolean) => void;
 
   // Available models from Gateway
