@@ -239,10 +239,10 @@ export function MessageBubble({ message, onEdit, onRegenerate, isLastAssistantMe
                   Save & Send
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground mt-1 text-right">
-                <kbd className="px-1 py-0.5 bg-muted rounded font-mono text-[10px]">Enter</kbd> to save
-                <span className="mx-1.5">·</span>
-                <kbd className="px-1 py-0.5 bg-muted rounded font-mono text-[10px]">Esc</kbd> to cancel
+              <p id={`edit-hint-${message.id}`} className="text-xs text-muted-foreground mt-1 text-right">
+                <kbd className="px-1 py-0.5 bg-muted rounded font-mono text-[10px]" aria-label="Enter key">Enter</kbd> to save
+                <span className="mx-1.5" aria-hidden="true">·</span>
+                <kbd className="px-1 py-0.5 bg-muted rounded font-mono text-[10px]" aria-label="Escape key">Esc</kbd> to cancel
               </p>
             </div>
           ) : message.isStreaming && !message.content ? (
