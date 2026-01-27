@@ -240,7 +240,7 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-dialog-title"
-        className="relative bg-background rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-border/50 ring-1 ring-white/10"
+        className="relative bg-background rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-border/50 ring-1 ring-white/10 flex flex-col"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -257,7 +257,7 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
         </div>
 
         {/* Content */}
-        <div className="px-6 py-4 space-y-6 max-h-[60vh] overflow-y-auto">
+        <div className="px-4 sm:px-6 py-4 space-y-6 flex-1 overflow-y-auto">
           {/* Connection Section */}
           <section>
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -500,7 +500,7 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-border bg-muted/30">
+        <div className="flex justify-end gap-3 px-4 sm:px-6 py-4 border-t border-border bg-muted/30 flex-shrink-0">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-sm font-medium border border-border hover:bg-muted transition-colors"
