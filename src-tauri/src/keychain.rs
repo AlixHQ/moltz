@@ -6,7 +6,6 @@
 //! - Linux: Secret Service (libsecret)
 
 use keyring::Entry;
-use tauri::State;
 
 /// Get a value from the keychain
 /// Uses spawn_blocking to prevent UI freezing on macOS
