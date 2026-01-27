@@ -324,6 +324,7 @@ export default function App() {
       }),
       listen("gateway:disconnected", () => {
         setConnected(false);
+        setConnectionError("Connection to Gateway lost");
         clearTimers();
         
         // No toast spam - the header bar shows the status
@@ -341,6 +342,7 @@ export default function App() {
           clearTimers();
           setRetryCountdown(null);
           setIsConnecting(true);
+          setConnectionError(null);
           try {
             const result = await invoke<ConnectResult>("connect", { 
               url: settings.gatewayUrl, 
@@ -352,6 +354,7 @@ export default function App() {
               useStore.getState().updateSettings({ gatewayUrl: result.used_url });
             }
             
+            setConnectionError(null);
             if (!showOnboarding) {
               const protocolMsg = result.protocol_switched ? ` (using ${result.used_url.startsWith("wss://") ? "wss://" : "ws://"})` : "";
               showSuccess(`Reconnected to Gateway${protocolMsg}`);
@@ -359,6 +362,8 @@ export default function App() {
             disconnectAttempts = 0;
           } catch (err) {
             console.error("Reconnection failed:", err);
+            const errorMessage = typeof err === 'string' ? err : 'Reconnection failed';
+            setConnectionError(errorMessage);
             setIsConnecting(false);
             // Schedule next retry with backoff
             disconnectAttempts++;
