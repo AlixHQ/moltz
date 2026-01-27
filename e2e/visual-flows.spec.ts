@@ -90,19 +90,34 @@ function reportStep(step: TestStep) {
 
 test.describe('Visual Flow: Onboarding', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate to the app and wait for it to load
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    
+    // Wait for the page to be interactive
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {
+      // Network idle might not happen, that's ok
+    });
+    
     // Clear all storage to simulate first-time user
-    await page.goto('/');
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
-      // Clear IndexedDB
-      indexedDB.databases().then(dbs => {
-        dbs.forEach(db => {
-          if (db.name) indexedDB.deleteDatabase(db.name);
-        });
-      });
+      // Clear IndexedDB (don't wait for this)
+      if (typeof indexedDB !== 'undefined') {
+        try {
+          indexedDB.databases().then(dbs => {
+            dbs.forEach(db => {
+              if (db.name) indexedDB.deleteDatabase(db.name);
+            });
+          }).catch(() => {});
+        } catch (e) {
+          // Ignore IndexedDB errors
+        }
+      }
     });
-    await page.reload();
+    
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
   });
 
   test('complete onboarding flow with screenshots', async ({ page }) => {
@@ -296,13 +311,17 @@ test.describe('Visual Flow: Onboarding', () => {
 
 test.describe('Visual Flow: Main Chat', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate first and wait for load
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    
     // Skip onboarding
-    await page.goto('/');
     await page.evaluate(() => {
       localStorage.setItem('molt-onboarding-completed', 'true');
       localStorage.setItem('molt-app-version', '1.0.0');
     });
-    await page.reload();
+    
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
   });
 
@@ -434,13 +453,17 @@ test.describe('Visual Flow: Main Chat', () => {
 
 test.describe('Visual Flow: Settings', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate first and wait for load
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    
     // Skip onboarding
-    await page.goto('/');
     await page.evaluate(() => {
       localStorage.setItem('molt-onboarding-completed', 'true');
       localStorage.setItem('molt-app-version', '1.0.0');
     });
-    await page.reload();
+    
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
   });
 

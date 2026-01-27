@@ -22,16 +22,16 @@ export function SuccessStep({ onNext, onSkip }: SuccessStepProps) {
     }));
     setConfetti(particles);
 
-    // Auto-advance
+    // Auto-advance (Enter → start using, skip the tour)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        onNext();
+        onSkip(); // Skip tour, go straight to app
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onNext]);
+  }, [onSkip]);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden">
@@ -112,11 +112,11 @@ export function SuccessStep({ onNext, onSkip }: SuccessStepProps) {
           )}
         >
           <button
-            onClick={onNext}
+            onClick={onSkip}
             className="group px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold text-lg shadow-xl shadow-green-500/30 hover:shadow-2xl hover:shadow-green-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
           >
             <span className="flex items-center gap-2">
-              Show Me Around
+              Start Using Molt
               <svg
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                 fill="none"
@@ -134,10 +134,10 @@ export function SuccessStep({ onNext, onSkip }: SuccessStepProps) {
           </button>
 
           <button
-            onClick={onSkip}
+            onClick={onNext}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Skip tour, let me dive in!
+            Show me keyboard shortcuts first
           </button>
         </div>
 

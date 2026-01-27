@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { cn } from "../../../lib/utils";
 
 interface FeatureTourStepProps {
@@ -10,39 +10,44 @@ interface Feature {
   icon: string;
   title: string;
   description: string;
-  shortcut?: string;
+  shortcut: string;
 }
 
-const features: Feature[] = [
+// Detect platform for keyboard shortcuts
+const isMacOS = typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac");
+const modKey = isMacOS ? "⌘" : "Ctrl+";
+
+const getFeatures = (): Feature[] => [
   {
-    icon: "⌘N",
+    icon: `${modKey}N`,
     title: "New Chat",
     description: "Start a fresh conversation anytime",
-    shortcut: "⌘N",
+    shortcut: `${modKey}N`,
   },
   {
-    icon: "⌘K",
+    icon: `${modKey}K`,
     title: "Quick Search",
     description: "Find any conversation instantly",
-    shortcut: "⌘K",
+    shortcut: `${modKey}K`,
   },
   {
-    icon: "⌘\\",
+    icon: `${modKey}\\`,
     title: "Toggle Sidebar",
     description: "Show or hide your conversation list",
-    shortcut: "⌘\\",
+    shortcut: `${modKey}\\`,
   },
   {
-    icon: "⌘,",
+    icon: `${modKey},`,
     title: "Settings",
     description: "Customize models, themes, and more",
-    shortcut: "⌘,",
+    shortcut: `${modKey},`,
   },
 ];
 
 export function FeatureTourStep({ onComplete, onSkip }: FeatureTourStepProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
+  const features = useMemo(() => getFeatures(), []);
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
