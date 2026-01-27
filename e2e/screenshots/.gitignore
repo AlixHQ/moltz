@@ -1,0 +1,12 @@
+# Ignore screenshots (they're generated during tests)
+*.png
+*.jpg
+*.jpeg
+
+# Ignore test reports
+report.json
+visual-test-report.json
+
+# Keep the directory structure
+!.gitignore
+!README.md

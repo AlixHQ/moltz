@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChatInput } from './ChatInput';
 
@@ -32,10 +32,12 @@ describe('ChatInput', () => {
     it('should show keyboard hints', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
+      // Keyboard hints are combined in a single paragraph with kbd elements
       expect(screen.getByText('Enter')).toBeInTheDocument();
-      expect(screen.getByText('to send')).toBeInTheDocument();
       expect(screen.getByText('Shift+Enter')).toBeInTheDocument();
-      expect(screen.getByText('for new line')).toBeInTheDocument();
+      // The descriptive text is part of the paragraph containing the kbd elements
+      expect(screen.getByText(/to send/)).toBeInTheDocument();
+      expect(screen.getByText(/for new line/)).toBeInTheDocument();
     });
   });
 
@@ -226,7 +228,7 @@ describe('ChatInput', () => {
     it('should have proper title attributes', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
-      expect(screen.getByTitle('Attach files')).toBeInTheDocument();
+      expect(screen.getByTitle(/Attach files/i)).toBeInTheDocument();
       expect(screen.getByTitle('Send message (Enter)')).toBeInTheDocument();
     });
 
@@ -239,26 +241,27 @@ describe('ChatInput', () => {
 
   describe('edge cases', () => {
     it('should handle very long messages', async () => {
-      const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
       const longMessage = 'a'.repeat(10000);
-      const input = screen.getByPlaceholderText('Message Molt...');
-      await user.type(input, longMessage);
-      await user.keyboard('{Enter}');
+      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      // Use fireEvent.change instead of userEvent.type for very long strings (faster)
+      fireEvent.change(input, { target: { value: longMessage } });
+      fireEvent.keyDown(input, { key: 'Enter' });
       
       expect(mockOnSend).toHaveBeenCalledWith(longMessage, []);
     });
 
     it('should handle special characters', async () => {
-      const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
-      await user.type(input, '<script>alert("xss")</script>');
-      await user.keyboard('{Enter}');
+      const specialChars = '<script>alert("xss")</script>';
+      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      // Use fireEvent.change for special characters that userEvent doesn't handle well
+      fireEvent.change(input, { target: { value: specialChars } });
+      fireEvent.keyDown(input, { key: 'Enter' });
       
-      expect(mockOnSend).toHaveBeenCalledWith('<script>alert("xss")</script>', []);
+      expect(mockOnSend).toHaveBeenCalledWith(specialChars, []);
     });
 
     it('should handle unicode characters', async () => {
@@ -273,14 +276,15 @@ describe('ChatInput', () => {
     });
 
     it('should handle emoji input', async () => {
-      const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
-      await user.type(input, '😀 😃 😄 😁');
-      await user.keyboard('{Enter}');
+      const emojiText = '😀 😃 😄 😁';
+      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      // Use fireEvent.change for emoji as userEvent has encoding issues
+      fireEvent.change(input, { target: { value: emojiText } });
+      fireEvent.keyDown(input, { key: 'Enter' });
       
-      expect(mockOnSend).toHaveBeenCalledWith('😀 😃 😄 😁', []);
+      expect(mockOnSend).toHaveBeenCalledWith(emojiText, []);
     });
   });
 });

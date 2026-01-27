@@ -339,9 +339,10 @@ describe('MessageBubble', () => {
         timestamp: new Date(),
       };
 
-      const { container } = render(<MessageBubble message={message} />);
+      render(<MessageBubble message={message} />);
       
-      expect(container.querySelector('.text-muted-foreground')).not.toBeInTheDocument();
+      // Model badge shows the model name - should not be present when modelUsed is undefined
+      expect(screen.queryByText(/claude|gpt|gemini/i)).not.toBeInTheDocument();
     });
   });
 

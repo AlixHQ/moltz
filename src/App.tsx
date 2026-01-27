@@ -174,9 +174,14 @@ export default function App() {
     }
     
     // Don't attempt connection if no Gateway URL is configured
+    // BUT don't re-trigger onboarding if it was just completed (check localStorage)
     if (!settings.gatewayUrl || settings.gatewayUrl.trim() === '') {
-      setIsConnecting(false);
-      setShowOnboarding(true); // Force onboarding if no URL
+      const justCompleted = localStorage.getItem('molt-onboarding-completed');
+      const justSkipped = localStorage.getItem('molt-onboarding-skipped');
+      if (!justCompleted && !justSkipped) {
+        setIsConnecting(false);
+        setShowOnboarding(true); // Force onboarding if no URL and not just completed
+      }
       return;
     }
     

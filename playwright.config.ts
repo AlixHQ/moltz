@@ -24,6 +24,9 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-report/results.json' }],
   ],
   
+  /* Global timeout for each test */
+  timeout: 60 * 1000,
+  
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -34,6 +37,15 @@ export default defineConfig({
     
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
+    
+    /* Video on failure (useful for visual debugging) */
+    video: 'retain-on-failure',
+    
+    /* Viewport size for consistent screenshots */
+    viewport: { width: 1280, height: 720 },
+    
+    /* Action timeout */
+    actionTimeout: 15 * 1000,
   },
 
   /* Configure projects for major browsers */
@@ -41,6 +53,20 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    // Visual testing project with specific settings
+    {
+      name: 'visual',
+      testMatch: '**/visual-flows.spec.ts',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Larger viewport for visual tests
+        viewport: { width: 1440, height: 900 },
+        // Always capture video for visual tests
+        video: 'on',
+        // Capture trace for visual tests
+        trace: 'on',
+      },
     },
     // Uncomment for cross-browser testing
     // {

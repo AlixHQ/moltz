@@ -6,7 +6,7 @@ import { useStore } from "../stores/store";
 describe("SearchDialog", () => {
   const onClose = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     // Reset store
     const store = useStore.getState();
@@ -34,6 +34,9 @@ describe("SearchDialog", () => {
       role: "assistant",
       content: "TypeScript is a typed superset of JavaScript",
     });
+    
+    // Wait for persistence to complete (messages are persisted to IndexedDB)
+    await new Promise(resolve => setTimeout(resolve, 200));
   });
 
   it("renders when open", () => {

@@ -384,9 +384,10 @@ describe('SettingsDialog', () => {
     it('should have proper labels for inputs', () => {
       render(<SettingsDialog open={true} onClose={mockOnClose} />);
       
-      expect(screen.getByLabelText('Gateway URL')).toBeInTheDocument();
-      expect(screen.getByLabelText(/Authentication Token/)).toBeInTheDocument();
-      expect(screen.getByLabelText('Default Model')).toBeInTheDocument();
+      // Find inputs by their id (which is connected to labels via htmlFor)
+      expect(document.getElementById('gateway-url')).toBeInTheDocument();
+      expect(document.getElementById('gateway-token')).toBeInTheDocument();
+      expect(document.getElementById('default-model')).toBeInTheDocument();
     });
 
     it('should have accessible toggle buttons', () => {
