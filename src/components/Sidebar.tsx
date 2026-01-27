@@ -5,6 +5,7 @@ import { SearchDialog } from "./SearchDialog";
 import { ConfirmDialog } from "./ui/confirm-dialog";
 import { ExportDialog } from "./ExportDialog";
 import { EmptyState } from "./ui/empty-state";
+import { ConversationSkeleton } from "./ui/skeleton";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -159,13 +160,17 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
 
       {/* Quick filter */}
       <div className="px-3 pb-2">
+        <label htmlFor="conversation-filter" className="sr-only">
+          Filter conversations by title or content
+        </label>
         <input
+          id="conversation-filter"
           type="text"
           placeholder="Filter conversations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full px-3 py-1.5 text-sm rounded-md border border-border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-          aria-label="Filter conversations by title or content"
+          aria-label="Filter conversations"
         />
       </div>
 
@@ -196,17 +201,30 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup }: SidebarProps) {
         )}
 
         {filteredConversations.length === 0 && (
-          <div className="flex flex-col items-center justify-center text-muted-foreground text-sm py-12 px-4">
-            <MessageSquare className="w-12 h-12 mb-3 opacity-30" strokeWidth={1.5} />
-            {searchQuery ? (
-              <p>No conversations match "{searchQuery}"</p>
-            ) : (
-              <>
-                <p className="font-medium">No conversations yet</p>
-                <p className="text-xs mt-1">Start a new chat to begin</p>
-              </>
-            )}
-          </div>
+          searchQuery ? (
+            <EmptyState
+              icon={<Search className="w-8 h-8" strokeWidth={1.5} />}
+              title="No matches"
+              description={`No conversations match "${searchQuery}"`}
+            />
+          ) : (
+            <EmptyState
+              icon={<MessageSquare className="w-8 h-8" strokeWidth={1.5} />}
+              title="No conversations yet"
+              description="Start a new chat to begin"
+              action={
+                <Button
+                  onClick={handleNewChat}
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<Plus className="w-4 h-4" />}
+                  aria-label="Create your first conversation"
+                >
+                  New Chat
+                </Button>
+              }
+            />
+          )
         )}
       </div>
 
