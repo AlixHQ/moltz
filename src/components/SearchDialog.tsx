@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+﻿import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useStore } from "../stores/store";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { searchPersistedMessages } from "../lib/persistence";
+import { EmptyState } from "./ui/empty-state";
+import { Search, MessageSquare, Frown } from "lucide-react";
 
 interface SearchDialogProps {
   open: boolean;
@@ -195,7 +197,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                         ? "bg-blue-500/10 text-blue-500" 
                         : "bg-orange-500/10 text-orange-500"
                     )}>
-                      {result.role === "user" ? "You" : "Molt"}
+                      {result.role === "user" ? "You" : "Moltzer"}
                     </span>
                     <span className="text-sm font-medium truncate">
                       {result.conversationTitle}
@@ -211,20 +213,23 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
               ))}
             </div>
           ) : query ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <svg className="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-sm">No results found for "{query}"</p>
-            </div>
+            <EmptyState
+              icon={<Frown className="w-8 h-8" strokeWidth={1.5} />}
+              title="No results found"
+              description={`No messages match "${query}". Try different keywords.`}
+            />
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <p className="text-sm">Type to search across all conversations</p>
-              <div id="search-instructions" className="flex gap-2 mt-4 text-xs">
-                <kbd className="px-2 py-1 bg-muted rounded">↑↓</kbd>
+              <MessageSquare className="w-12 h-12 mb-3 opacity-50" strokeWidth={1.5} />
+              <p className="text-sm font-medium mb-1">Search all conversations</p>
+              <p className="text-xs text-muted-foreground mb-4">Find messages across encrypted history</p>
+              <div id="search-instructions" className="flex gap-2 mt-2 text-xs">
+                <kbd className="px-2 py-1 bg-muted rounded" aria-label="Arrow keys">↑↓</kbd>
                 <span>Navigate</span>
-                <kbd className="px-2 py-1 bg-muted rounded">Enter</kbd>
+                <kbd className="px-2 py-1 bg-muted rounded" aria-label="Enter key">Enter</kbd>
                 <span>Select</span>
+                <kbd className="px-2 py-1 bg-muted rounded" aria-label="Escape key">Esc</kbd>
+                <span>Close</span>
               </div>
             </div>
           )}
