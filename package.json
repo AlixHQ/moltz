@@ -1,7 +1,7 @@
 {
   "name": "moltzer-client",
   "version": "1.0.0",
-  "description": "Native cross-platform client for Moltbot",
+  "description": "Native cross-platform desktop client for Clawdbot - A beautiful ChatGPT-style interface for your personal AI assistant",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -26,6 +26,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.6",
+    "@tanstack/react-virtual": "^3.13.18",
     "@tauri-apps/api": "^2.2.0",
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-fs": "^2.2.0",
