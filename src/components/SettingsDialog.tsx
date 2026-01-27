@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Switch } from "./ui/switch";
+import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toast";
 
 interface SettingsDialogProps {
@@ -308,7 +309,7 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
                         <p className="text-muted-foreground">
                           Check your Gateway config file or ask your admin. Run{" "}
                           <code className="px-1 py-0.5 bg-muted rounded text-xs font-mono">
-                            Moltbot gateway status
+                            moltzer gateway status
                           </code>{" "}
                           to see if auth is enabled.
                         </p>
@@ -416,31 +417,33 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
                     </span>
                   )}
                 </div>
-                <select
-                  id="default-model"
-                  value={formData.defaultModel}
-                  onChange={(e) => setFormData({ ...formData, defaultModel: e.target.value })}
-                  disabled={modelsLoading}
-                  aria-describedby={!connected ? "model-hint" : undefined}
-                  className={cn(
-                    "w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/50",
-                    modelsLoading && "opacity-50 cursor-not-allowed"
-                  )}
-                >
-                  {Object.entries(modelsByProvider).map(([provider, providerModels]) => (
-                    <optgroup key={provider} label={providerNames[provider] || provider}>
-                      {providerModels.map((model) => (
-                        <option key={model.id} value={model.id}>
-                          {model.name}
-                        </option>
+                {modelsLoading ? (
+                  <Skeleton className="h-10 w-full" />
+                ) : (
+                  <>
+                    <select
+                      id="default-model"
+                      value={formData.defaultModel}
+                      onChange={(e) => setFormData({ ...formData, defaultModel: e.target.value })}
+                      aria-describedby={!connected ? "model-hint" : undefined}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    >
+                      {Object.entries(modelsByProvider).map(([provider, providerModels]) => (
+                        <optgroup key={provider} label={providerNames[provider] || provider}>
+                          {providerModels.map((model) => (
+                            <option key={model.id} value={model.id}>
+                              {model.name}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
-                    </optgroup>
-                  ))}
-                </select>
-                {!connected && (
-                  <p id="model-hint" className="text-xs text-muted-foreground mt-1.5">
-                    Connect to Gateway to see available models
-                  </p>
+                    </select>
+                    {!connected && (
+                      <p id="model-hint" className="text-xs text-muted-foreground mt-1.5">
+                        Connect to Gateway to see available models
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
               <div className="flex items-center justify-between">
