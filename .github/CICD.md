@@ -1,10 +1,10 @@
 # CI/CD Pipeline Documentation
 
-This document describes the CI/CD setup for the Molt Client, including workflows, automated testing, releases, and dependency management.
+This document describes the CI/CD setup for the Moltzer client, including workflows, automated testing, releases, and dependency management.
 
 ## Overview
 
-The Molt Client uses GitHub Actions for continuous integration and deployment with the following workflows:
+The Moltzer client uses GitHub Actions for continuous integration and deployment with the following workflows:
 
 1. **CI Workflow** (`ci.yml`) - Runs on every push and PR
 2. **Release Workflow** (`release.yml`) - Builds and publishes releases on tags
@@ -121,17 +121,17 @@ Finalize release (publish)
 Each release produces:
 
 #### macOS
-- `Molt_1.0.0_aarch64.dmg` - Apple Silicon installer
-- `Molt_1.0.0_x64.dmg` - Intel installer
+- `moltzer_1.0.0_aarch64.dmg` - Apple Silicon installer
+- `moltzer_1.0.0_x64.dmg` - Intel installer
 - Signed and notarized (if configured)
 
 #### Windows
-- `Molt_1.0.0_x64.msi` - MSI installer
+- `moltzer_1.0.0_x64.msi` - MSI installer
 - Signed (if configured)
 
 #### Linux
-- `molt_1.0.0_amd64.AppImage` - AppImage bundle
-- `molt_1.0.0_amd64.deb` - Debian package
+- `moltzer_1.0.0_amd64.AppImage` - AppImage bundle
+- `moltzer_1.0.0_amd64.deb` - Debian package
 
 #### Updater Files
 - `latest.json` - Update manifest
@@ -180,7 +180,7 @@ git push origin v1.0.0
 
 ## Auto-Updates
 
-The Molt Client uses Tauri's built-in updater for seamless updates.
+The Moltzer client uses Tauri's built-in updater for seamless updates.
 
 ### How It Works
 
@@ -201,7 +201,7 @@ The Molt Client uses Tauri's built-in updater for seamless updates.
       "active": true,
       "dialog": true,
       "endpoints": [
-        "https://github.com/dokterdok/molt-client/releases/latest/download/latest.json"
+        "https://github.com/dokterdok/moltzer-client/releases/latest/download/latest.json"
       ],
       "pubkey": "YOUR_PUBLIC_KEY_HERE"
     }
@@ -511,7 +511,7 @@ Check usage limits:
 Add to README.md:
 
 ```markdown
-[![CI](https://github.com/dokterdok/molt-client/actions/workflows/ci.yml/badge.svg)](https://github.com/dokterdok/molt-client/actions/workflows/ci.yml)
+[![CI](https://github.com/dokterdok/moltzer-client/actions/workflows/ci.yml/badge.svg)](https://github.com/dokterdok/moltzer-client/actions/workflows/ci.yml)
 ```
 
 ---

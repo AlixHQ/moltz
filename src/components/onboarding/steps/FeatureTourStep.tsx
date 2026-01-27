@@ -180,7 +180,7 @@ export function FeatureTourStep({ onComplete, onSkip }: FeatureTourStepProps) {
             className="group px-8 py-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold text-lg shadow-xl shadow-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
           >
             <span className="flex items-center gap-2">
-              Start Using Molt
+              Start Using Moltzer
               <svg
                 className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                 fill="none"

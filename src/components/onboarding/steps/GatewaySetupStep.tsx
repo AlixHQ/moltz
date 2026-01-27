@@ -160,7 +160,7 @@ export function GatewaySetupStep({
         updateSettings({ gatewayUrl: actualUrl, gatewayToken: "" });
         
         // Save progress
-        localStorage.setItem('molt-onboarding-progress', JSON.stringify({
+        localStorage.setItem('moltzer-onboarding-progress', JSON.stringify({
           step: 'setup-complete',
           gatewayUrl: actualUrl,
           timestamp: Date.now()
@@ -260,7 +260,7 @@ export function GatewaySetupStep({
       updateSettings({ gatewayUrl: actualUrl, gatewayToken: trimmedToken });
 
       // Save progress (token NOT stored here - goes to keychain via updateSettings)
-      localStorage.setItem('molt-onboarding-progress', JSON.stringify({
+      localStorage.setItem('moltzer-onboarding-progress', JSON.stringify({
         step: 'setup-complete',
         gatewayUrl: actualUrl,
         timestamp: Date.now()

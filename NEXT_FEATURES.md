@@ -51,11 +51,11 @@ From ROADMAP.md, these features block public release:
 
 ## 2. Competitive Gaps Analysis
 
-From COMPETITIVE_ANALYSIS.md, what ChatGPT/Claude have that Molt doesn't:
+From COMPETITIVE_ANALYSIS.md, what ChatGPT/Claude have that Moltzer doesn't:
 
 ### High Priority Gaps
 
-| Feature | ChatGPT | Claude | Molt | Feasibility | Strategic Value |
+| Feature | ChatGPT | Claude | Moltzer | Feasibility | Strategic Value |
 |---------|---------|--------|------|-------------|-----------------|
 | **Edit previous messages** | ✅ | ✅ | ❌ | 🟢 Easy | 🔥 Must-have |
 | **Regenerate responses** | ✅ | ✅ | ❌ | 🟢 Easy | 🔥 Must-have |
@@ -67,7 +67,7 @@ From COMPETITIVE_ANALYSIS.md, what ChatGPT/Claude have that Molt doesn't:
 | **Voice input** | ✅ | ⚠️ | ❌ | 🔴 Hard | 🟡 Medium |
 | **Always-on-top mode** | ✅ | ⚠️ | ❌ | 🟢 Easy | 🟡 Medium |
 
-### What Molt Already Does Better
+### What Moltzer Already Does Better
 
 ✅ **Multi-model support** — Switch between GPT, Claude, Gemini (competitors lock to one provider)  
 ✅ **Lighter weight** — Tauri vs Electron (~50MB vs ~500MB RAM)  
@@ -85,7 +85,7 @@ Each feature evaluated on:
 - **Testing complexity** — Can it be tested autonomously?
 - **User impact** — High/medium/low demand
 - **Dependencies** — Gateway changes? OS features?
-- **Strategic value** — Does it differentiate Molt or match table stakes?
+- **Strategic value** — Does it differentiate Moltzer or match table stakes?
 
 ### Priority Tiers
 
@@ -622,7 +622,7 @@ function conversationToMarkdown(conversation: Conversation): string {
   lines.push('');
   lines.push('---');
   lines.push('');
-  lines.push(`*Exported from Molt on ${new Date().toLocaleString()}*`);
+  lines.push(`*Exported from Moltzer on ${new Date().toLocaleString()}*`);
   
   return lines.join('\n');
 }
@@ -648,7 +648,7 @@ function conversationToText(conversation: Conversation): string {
   });
   
   lines.push(`--`);
-  lines.push(`Exported from Molt on ${new Date().toLocaleString()}`);
+  lines.push(`Exported from Moltzer on ${new Date().toLocaleString()}`);
   
   return lines.join('\n');
 }
@@ -1363,7 +1363,7 @@ test.describe('Image Rendering', () => {
     
     // Mock the response (inject into store)
     await page.evaluate((md) => {
-      const store = (window as any).__MOLT_STORE__;
+      const store = (window as any).__moltzer_STORE__;
       const conv = store.createConversation();
       store.addMessage(conv.id, { role: 'assistant', content: md });
     }, markdownWithImage);
@@ -1378,7 +1378,7 @@ test.describe('Image Rendering', () => {
     
     // Create message with image (similar to above)
     await page.evaluate(() => {
-      const store = (window as any).__MOLT_STORE__;
+      const store = (window as any).__moltzer_STORE__;
       const conv = store.createConversation();
       store.addMessage(conv.id, {
         role: 'assistant',
@@ -1398,7 +1398,7 @@ test.describe('Image Rendering', () => {
     
     // Open lightbox (same setup as above)
     await page.evaluate(() => {
-      const store = (window as any).__MOLT_STORE__;
+      const store = (window as any).__moltzer_STORE__;
       const conv = store.createConversation();
       store.addMessage(conv.id, {
         role: 'assistant',

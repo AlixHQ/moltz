@@ -1,6 +1,6 @@
-# Molt Features
+# Moltzerzer Features
 
-Complete documentation of all Molt features, keyboard shortcuts, and settings.
+Complete documentation of all Moltzer features, keyboard shortcuts, and settings.
 
 ---
 
@@ -178,7 +178,7 @@ Supported languages: Python, JavaScript, TypeScript, Rust, Go, Java, C++, SQL, S
 **Context window:**
 - Gateway manages context limits
 - Older messages may be summarized by Gateway
-- No artificial limits in Molt
+- No artificial limits in Moltzer
 
 ---
 
@@ -330,7 +330,7 @@ Extended reasoning mode that allows Claude to "think" before responding.
 | **⌘,** / **Ctrl+,** | Open settings | Anywhere |
 | **⌘\\** / **Ctrl+\\** | Toggle sidebar | Anywhere |
 | **⌘W** / **Ctrl+W** | Close window | Anywhere |
-| **⌘Q** / **Ctrl+Q** | Quit Molt | Anywhere |
+| **⌘Q** / **Ctrl+Q** | Quit Moltzer | Anywhere |
 
 ### Chat Input Shortcuts
 
@@ -363,7 +363,7 @@ Extended reasoning mode that allows Claude to "think" before responding.
 
 | Shortcut | Action |
 |----------|--------|
-| **⌘H** | Hide Molt |
+| **⌘H** | Hide Moltzer |
 | **⌘M** | Minimize window |
 | **⌘⌥I** | Open developer tools |
 
@@ -463,9 +463,9 @@ Extended reasoning mode that allows Claude to "think" before responding.
 - No hard limits — IndexedDB can handle gigabytes
 
 **Location:**
-- **macOS:** `~/Library/Application Support/com.molt.client/`
-- **Windows:** `%APPDATA%\com.molt.client\`
-- **Linux:** `~/.local/share/com.molt.client/`
+- **macOS:** `~/Library/Application Support/com.moltzer.client/`
+- **Windows:** `%APPDATA%\com.moltzer.client\`
+- **Linux:** `~/.local/share/com.moltzer.client/`
 
 ### Encryption
 
@@ -516,7 +516,7 @@ Extended reasoning mode that allows Claude to "think" before responding.
 - Encryption keys
 
 **No telemetry:**
-- Molt does not track usage
+- Moltzer does not track usage
 - No analytics or crash reports (unless you opt in)
 - No ads, ever
 
@@ -627,7 +627,7 @@ Extended reasoning mode that allows Claude to "think" before responding.
 
 **Image generation:**
 - Gateway may support it
-- Molt doesn't display images yet
+- Moltzer doesn't display images yet
 - Planned for v1.2
 
 **Context limits:**
@@ -637,7 +637,7 @@ Extended reasoning mode that allows Claude to "think" before responding.
 
 ### Known Issues
 
-See [GitHub Issues](https://github.com/dokterdok/molt-client/issues) for full list.
+See [GitHub Issues](https://github.com/dokterdok/moltzer-client/issues) for full list.
 
 ---
 
@@ -675,4 +675,4 @@ See [GitHub Issues](https://github.com/dokterdok/molt-client/issues) for full li
 - **General help:** See [SETUP.md](SETUP.md)
 - **Security questions:** See [SECURITY.md](SECURITY.md)
 - **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Report issues:** [GitHub Issues](https://github.com/dokterdok/molt-client/issues)
+- **Report issues:** [GitHub Issues](https://github.com/dokterdok/moltzer-client/issues)

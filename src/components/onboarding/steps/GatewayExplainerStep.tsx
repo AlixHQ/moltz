@@ -52,7 +52,7 @@ export function GatewayExplainerStep({ onNext, onBack, onSkip }: GatewayExplaine
           </div>
           <h2 className="text-4xl font-bold mb-3">What's a Gateway?</h2>
           <p className="text-lg text-muted-foreground">
-            Think of it as Molt's connection to your world
+            Think of it as Moltzer's connection to your world
           </p>
         </div>
 
@@ -92,7 +92,7 @@ export function GatewayExplainerStep({ onNext, onBack, onSkip }: GatewayExplaine
                   Connects Everything
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Gateway lets Molt talk to your calendar, email, files, and more—all while keeping 
+                  Gateway lets Moltzer talk to your calendar, email, files, and more—all while keeping 
                   your credentials secure on your computer.
                 </p>
               </div>

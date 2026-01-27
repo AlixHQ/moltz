@@ -411,7 +411,7 @@ export const useStore = create<Store>()((set, get) => ({
           
           // Save other settings to localStorage (token excluded)
           const { gatewayToken: _gatewayToken, ...settingsWithoutToken } = settingsToSave;
-          localStorage.setItem('molt-settings', JSON.stringify(settingsWithoutToken));
+          localStorage.setItem('moltzer-settings', JSON.stringify(settingsWithoutToken));
         }
       },
 
@@ -420,7 +420,7 @@ export const useStore = create<Store>()((set, get) => ({
         
         try {
           // Load settings from localStorage
-          const savedSettings = localStorage.getItem('molt-settings');
+          const savedSettings = localStorage.getItem('moltzer-settings');
           let settings = get().settings;
           
           if (savedSettings) {
@@ -432,7 +432,7 @@ export const useStore = create<Store>()((set, get) => ({
                 await setGatewayToken(parsed.gatewayToken);
                 // Remove token from localStorage after migration
                 delete parsed.gatewayToken;
-                localStorage.setItem('molt-settings', JSON.stringify(parsed));
+                localStorage.setItem('moltzer-settings', JSON.stringify(parsed));
                 // Successfully migrated gateway token to OS keychain
               } catch (err) {
                 console.error('Failed to migrate token to keychain:', err);

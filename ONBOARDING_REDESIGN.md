@@ -1,7 +1,7 @@
 # Onboarding Redesign: No-Gateway Flow
 
 ## Summary
-Enhanced Molt onboarding to better handle users who don't have Clawdbot Gateway installed yet.
+Enhanced Moltzer onboarding to better handle users who don't have Clawdbot Gateway installed yet.
 
 ## Changes Implemented
 

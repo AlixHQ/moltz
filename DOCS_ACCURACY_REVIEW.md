@@ -1,4 +1,4 @@
-# Documentation Accuracy Review - Molt Client
+# Documentation Accuracy Review - Moltzer client
 
 **Review Date:** January 27, 2026  
 **Reviewer:** Subagent (deep-review-docs)  
@@ -10,7 +10,7 @@
 
 Overall documentation quality: **GOOD** ✅
 
-The Molt documentation is generally accurate and well-written. Most technical claims are verified by actual code implementation. However, there are several **inaccuracies**, **outdated references**, and **missing documentation** that need to be addressed.
+the Moltzer documentation is generally accurate and well-written. Most technical claims are verified by actual code implementation. However, there are several **inaccuracies**, **outdated references**, and **missing documentation** that need to be addressed.
 
 ### Key Findings:
 - ✅ **Encryption implementation matches claims** - AES-GCM 256-bit, keychain integration verified
@@ -19,8 +19,8 @@ The Molt documentation is generally accurate and well-written. Most technical cl
 - ✅ **IndexedDB + Dexie** for storage confirmed
 - ⚠️ **Installation methods are speculative** - No actual releases exist yet
 - ⚠️ **Several features documented but NOT implemented** (voice, file attachments functional)
-- ⚠️ **GitHub repo URL is wrong** - docs reference `dokterdok/molt-client` which doesn't match actual repo structure
-- ⚠️ **External links and references are unverified** (molt.dev, social media, support email)
+- ⚠️ **GitHub repo URL is wrong** - docs reference `dokterdok/moltzer-client` which doesn't match actual repo structure
+- ⚠️ **External links and references are unverified** (moltzer.dev, social media, support email)
 
 ---
 
@@ -59,7 +59,7 @@ The Molt documentation is generally accurate and well-written. Most technical cl
 
 1. **GitHub Repository URL:**
    ```markdown
-   ❌ WRONG: https://github.com/dokterdok/molt-client
+   ❌ WRONG: https://github.com/dokterdok/moltzer-client
    ```
    - All badges, links, and clone commands reference this URL
    - No evidence this public repo exists or matches the local structure
@@ -69,8 +69,8 @@ The Molt documentation is generally accurate and well-written. Most technical cl
    ```markdown
    ❌ SPECULATIVE:
    - "Download from GitHub Releases" - No releases exist yet
-   - "winget install Molt.Client" - Not published
-   - "brew install molt-client" - Not published
+   - "winget install Moltzer.Client" - Not published
+   - "brew install moltzer-client" - Not published
    - Version references "1.0.0" but no tagged release
    ```
    - **FIX NEEDED:** Mark these as "Coming soon" or remove until actually released
@@ -92,9 +92,9 @@ The Molt documentation is generally accurate and well-written. Most technical cl
 5. **External Links (Unverified):**
    ```markdown
    ❌ UNVERIFIED:
-   - https://molt.dev (website likely doesn't exist)
-   - support@molt.dev (email likely doesn't exist)
-   - security@molt.dev (email likely doesn't exist)
+   - https://moltzer.dev (website likely doesn't exist)
+   - support@moltzer.dev (email likely doesn't exist)
+   - security@moltzer.dev (email likely doesn't exist)
    - https://twitter.com/moltclient (social media likely doesn't exist)
    ```
    - **FIX NEEDED:** Remove or replace with actual contact methods
@@ -186,7 +186,7 @@ The Molt documentation is generally accurate and well-written. Most technical cl
    - **FIX NEEDED:** Update to actual Clawdbot repository or remove
 
 4. **First Launch Auto-Setup:**
-   - Claims "Molt will guide you through initial setup"
+   - Claims "Moltzer will guide you through initial setup"
    - ✅ VERIFIED: `OnboardingFlow.tsx` exists and implements this
    - ✅ ACCURATE
 
@@ -342,7 +342,7 @@ The Molt documentation is generally accurate and well-written. Most technical cl
 
 1. **Repository URLs:**
    ```bash
-   ❌ git clone https://github.com/dokterdok/molt-client.git
+   ❌ git clone https://github.com/dokterdok/moltzer-client.git
    ```
    - Same issue as README - wrong repo URL
    - **FIX NEEDED:** Update to correct repository
@@ -424,7 +424,7 @@ The Molt documentation is generally accurate and well-written. Most technical cl
    - **FIX NEEDED:** Mark as "Planned" or configure in release.yml
 
 3. **Contact Email:**
-   - `security@molt.dev` likely doesn't exist
+   - `security@moltzer.dev` likely doesn't exist
    - **FIX NEEDED:** Provide actual security contact
 
 4. **Security Audit:**
@@ -492,8 +492,8 @@ All installation methods in README.md and SETUP.md assume published releases:
 
 ```markdown
 ❌ Download from GitHub Releases
-❌ winget install Molt.Client
-❌ brew install molt-client
+❌ winget install Moltzer.Client
+❌ brew install moltzer-client
 ❌ sudo dpkg -i Molt-1.0.0.deb
 ❌ Download .dmg / .msi / .AppImage
 ```
@@ -526,10 +526,10 @@ This WORKS ✅ and should be the main installation method until releases are pub
 ### ❌ Broken / Unverified Links
 
 **In README.md:**
-- `https://github.com/dokterdok/molt-client` - Likely wrong ❌
-- `https://molt.dev` - Likely doesn't exist ❌
+- `https://github.com/dokterdok/moltzer-client` - Likely wrong ❌
+- `https://moltzer.dev` - Likely doesn't exist ❌
 - `https://twitter.com/moltclient` - Likely doesn't exist ❌
-- `support@molt.dev` - Likely doesn't exist ❌
+- `support@moltzer.dev` - Likely doesn't exist ❌
 
 **In SETUP.md:**
 - `https://github.com/clawdbot/clawdbot` - Unverified ❌
@@ -537,7 +537,7 @@ This WORKS ✅ and should be the main installation method until releases are pub
 - `npm install -g clawdbot` - Likely doesn't exist ❌
 
 **In SECURITY.md:**
-- `security@molt.dev` - Likely doesn't exist ❌
+- `security@moltzer.dev` - Likely doesn't exist ❌
 - `./ENCRYPTION.md` - ✅ EXISTS (verified)
 
 **In CONTRIBUTING.md:**
@@ -619,7 +619,7 @@ This WORKS ✅ and should be the main installation method until releases are pub
    - All download links, package managers, binaries are fictional
    - Fix: Remove or clearly mark as "Coming Soon", make build-from-source primary
 
-3. **External links (molt.dev, support emails) don't exist**
+3. **External links (moltzer.dev, support emails) don't exist**
    - Affects: README.md, SECURITY.md, CONTRIBUTING.md
    - Fix: Replace with real contact methods or remove
 
@@ -671,7 +671,7 @@ This WORKS ✅ and should be the main installation method until releases are pub
 
 1. **Update ALL repository URLs** to correct GitHub repo
 2. **Rewrite installation section** - Build from source as PRIMARY method
-3. **Remove/replace all fictitious links** (molt.dev, emails, etc.)
+3. **Remove/replace all fictitious links** (moltzer.dev, emails, etc.)
 4. **Fix Clawdbot installation instructions** - Link to real docs or remove
 5. **Add disclaimers to performance claims** ("estimated", "typical")
 6. **Mark code signing as planned** (or implement in CI)
@@ -715,7 +715,7 @@ The core technical documentation is **solid**. The main issues are **speculative
 1. ✅ Fix all CRITICAL issues (repository URLs, installation methods, external links)
 2. ✅ Add "Pre-release" or "Beta" disclaimer to README
 3. ✅ Create actual GitHub releases with binaries
-4. ✅ Set up real infrastructure (molt.dev, support email, etc.) OR remove references
+4. ✅ Set up real infrastructure (moltzer.dev, support email, etc.) OR remove references
 5. ✅ Test actual binary sizes and update claims
 6. ✅ Configure code signing in CI/CD
 

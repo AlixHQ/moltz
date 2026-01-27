@@ -1,4 +1,4 @@
-# 🚀 Molt Growth Strategy
+# 🚀 Moltzer Growth Strategy
 
 **Document Version:** 1.0  
 **Last Updated:** 2025-01-27  
@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-Molt is a native desktop client for Clawdbot with a clear differentiator: **lightweight, private, yours**. This document outlines viral growth features, launch strategy, and prioritized implementation roadmap.
+Moltzer is a native desktop client for Clawdbot with a clear differentiator: **lightweight, private, yours**. This document outlines viral growth features, launch strategy, and prioritized implementation roadmap.
 
-**Core Challenge:** Molt requires Clawdbot Gateway to function—this limits viral spread to Clawdbot users (a niche) unless we create broader appeal or reduce the Gateway dependency for discovery/trial.
+**Core Challenge:** Moltzer requires Clawdbot Gateway to function—this limits viral spread to Clawdbot users (a niche) unless we create broader appeal or reduce the Gateway dependency for discovery/trial.
 
 **Growth Philosophy:** Don't chase vanity metrics. Build genuine value that makes users want to share.
 
@@ -32,7 +32,7 @@ Molt is a native desktop client for Clawdbot with a clear differentiator: **ligh
 
 ## 1. Positioning & Target Audience
 
-### Who Molt Is For
+### Who Moltzer is For
 
 | Segment | Size | Likelihood to Share | Acquisition Channel |
 |---------|------|---------------------|---------------------|
@@ -58,7 +58,7 @@ Research shows people share apps when they:
 - Get unexpectedly delighted (surprise factor)
 - Join a tribe (identity signaling)
 
-**Molt's strongest angle:** "Look how small/fast this is" (developer flex)
+**Moltzerzer's strongest angle:** "Look how small/fast this is" (developer flex)
 
 ---
 
@@ -75,7 +75,7 @@ Research shows people share apps when they:
 | **Fits Positioning?** | ⚠️ Tension with privacy |
 
 **Why it's complex:**
-- Molt is local-first with E2E encryption
+- Moltzer is local-first with E2E encryption
 - Sharing requires either:
   a) Hosting service (contradicts "local-first")
   b) Self-hosted sharing (requires user setup)
@@ -85,7 +85,7 @@ Research shows people share apps when they:
 
 **Alternative: Local Sharing**
 - Generate encrypted .molt file
-- Recipient opens in Molt
+- Recipient opens in Moltzer
 - No server needed
 - Preserves privacy positioning
 
@@ -112,14 +112,14 @@ Research shows people share apps when they:
 - Auto-crop to fit Twitter/Instagram ratios
 - Beautiful dark/light themed cards
 - Syntax highlighting in images
-- Optional "Made with Molt" watermark
+- Optional "Made with Moltzer" watermark
 - Copy to clipboard / Save as PNG
 ```
 
 **Design mockup:**
 ```
 ┌─────────────────────────────────┐
-│  🦞 Molt                        │
+│  🦞 Moltzer                        │
 ├─────────────────────────────────┤
 │  Me: How do I reverse a linked  │
 │      list in Rust?              │
@@ -134,13 +134,13 @@ Research shows people share apps when they:
 │  └─────────────────────────┘   │
 │                                 │
 │         ─────────────────       │
-│         Made with Molt          │
+│         Made with Moltzerzer          │
 └─────────────────────────────────┘
 ```
 
 **Priority:** 🔥 **HIGH** — Ship in v1.1
 
-### 2.3 "Made with Molt" Watermark
+### 2.3 "Made with Moltzer" Watermark
 
 **Description:** Optional branding on exported images/shared content.
 
@@ -153,7 +153,7 @@ Research shows people share apps when they:
 **Options:**
 - On by default, can be disabled
 - Small, tasteful logo in corner
-- Links to molt.dev when clicked (in supported contexts)
+- Links to Moltzerzer.dev when clicked (in supported contexts)
 
 **Key insight:** Don't make it obnoxious. Subtle = classy = tech cred.
 
@@ -163,7 +163,7 @@ Research shows people share apps when they:
 
 ### 3.1 Usage Stats in App
 
-**Description:** Show aggregate Molt usage ("Molt users have sent X messages").
+**Description:** Show aggregate Moltzer usage ("Molt users have sent X messages").
 
 | Aspect | Assessment |
 |--------|------------|
@@ -176,11 +176,11 @@ Research shows people share apps when they:
 - Local-first means no central server to count
 - Feels like vanity metrics
 
-**Recommendation:** Skip entirely. This contradicts Molt's core positioning.
+**Recommendation:** Skip entirely. This contradicts Moltzer's core positioning.
 
 ### 3.2 Community Showcase
 
-**Description:** Curated gallery of impressive Molt conversations/use cases.
+**Description:** Curated gallery of impressive Moltzer conversations/use cases.
 
 | Aspect | Assessment |
 |--------|------------|
@@ -190,7 +190,7 @@ Research shows people share apps when they:
 
 **Implementation:**
 - Users submit screenshots/exported images
-- Curated showcase on molt.dev
+- Curated showcase on moltzer.dev
 - Categories: "Code", "Writing", "Research", "Creative"
 - Link to tweet/post where shared
 
@@ -215,7 +215,7 @@ Research shows people share apps when they:
 **Where to show:**
 - GitHub repo prominently
 - README badges (already have some)
-- Landing page (molt.dev)
+- Landing page (moltzer.dev)
 - About dialog in app
 
 **Priority:** 🔥 HIGH — Easy win, do immediately
@@ -253,7 +253,7 @@ Research shows people share apps when they:
 | **Growth Potential** | 🟡 Medium |
 | **Fits Positioning?** | ⚠️ Feels consumer-y |
 
-**Problem:** Molt targets developers. "Invite friends" flows feel like consumer apps (Dropbox, Robinhood). Developers invite via:
+**Problem:** Moltzer targets developers. "Invite friends" flows feel like consumer apps (Dropbox, Robinhood). Developers invite via:
 - Tweeting about tools
 - Slack/Discord recommendations
 - GitHub stars
@@ -280,7 +280,7 @@ Research shows people share apps when they:
 | **Growth Potential** | 🟢 High if executed |
 | **Fits Positioning?** | ⚠️ Requires major architecture change |
 
-**Problem:** Molt is fundamentally single-user, local-first. Team features would require:
+**Problem:** Moltzer is fundamentally single-user, local-first. Team features would require:
 - Backend infrastructure
 - User accounts
 - Shared state management
@@ -303,7 +303,7 @@ Research shows people share apps when they:
 - No backend needed (GitHub repo of .json files)
 - Users contribute prompts, get recognition
 - Import prompts from others = discover Molt
-- "Made with Molt" in prompt metadata
+- "Made with Moltzer" in prompt metadata
 
 **Implementation:**
 ```
@@ -326,9 +326,9 @@ Research shows people share apps when they:
 
 ### 5.3 Clawdbot Gateway Network
 
-**Observation:** Every Molt user needs a Clawdbot Gateway. This is a constraint AND an opportunity.
+**Observation:** Every Moltzer user needs a Clawdbot Gateway. This is a constraint AND an opportunity.
 
-**Opportunity:** If Clawdbot grows, Molt grows automatically as the "official" desktop client.
+**Opportunity:** If Clawdbot grows, Moltzer grows automatically as the "official" desktop client.
 
 **Action items:**
 - Deep integration with Clawdbot team
@@ -344,7 +344,7 @@ Research shows people share apps when they:
 
 Research on viral dev tool tweets:
 
-| Trigger | Example | Molt Angle |
+| Trigger | Example | Moltzer Angle |
 |---------|---------|------------|
 | **Size comparison** | "This replaces 10 tools" | "10MB vs 300MB Electron" |
 | **Speed flex** | "Built X in Y hours" | "50MB RAM vs 500MB" |
@@ -361,13 +361,13 @@ Same features. Native performance.
 
 This is what Tauri makes possible."
 
-[screenshot of Molt UI]
+[screenshot of Moltzer UI]
 ```
 
 ```
 "My new ChatGPT replacement setup:
 - Clawdbot (self-hosted gateway)
-- Molt (10MB native client)
+- Moltzer (10MB native client)
 - Claude API key
 
 Own your AI conversations. 🦞"
@@ -408,7 +408,7 @@ Own your AI conversations. 🦞"
 
 **High-impact comparisons:**
 ```
-| Metric | ChatGPT Desktop | Slack | Molt |
+| Metric | ChatGPT Desktop | Slack | Moltzer |
 |--------|-----------------|-------|------|
 | Binary size | ~500MB | ~300MB | 9MB |
 | RAM (idle) | ~400MB | ~300MB | 45MB |
@@ -434,7 +434,7 @@ Own your AI conversations. 🦞"
 - [ ] get_models actually fetches from Gateway
 - [ ] localStorage token leak fixed
 - [ ] File attachment UI removed or working
-- [ ] Landing page live (molt.dev)
+- [ ] Landing page live (moltzer.dev)
 - [ ] README polished with GIFs
 - [ ] Social accounts created (@MoltClient)
 - [ ] Discord/community ready
@@ -460,9 +460,9 @@ Own your AI conversations. 🦞"
 
 **Product Hunt description:**
 ```
-🦞 Molt - Native AI Chat Client
+🦞 Moltzer - Native AI Chat Client
 
-Tired of Electron bloat? Molt is a 10MB native desktop app 
+Tired of Electron bloat? Moltzer is a 10MB native desktop app 
 for chatting with Claude, GPT, and other AI models.
 
 ✅ 10x smaller than Electron apps
@@ -473,7 +473,7 @@ for chatting with Claude, GPT, and other AI models.
 
 Built with Tauri + React. Your data stays on your device.
 
-Open source: github.com/dokterdok/molt-client
+Open source: github.com/dokterdok/moltzer-client
 ```
 
 ### 7.3 Hacker News Show HN
@@ -481,16 +481,16 @@ Open source: github.com/dokterdok/molt-client
 **Target:** Front page, 100+ points
 
 **Title options (A/B test mentally):**
-- "Show HN: Molt – 10MB native ChatGPT-style client built with Tauri"
+- "Show HN: Moltzer – 10MB native ChatGPT-style client built with Tauri"
 - "Show HN: I built a native AI chat client that's 30x smaller than Electron apps"
-- "Show HN: Molt – Privacy-first desktop client for Claude/GPT"
+- "Show HN: Moltzer – Privacy-first desktop client for Claude/GPT"
 
 **Post body:**
 ```
-Hey HN, I built Molt because I was frustrated with Electron-based 
+Hey HN, I built Moltzer because I was frustrated with Electron-based 
 AI clients eating 500MB+ of RAM.
 
-Molt is a native desktop client for AI chat (Claude, GPT, etc.) 
+Moltzer is a native desktop client for AI chat (Claude, GPT, etc.) 
 that connects to your own gateway. It's built with Tauri, resulting 
 in a ~10MB binary that uses ~50MB RAM.
 
@@ -544,7 +544,7 @@ Would love feedback, especially on:
 
 **Launch tweets (thread):**
 ```
-1/ Introducing Molt 🦞
+1/ Introducing Moltzer 🦞
 
 A native AI chat client that's 30x smaller than Electron apps.
 
@@ -558,7 +558,7 @@ ChatGPT's desktop app: 500MB
 Slack: 300MB  
 VSCode: 300MB
 
-My whole Molt installation: 10MB
+My whole Moltzer installation: 10MB
 
 Tauri makes this possible.
 
@@ -605,7 +605,7 @@ fast, native apps. 🦞
 | Fix all failing tests | 🔴 Critical | 2-3 days | Required |
 | Verify Gateway protocol | 🔴 Critical | 1 day | Required |
 | Fix localStorage token leak | 🔴 Critical | 1 hour | Security |
-| Landing page (molt.dev) | 🔴 Critical | 2-3 days | Required |
+| Landing page (moltzer.dev) | 🔴 Critical | 2-3 days | Required |
 | README with GIFs | 🔴 Critical | 1 day | First impressions |
 | Social accounts setup | 🟡 High | 2 hours | Required |
 
@@ -614,7 +614,7 @@ fast, native apps. 🦞
 | Feature | Priority | Effort | Impact |
 |---------|----------|--------|--------|
 | Export as image | 🔴 Critical | 3-4 days | High viral potential |
-| "Made with Molt" watermark | 🟢 Easy | 2 hours | Free marketing |
+| "Made with Moltzer" watermark | 🟢 Easy | 2 hours | Free marketing |
 | One-click tweet button | 🟢 Easy | 1 day | Reduce sharing friction |
 | Keyboard shortcut overlay | 🟡 Medium | 1 day | Power user delight |
 
@@ -662,13 +662,13 @@ fast, native apps. 🦞
 
 ### North Star Metric
 
-**"Users who recommend Molt unprompted"**
+**"Users who recommend Moltzer unprompted"**
 
 We can't track this directly, but indicators include:
 - Organic Twitter mentions
 - Reddit posts we didn't create
 - GitHub issues from new users
-- "How did you hear about Molt?" in Discord
+- "How did you hear about Moltzer?" in Discord
 
 ---
 
@@ -727,7 +727,7 @@ Discovery (HN/PH/Reddit/Twitter)
 
 ## Appendix C: Competitive Landscape
 
-| Product | Positioning | Molt Advantage |
+| Product | Positioning | Moltzer Advantage |
 |---------|-------------|----------------|
 | ChatGPT Desktop | Official OpenAI | Works with any provider, local-first |
 | Claude.ai | Web-based | Native performance, offline capable |
@@ -736,7 +736,7 @@ Discovery (HN/PH/Reddit/Twitter)
 | Jan.ai | Local LLMs | Gateway flexibility, encryption |
 | Msty | Local/API both | Tauri (smaller), Clawdbot integration |
 
-**Molt's moat:** Native performance + privacy + Clawdbot ecosystem
+**Moltzerzer's moat:** Native performance + privacy + Clawdbot ecosystem
 
 ---
 

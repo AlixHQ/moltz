@@ -1,4 +1,4 @@
-# Molt Client Onboarding Flow
+# Moltzerzer client Onboarding Flow
 
 ## Overview
 World-class first-launch experience inspired by Linear, Notion, and Arc browser.
@@ -6,7 +6,7 @@ World-class first-launch experience inspired by Linear, Notion, and Arc browser.
 ## Flow Steps
 
 1. **Welcome Screen** (`WelcomeStep.tsx`)
-   - Animated Molt lobster with gradient background
+   - Animated Moltzer lobster with gradient background
    - Feature highlights (email, calendar, messaging)
    - Smooth entrance animations
    - Keyboard: `Enter` to continue, `Esc` to skip

@@ -6,24 +6,24 @@
 
 ChatGPT-style interface for your personal AI assistant, built with Tauri for true native performance
 
-[![CI](https://github.com/dokterdok/molt-client/actions/workflows/ci.yml/badge.svg)](https://github.com/dokterdok/molt-client/actions/workflows/ci.yml)
-[![Release](https://github.com/dokterdok/molt-client/actions/workflows/release.yml/badge.svg)](https://github.com/dokterdok/molt-client/actions/workflows/release.yml)
+[![CI](https://github.com/dokterdok/moltzer-client/actions/workflows/ci.yml/badge.svg)](https://github.com/dokterdok/moltzer-client/actions/workflows/ci.yml)
+[![Release](https://github.com/dokterdok/moltzer-client/actions/workflows/release.yml/badge.svg)](https://github.com/dokterdok/moltzer-client/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)](https://github.com/dokterdok/molt-client/releases)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)](https://github.com/dokterdok/moltzer-client/releases)
 [![Tauri](https://img.shields.io/badge/tauri-v2-orange)](https://tauri.app/)
-[![Version](https://img.shields.io/badge/version-1.0.0-green)](https://github.com/dokterdok/molt-client/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.0.0-green)](https://github.com/dokterdok/moltzer-client/releases/latest)
 
-<img src=".github/social-preview.png" alt="Molt desktop client showing a conversation interface with Claude AI, featuring a dark theme and modern UI design" width="800" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);" />
+<img src=".github/social-preview.png" alt="Moltzer desktop client showing a conversation interface with Claude AI, featuring a dark theme and modern UI design" width="800" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);" />
 
-[Download](https://github.com/dokterdok/molt-client/releases) • [Quick Start](#-quick-start) • [Features](#-features) • [Documentation](./SETUP.md) • [Contributing](./CONTRIBUTING.md)
+[Download](https://github.com/dokterdok/moltzer-client/releases) • [Quick Start](#-quick-start) • [Features](#-features) • [Documentation](./SETUP.md) • [Contributing](./CONTRIBUTING.md)
 
 </div>
 
 ---
 
-## 🦞 What is Molt?
+## 🦞 What is Moltzer?
 
-Molt is a **native desktop application** that connects to your Clawdbot Gateway, providing a fast, beautiful interface for chatting with Claude and other AI models. Unlike browser-based or Electron apps, Molt uses your operating system's native webview, resulting in:
+Moltzer is a **native desktop application** that connects to your Clawdbot Gateway, providing a fast, beautiful interface for chatting with Claude and other AI models. Unlike browser-based or Electron apps, Moltzer uses your operating system's native webview, resulting in:
 
 - **~10MB binary** (not 300MB like Electron!)
 - **Minimal RAM usage** (~50MB vs 500MB)
@@ -38,7 +38,7 @@ Think of it as "ChatGPT for Clawdbot" — but better, because it's yours.
 
 **Already have Clawdbot Gateway running?**
 
-1. **[Download Molt](https://github.com/dokterdok/molt-client/releases)** for your platform
+1. **[Download Moltzerzer](https://github.com/dokterdok/moltzer-client/releases)** for your platform
 2. **Launch the app** and enter your Gateway URL (usually `ws://localhost:18789`)
 3. **Start chatting!** Press **⌘N** (Mac) or **Ctrl+N** (Windows/Linux) for a new conversation
 
@@ -89,25 +89,25 @@ Think of it as "ChatGPT for Clawdbot" — but better, because it's yours.
 **Windows:**
 ```powershell
 # Download from GitHub Releases
-# https://github.com/dokterdok/molt-client/releases
+# https://github.com/dokterdok/moltzer-client/releases
 
 # Or use winget (if published)
-winget install Molt.Client
+winget install Moltzer.Client
 ```
 
 **macOS:**
 ```bash
 # Download .dmg from GitHub Releases
-# https://github.com/dokterdok/molt-client/releases
+# https://github.com/dokterdok/moltzer-client/releases
 
 # Or use Homebrew (if published)
-brew install molt-client
+brew install moltzer-client
 ```
 
 **Linux:**
 ```bash
 # Download .AppImage from GitHub Releases
-# https://github.com/dokterdok/molt-client/releases
+# https://github.com/dokterdok/moltzer-client/releases
 
 # Make executable and run
 chmod +x Molt-1.0.0.AppImage
@@ -134,7 +134,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions.
 
 ### First Launch
 
-1. **Launch Molt** — The app will guide you through initial setup
+1. **Launch Moltzerzer** — The app will guide you through initial setup
 
 2. **Configure Gateway connection:**
    - Enter Gateway URL (e.g., `ws://localhost:18789`)
@@ -149,10 +149,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions.
 
 Try something like:
 ```text
-Hello! Can you explain what Molt is and what you can help me with?
+Hello! Can you explain what Moltzer is and what you can help me with?
 ```
 
-Molt will connect to your Clawdbot Gateway and stream Claude's response in real-time.
+Moltzer will connect to your Clawdbot Gateway and stream Claude's response in real-time.
 
 ---
 
@@ -165,7 +165,7 @@ Molt will connect to your Clawdbot Gateway and stream Claude's response in real-
 - **Gateway URL:** WebSocket endpoint for your Clawdbot Gateway
   - Format: `ws://hostname:port` or `wss://hostname:port`
   - Default: `ws://localhost:18789`
-  - Auto-fallback: If `ws://` fails, Molt tries `wss://` automatically
+  - Auto-fallback: If `ws://` fails, Moltzer tries `wss://` automatically
   
 - **Auth Token:** Optional authentication token
   - Required if your Gateway has auth enabled
@@ -219,10 +219,10 @@ Molt will connect to your Clawdbot Gateway and stream Claude's response in real-
 
 ## 🏗️ Architecture
 
-Molt is built with a modern, maintainable architecture:
+Moltzer is built with a modern, maintainable architecture:
 
 ```text
-molt-client/
+moltzer-client/
 ├── src/                          # React frontend
 │   ├── components/               # UI components
 │   │   ├── ChatView.tsx         # Main chat interface
@@ -280,8 +280,8 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 ```bash
 # Clone the repo
-git clone https://github.com/dokterdok/molt-client.git
-cd molt-client
+git clone https://github.com/dokterdok/moltzer-client.git
+cd moltzer-client
 
 # Install dependencies
 npm install
@@ -318,7 +318,7 @@ npm run tauri dev
 - **Voice input:** Not yet implemented
 - **Image generation:** Not yet supported
 
-See [GitHub Issues](https://github.com/dokterdok/molt-client/issues) for full list and workarounds.
+See [GitHub Issues](https://github.com/dokterdok/moltzer-client/issues) for full list and workarounds.
 
 ---
 
@@ -339,17 +339,17 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## 💬 Support
 
-- **Issues:** [GitHub Issues](https://github.com/dokterdok/molt-client/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/dokterdok/molt-client/discussions)
-- **Email:** support@molt.dev
+- **Issues:** [GitHub Issues](https://github.com/dokterdok/moltzer-client/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/dokterdok/moltzer-client/discussions)
+- **Email:** support@moltzer.dev
 
 ---
 
 <div align="center">
-  <p>Made with 🦞 by the Molt community</p>
+  <p>Made with 🦞 by the Moltzer Community</p>
   <p>
-    <a href="https://github.com/dokterdok/molt-client">GitHub</a> •
-    <a href="https://molt.dev">Website</a> •
+    <a href="https://github.com/dokterdok/moltzer-client">GitHub</a> •
+    <a href="https://moltzer.dev">Website</a> •
     <a href="https://twitter.com/moltclient">Twitter</a>
   </p>
 </div>

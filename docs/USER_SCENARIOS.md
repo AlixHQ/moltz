@@ -1,6 +1,6 @@
 # USER SCENARIOS: UX for Different Use Cases
 
-This document outlines optimal UX design for different Molt user personas and scenarios.
+This document outlines optimal UX design for different Moltzer user personas and scenarios.
 
 ---
 
@@ -63,10 +63,10 @@ This document outlines optimal UX design for different Molt user personas and sc
 ### 3. Team Admin
 
 **Profile:**
-- Sets up Molt for team or organization
+- Sets up Moltzer for team or organization
 - Manages Gateway, configurations, user access
 - Cares about security, cost control, consistency
-- May not use Molt daily themselves
+- May not use Moltzer daily themselves
 - Needs visibility into usage
 - Troubleshoots issues for others
 
@@ -94,9 +94,9 @@ This document outlines optimal UX design for different Molt user personas and sc
 **User:** Casual User or Power User (first time)
 
 **Flow:**
-1. **Launch Molt** → Welcome screen appears
+1. **Launch Moltzer** → Welcome screen appears
 2. **Welcome Screen** shows:
-   - "Welcome to Molt - Your AI Assistant"
+   - "Welcome to Moltzer - Your AI Assistant"
    - Two clear paths:
      - **Quick Start**: "Use cloud AI (requires API key)"
      - **Advanced**: "Connect to local Gateway (recommended for teams)"
@@ -130,7 +130,7 @@ This document outlines optimal UX design for different Molt user personas and sc
 **User:** Power User or Team Member
 
 **Flow:**
-1. **Launch Molt** → Welcome screen
+1. **Launch Moltzer** → Welcome screen
 2. **User chooses "Connect to Gateway"**
 3. **Gateway Connection Screen**:
    - Input: "Gateway URL" (placeholder: `http://localhost:3000`)
@@ -162,7 +162,7 @@ This document outlines optimal UX design for different Molt user personas and sc
 **User:** Power User
 
 **Flow:**
-1. **Launch Molt** (already configured)
+1. **Launch Moltzer** (already configured)
    - Opens to last conversation OR conversation list
 2. **User needs new coding session**:
    - Keyboard: `Cmd/Ctrl+N` → New conversation
@@ -248,7 +248,7 @@ This document outlines optimal UX design for different Molt user personas and sc
 **User:** Casual User
 
 **Flow:**
-1. **User opens Molt**
+1. **User opens Moltzer**
 2. **Types quick question**: "What's the capital of Latvia?"
 3. **AI responds**: "Riga"
 4. **User is done**

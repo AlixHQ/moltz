@@ -1,4 +1,4 @@
-# 🦞 Molt Press Kit
+# 🦞 Moltzer Press Kit
 
 **Last Updated:** January 2025  
 **Version:** 1.0
@@ -73,7 +73,7 @@
 
 | Name | Hex | RGB | Usage |
 |------|-----|-----|-------|
-| **Molt Red** | `#E63946` | rgb(230, 57, 70) | Primary accent, CTAs, icons |
+| **Moltzer Red** | `#E63946` | rgb(230, 57, 70) | Primary accent, CTAs, icons |
 | **Deep Ocean** | `#1D3557` | rgb(29, 53, 87) | Dark mode backgrounds, headers |
 | **Arctic White** | `#F1FAEE` | rgb(241, 250, 238) | Light mode backgrounds |
 | **Seafoam** | `#A8DADC` | rgb(168, 218, 220) | Secondary accent, highlights |
@@ -92,14 +92,14 @@
 ### Color Usage Guidelines
 
 **DO:**
-- ✅ Use Molt Red sparingly for emphasis
+- ✅ Use Moltzer Red sparingly for emphasis
 - ✅ Maintain 4.5:1 contrast ratio for accessibility
 - ✅ Use Deep Ocean for dark mode backgrounds
 - ✅ Use Arctic White for light mode backgrounds
 
 **DON'T:**
-- ❌ Use Molt Red for large text blocks
-- ❌ Combine Molt Red with Error Red
+- ❌ Use Moltzer Red for large text blocks
+- ❌ Combine Moltzer Red with Error Red
 - ❌ Use colors outside the palette in official materials
 - ❌ Apply gradients to the logo
 
@@ -193,7 +193,7 @@
 - ❌ "The BEST AI app EVER!!!"
 
 **Product Description:**
-- ✅ "Molt is a native desktop client for chatting with Claude, GPT, and other AI models. It's fast, lightweight, and keeps your conversations private."
+- ✅ "Moltzer is a native desktop client for chatting with Claude, GPT, and other AI models. It's fast, lightweight, and keeps your conversations private."
 - ❌ "Molt leverages cutting-edge AI technology to provide an unparalleled conversational experience powered by next-generation language models."
 
 **Error Messages:**
@@ -217,9 +217,9 @@
 
 ## One-Pager Fact Sheet
 
-### What is Molt?
+### What is Moltzer?
 
-**Molt** is a native desktop application that provides a ChatGPT-style interface for chatting with multiple AI models (Claude, GPT, Gemini, and more). Unlike browser-based or Electron apps, Molt uses native OS technologies for blazing-fast performance and minimal resource usage.
+**Moltzerzer** is a native desktop application that provides a ChatGPT-style interface for chatting with multiple AI models (Claude, GPT, Gemini, and more). Unlike browser-based or Electron apps, Moltzer uses native OS technologies for blazing-fast performance and minimal resource usage.
 
 ### The Problem
 
@@ -231,7 +231,7 @@
 
 ### The Solution
 
-Molt provides:
+Moltzer provides:
 - **Multi-model support** — Claude, GPT, Gemini in one unified interface
 - **Native performance** — ~10MB binary, ~50MB RAM (vs 300MB+ for Electron)
 - **Local-first privacy** — All conversations encrypted and stored locally
@@ -259,7 +259,7 @@ Molt provides:
 
 ### Competitive Advantages
 
-| Feature | Molt | ChatGPT Desktop | Claude Desktop |
+| Feature | Moltzer | ChatGPT Desktop | Claude Desktop |
 |---------|------|-----------------|----------------|
 | Multi-model support | ✅ | ❌ | ❌ |
 | Native performance | ✅ (Tauri) | ⚠️ (Electron) | ⚠️ (Electron) |
@@ -283,9 +283,9 @@ Molt provides:
 
 **David de Wit** — Creator & Lead Developer
 
-David is a software engineer and AI enthusiast based in Switzerland. He created Molt after growing frustrated with the fragmented experience of using multiple AI assistants across different browser tabs and apps.
+David is a software engineer and AI enthusiast based in Switzerland. He created Moltzer after growing frustrated with the fragmented experience of using multiple AI assistants across different browser tabs and apps.
 
-> "I was switching between ChatGPT, Claude, and other AI tools constantly. I wanted a single, fast, native app that could talk to all of them. Molt is the tool I wished existed."
+> "I was switching between ChatGPT, Claude, and other AI tools constantly. I wanted a single, fast, native app that could talk to all of them. Moltzer is the tool I wished existed."
 
 **Background:**
 - 10+ years in software development
@@ -295,7 +295,7 @@ David is a software engineer and AI enthusiast based in Switzerland. He created 
 **Contact:**
 - GitHub: [@dokterdok](https://github.com/dokterdok)
 - Twitter: [@dokterdok](https://twitter.com/dokterdok)
-- Email: david@molt.dev
+- Email: david@moltzer.dev
 
 ---
 
@@ -378,7 +378,7 @@ David is a software engineer and AI enthusiast based in Switzerland. He created 
 ### Icon Design Guidelines
 
 - **Shape:** Rounded square (iOS-style) with 16% corner radius
-- **Background:** Gradient from Molt Red (#E63946) to Deep Ocean (#1D3557)
+- **Background:** Gradient from Moltzer Red (#E63946) to Deep Ocean (#1D3557)
 - **Foreground:** White lobster silhouette
 - **Safe zone:** Keep content within 80% of icon area
 
@@ -419,15 +419,15 @@ David is a software engineer and AI enthusiast based in Switzerland. He created 
 
 **FOR IMMEDIATE RELEASE**
 
-### Molt Launches: The First Native Desktop Client Supporting All Major AI Models
+### Moltzerzer Launches: The First Native Desktop Client Supporting All Major AI Models
 
 *New open-source app brings ChatGPT, Claude, and Gemini together in a single, lightning-fast interface*
 
-**[CITY, DATE]** — Today marks the launch of **Molt**, a revolutionary native desktop application that unifies the AI chat experience. For the first time, users can access ChatGPT, Claude, Gemini, and other leading AI models from a single, blazing-fast desktop client.
+**[CITY, DATE]** — Today marks the launch of **Moltzerzer**, a revolutionary native desktop application that unifies the AI chat experience. For the first time, users can access ChatGPT, Claude, Gemini, and other leading AI models from a single, blazing-fast desktop client.
 
-Unlike browser-based alternatives or resource-heavy Electron apps, Molt uses Tauri technology to deliver native performance. The result: a ~10MB download that uses just ~50MB of RAM—a fraction of competing solutions.
+Unlike browser-based alternatives or resource-heavy Electron apps, Moltzer uses Tauri technology to deliver native performance. The result: a ~10MB download that uses just ~50MB of RAM—a fraction of competing solutions.
 
-**"I built Molt because I was tired of juggling browser tabs and watching my laptop slow down,"** said David de Wit, creator of Molt. **"Power users deserve a tool that's as fast and focused as they are."**
+**"I built Moltzer because I was tired of juggling browser tabs and watching my laptop slow down,"** said David de Wit, creator of Molt. **"Power users deserve a tool that's as fast and focused as they are."**
 
 #### Key Features:
 
@@ -439,17 +439,17 @@ Unlike browser-based alternatives or resource-heavy Electron apps, Molt uses Tau
 
 #### Availability:
 
-Molt is available today as a free, open-source download from GitHub:  
-**https://github.com/dokterdok/molt-client/releases**
+Moltzer is available today as a free, open-source download from GitHub:  
+**https://github.com/dokterdok/moltzer-client/releases**
 
 #### About Molt:
 
-Molt is an open-source desktop application designed for professionals who rely on AI daily. Built with Tauri and React, it represents a new generation of lightweight, privacy-respecting AI tools.
+Moltzer is an open-source desktop application designed for professionals who rely on AI daily. Built with Tauri and React, it represents a new generation of lightweight, privacy-respecting AI tools.
 
 **Press Contact:**  
 David de Wit  
-press@molt.dev  
-https://molt.dev/press
+press@moltzer.dev  
+https://moltzer.dev/press
 
 **###**
 
@@ -461,7 +461,7 @@ https://molt.dev/press
 
 1. **First multi-model desktop client** — No other native app supports GPT, Claude, AND Gemini in one interface
 
-2. **10x lighter than Electron** — Molt uses ~50MB RAM vs ~500MB for ChatGPT/Claude desktop apps
+2. **10x lighter than Electron** — Moltzer uses ~50MB RAM vs ~500MB for ChatGPT/Claude desktop apps
 
 3. **Privacy by design** — All conversations encrypted locally; data never leaves your device
 
@@ -478,7 +478,7 @@ https://molt.dev/press
 
 ### Market Positioning
 
-- **Not competing with ChatGPT/Claude** — Molt is a *client*, not an AI model
+- **Not competing with ChatGPT/Claude** — Moltzer is a *client*, not an AI model
 - **Aggregator play** — Like a universal TV remote for AI services
 - **Power tools market** — Positioned with developer tools (VS Code, iTerm, etc.)
 
@@ -488,20 +488,20 @@ https://molt.dev/press
 
 ### From the Creator
 
-> "The best AI tool is the one that gets out of your way. Molt is invisible until you need it, then lightning-fast when you do."
+> "The best AI tool is the one that gets out of your way. Moltzer is invisible until you need it, then lightning-fast when you do."
 > — David de Wit, Creator of Molt
 
 > "I'm not building the next ChatGPT. I'm building the best way to *use* ChatGPT—and Claude, and Gemini, and whatever comes next."
 > — David de Wit
 
-> "Browser tabs are where productivity goes to die. Molt is the escape hatch."
+> "Browser tabs are where productivity goes to die. Moltzer is the escape hatch."
 > — David de Wit
 
 ### For Attribution
 
 > "Molt represents a new category: the AI client. As AI models become commoditized, the interface layer becomes increasingly valuable."
 
-> "Privacy isn't a feature—it's a right. Molt keeps your conversations on your device, encrypted, where they belong."
+> "Privacy isn't a feature—it's a right. Moltzer keeps your conversations on your device, encrypted, where they belong."
 
 > "We're building tools for the AI-native generation of workers who use AI as naturally as email."
 
@@ -570,7 +570,7 @@ https://molt.dev/press
 
 ### Pitch Template for Podcasts
 
-**Subject:** Guest pitch: Creator of Molt (native AI chat client)
+**Subject:** Guest pitch: Creator of Moltzer (native AI chat client)
 
 Hi [Host Name],
 
@@ -632,7 +632,7 @@ David
 
 **Tweet 1 (Main announcement):**
 ```
-🦞 Introducing Molt — the AI chat client for power users
+🦞 Introducing Moltzer — the AI chat client for power users
 
 One app. Every AI. Native speed.
 
@@ -642,7 +642,7 @@ One app. Every AI. Native speed.
 ✅ Open source
 
 Free download 👇
-https://github.com/dokterdok/molt-client
+https://github.com/dokterdok/moltzer-client
 
 🧵
 ```
@@ -690,13 +690,13 @@ Coming soon: voice, file attachments, export
 
 **Tweet 5:**
 ```
-Molt is open source (MIT license).
+Moltzer is open source (MIT license).
 
 No tracking. No telemetry. No BS.
 
 Your conversations stay on YOUR device.
 
-Star us on GitHub: github.com/dokterdok/molt-client
+Star us on GitHub: github.com/dokterdok/moltzer-client
 
 🦞
 ```
@@ -713,18 +713,18 @@ ChatGPT + Claude + Gemini in one native app
 
 Open source.
 
-github.com/dokterdok/molt-client
+github.com/dokterdok/moltzer-client
 ```
 
 **Problem-focused:**
 ```
 Browser tabs are where AI productivity goes to die.
 
-Today I'm launching Molt — a single desktop app for ChatGPT, Claude, and Gemini.
+Today I'm launching Moltzer — a single desktop app for ChatGPT, Claude, and Gemini.
 
 Native speed. Local encryption. Actually fast.
 
-🦞 github.com/dokterdok/molt-client
+🦞 github.com/dokterdok/moltzer-client
 ```
 
 **Technical audience:**
@@ -739,7 +739,7 @@ A multi-model AI chat client built with:
 
 10MB binary. Ships to Win/Mac/Linux.
 
-github.com/dokterdok/molt-client
+github.com/dokterdok/moltzer-client
 ```
 
 ---
@@ -749,11 +749,11 @@ github.com/dokterdok/molt-client
 ### Launch Announcement
 
 ```
-🚀 Excited to announce the launch of Molt — a project I've been building for the past several months.
+🚀 Excited to announce the launch of Moltzer — a project I've been building for the past several months.
 
 **The problem:** Using AI for work means juggling ChatGPT, Claude, and other tools across multiple browser tabs. It's slow, cluttered, and resource-heavy.
 
-**The solution:** Molt is a native desktop app that brings all your AI conversations into one fast, unified interface.
+**The solution:** Moltzer is a native desktop app that brings all your AI conversations into one fast, unified interface.
 
 Key features:
 • Multi-model support (GPT-4, Claude, Gemini, and more)
@@ -762,10 +762,10 @@ Key features:
 • Keyboard-first design for power users
 • Open source (MIT license)
 
-I built Molt because I wanted a tool that gets out of the way and lets me focus on the conversation, not the interface.
+I built Moltzer because I wanted a tool that gets out of the way and lets me focus on the conversation, not the interface.
 
 Available now for Windows, macOS, and Linux:
-https://github.com/dokterdok/molt-client
+https://github.com/dokterdok/moltzer-client
 
 Would love to hear your feedback! 🦞
 
@@ -777,7 +777,7 @@ Would love to hear your feedback! 🦞
 ```
 Just shipped something I've been working on:
 
-🦞 Molt — a native desktop client for ChatGPT, Claude, and Gemini
+🦞 Moltzer — a native desktop client for ChatGPT, Claude, and Gemini
 
 Why? Because power users deserve better than browser tabs.
 
@@ -786,7 +786,7 @@ Why? Because power users deserve better than browser tabs.
 • Encrypted local storage
 • Open source
 
-Free download: github.com/dokterdok/molt-client
+Free download: github.com/dokterdok/moltzer-client
 
 Feedback welcome!
 
@@ -798,7 +798,7 @@ Feedback welcome!
 ```
 Built something new with an interesting tech stack:
 
-🦞 Molt — Native AI chat client
+🦞 Moltzer — Native AI chat client
 
 The architecture:
 • Tauri v2 (Rust) instead of Electron → 10MB vs 300MB binary
@@ -813,7 +813,7 @@ Open source, MIT licensed.
 
 If you're interested in desktop app development or the future of AI interfaces, I'd love to connect.
 
-github.com/dokterdok/molt-client
+github.com/dokterdok/moltzer-client
 
 #SoftwareEngineering #Rust #React #AI #DesktopDevelopment
 ```
@@ -844,9 +844,9 @@ github.com/dokterdok/molt-client
 
 **Description:**
 ```
-Molt is a native desktop app that unifies your AI conversations. Chat with ChatGPT, Claude, Gemini, and more from a single, lightning-fast interface.
+Moltzer is a native desktop app that unifies your AI conversations. Chat with ChatGPT, Claude, Gemini, and more from a single, lightning-fast interface.
 
-🚀 **Why Molt?**
+🚀 **Why Moltzer?**
 • **Multi-model:** Switch between AI providers with one click
 • **Native speed:** ~10MB binary, ~50MB RAM (not another Electron app)
 • **Private:** End-to-end encrypted local storage
@@ -888,7 +888,7 @@ Happy to answer any questions!
 ### Product Hunt Assets
 
 **Thumbnail (240x240):**
-- Molt icon on gradient background
+- Moltzer icon on gradient background
 
 **Gallery Images (1270x760):**
 1. Hero shot — Main conversation interface
@@ -914,16 +914,16 @@ Happy to answer any questions!
 
 **Title:**
 ```
-Show HN: Molt – Native multi-model AI chat client (ChatGPT + Claude + Gemini)
+Show HN: Moltzer – Native multi-model AI chat client (ChatGPT + Claude + Gemini)
 ```
 
 **Body:**
 ```
 Hey HN,
 
-I built Molt because I was tired of juggling browser tabs for different AI services and watching Electron apps eat my RAM.
+I built Moltzer because I was tired of juggling browser tabs for different AI services and watching Electron apps eat my RAM.
 
-Molt is a native desktop client (Windows/macOS/Linux) that lets you chat with ChatGPT, Claude, Gemini, and other AI models from a single interface.
+Moltzer is a native desktop client (Windows/macOS/Linux) that lets you chat with ChatGPT, Claude, Gemini, and other AI models from a single interface.
 
 Tech stack:
 - Tauri v2 (Rust backend) instead of Electron
@@ -938,8 +938,8 @@ Key features:
 - Local-only storage (no cloud sync)
 - MIT licensed
 
-GitHub: https://github.com/dokterdok/molt-client
-Direct download: https://github.com/dokterdok/molt-client/releases
+GitHub: https://github.com/dokterdok/moltzer-client
+Direct download: https://github.com/dokterdok/moltzer-client/releases
 
 Would love feedback, especially on:
 1. What models/providers should I prioritize?
@@ -959,7 +959,7 @@ Happy to answer technical questions about the Tauri architecture!
 **Title:** I built a native desktop app that combines ChatGPT, Claude, and Gemini in one interface
 
 **Body:**
-After months of juggling browser tabs between different AI services, I built Molt — a lightweight desktop client that lets you use all major AI models from one app.
+After months of juggling browser tabs between different AI services, I built Moltzer — a lightweight desktop client that lets you use all major AI models from one app.
 
 **What it does:**
 - Switch between GPT-4, Claude, Gemini, etc. with one click
@@ -986,7 +986,7 @@ Built this for my own workflow but figured others might find it useful. Happy to
 **Body:**
 Hey r/ClaudeAI!
 
-I built Molt because I use both Claude and ChatGPT daily, and switching between browser tabs was driving me crazy.
+I built Moltzer because I use both Claude and ChatGPT daily, and switching between browser tabs was driving me crazy.
 
 It's a native desktop app (Tauri, not Electron) that gives you a ChatGPT-style interface for multiple AI providers.
 
@@ -1053,10 +1053,10 @@ GitHub: [link]
 ## Contact Information
 
 **Press Inquiries:**  
-press@molt.dev
+press@moltzer.dev
 
 **General Contact:**  
-hello@molt.dev
+hello@moltzer.dev
 
 **Creator:**  
 David de Wit  
@@ -1064,10 +1064,10 @@ Twitter: [@dokterdok](https://twitter.com/dokterdok)
 GitHub: [@dokterdok](https://github.com/dokterdok)
 
 **Resources:**  
-- Website: https://molt.dev
-- GitHub: https://github.com/dokterdok/molt-client
-- Press Kit: https://molt.dev/press
+- Website: https://moltzer.dev
+- GitHub: https://github.com/dokterdok/moltzer-client
+- Press Kit: https://moltzer.dev/press
 
 ---
 
-*This press kit is maintained by the Molt team. For the latest version, visit https://github.com/dokterdok/molt-client/blob/main/PRESS_KIT.md*
+*This press kit is maintained by the Moltzer team. For the latest version, visit https://github.com/dokterdok/moltzer-client/blob/main/PRESS_KIT.md*

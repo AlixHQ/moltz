@@ -297,7 +297,7 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
               ? "Sending message..." 
               : disabled 
               ? "Connect to Gateway to send messages..." 
-              : "Message Molt..."
+              : "Message Moltzer..."
           }
           rows={1}
           className={cn(

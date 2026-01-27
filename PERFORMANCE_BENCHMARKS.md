@@ -1,16 +1,16 @@
-# Molt Performance Benchmarks
+# Moltzerzer Performance Benchmarks
 
 *Last updated: January 2026*
 
-This document tracks Molt's performance metrics, competitor benchmarks, optimization opportunities, and marketing-worthy claims.
+This document tracks Moltzer's performance metrics, competitor benchmarks, optimization opportunities, and marketing-worthy claims.
 
 ---
 
 ## Executive Summary
 
-**Molt's performance advantage is REAL and significant:**
+**Moltzerzer's performance advantage is REAL and significant:**
 
-| Metric | Molt (Tauri) | ChatGPT (Electron) | Advantage |
+| Metric | Moltzer (Tauri) | ChatGPT (Electron) | Advantage |
 |--------|--------------|---------------------|-----------|
 | App bundle size | ~12-15 MB | ~500+ MB | **30-40x smaller** |
 | RAM at idle | ~50-80 MB | ~300-500 MB | **5-6x less** |
@@ -41,7 +41,7 @@ Total frontend                  835.2 KB   249.3 KB
 **This is excellent!** The gzipped size (~249 KB) is what actually transfers over the network. Compare to:
 - ChatGPT web: ~2-4 MB gzipped
 - Claude web: ~2-3 MB gzipped
-- **Molt is 8-12x smaller than web competitors**
+- **Moltzerzer is 8-12x smaller than web competitors**
 
 **Analysis:**
 - JS bundle is reasonable for a full React app with Markdown, syntax highlighting
@@ -375,7 +375,7 @@ const MessageBubble = memo(({ message }: Props) => { ... });
 
 **Comparison table for landing page:**
 
-| | Molt | ChatGPT Desktop | Claude Desktop |
+| | Moltzer | ChatGPT Desktop | Claude Desktop |
 |--|------|-----------------|----------------|
 | Install size | **15 MB** | 500 MB | 450 MB |
 | Memory usage | **~80 MB** | ~400 MB | ~350 MB |
@@ -627,7 +627,7 @@ test.describe('Performance', () => {
 
 ## 8. Key Takeaways
 
-1. **Molt has a significant performance advantage** due to Tauri vs Electron
+1. **Moltzer has a significant performance advantage** due to Tauri vs Electron
 2. **Bundle size is reasonable** but could be 30-40% smaller with splitting
 3. **Memory usage is already good** (~5x better than competitors)
 4. **Main optimization opportunities:**
@@ -637,7 +637,7 @@ test.describe('Performance', () => {
    - Virtualization (for power users)
 5. **Marketing claims are defensible** - we can prove them
 
-**Bottom line:** Molt's architecture gives us a 5-10x performance advantage over Electron competitors. With the optimizations outlined here, we can legitimately claim to be the fastest, lightest AI chat client on the market.
+**Bottom line:** Moltzer's architecture gives us a 5-10x performance advantage over Electron competitors. With the optimizations outlined here, we can legitimately claim to be the fastest, lightest AI chat client on the market.
 
 ---
 

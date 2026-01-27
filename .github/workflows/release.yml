@@ -60,8 +60,8 @@ jobs:
             
             **Linux:**
             - Download the `.AppImage` file
-            - Make it executable: `chmod +x molt_*_amd64.AppImage`
-            - Run: `./molt_*_amd64.AppImage`
+            - Make it executable: `chmod +x moltzer_*_amd64.AppImage`
+            - Run: `./moltzer_*_amd64.AppImage`
             
             ### Auto-Updates
             Molt will automatically check for updates and prompt you to install them.

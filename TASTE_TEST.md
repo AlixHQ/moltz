@@ -27,7 +27,7 @@
 
 **Bad:**
 - First screen is a setup wizard, not a "wow" moment
-- "Welcome to Molt" - but *what is Molt?* Not immediately clear
+- "Welcome to Moltzer" - but *what is Moltzer?* Not immediately clear
 - Three generic icons (📧📅💬) don't convey what makes this special
 - The gradient lobster shadow is a nice touch, but the emoji feels unfinished
 
@@ -63,7 +63,7 @@ If I had 30 seconds to impress someone, what would I show?
 
 **What's MISSING that would make someone say "I need this":**
 
-- 🎯 **No demo of what makes Molt *different* from ChatGPT**
+- 🎯 **No demo of what makes Moltzer *different* from ChatGPT**
 - 🎯 **No showcase of "agentic" capabilities** (the welcome screen hints at calendar/email but it's vapor)
 - 🎯 **No killer feature visible in first 30 seconds**
 - 🎯 **No "magic" moment that couldn't happen elsewhere**
@@ -80,7 +80,7 @@ The WelcomeView promises:
 🏠 Control my smart home
 ```
 
-But clicking these just... sends a message. **There's no magic.** The magic depends entirely on the Gateway/backend. Molt itself is just a fancy chat wrapper.
+But clicking these just... sends a message. **There's no magic.** The magic depends entirely on the Gateway/backend. Moltzer itself is just a fancy chat wrapper.
 
 **Jobs would say:** "You're showing me a chat app. I already have 17 chat apps. What can this do that nothing else can?"
 
@@ -171,7 +171,7 @@ pub async fn get_models(...) -> Result<Vec<ModelInfo>, String> {
 
 ## 4. The Story
 
-### What is Molt? (5 words)
+### What is Moltzer? (5 words)
 
 **Current positioning:** "A native desktop client for Clawdbot"
 

@@ -1,11 +1,11 @@
-# Protocol Verification Report: Molt ↔ Clawdbot Gateway
+# Protocol Verification Report: Moltzer ↔ Clawdbot Gateway
 
 **Date:** 2025-01-27  
 **Status:** 🔴 CRITICAL MISMATCHES FOUND
 
 ## Summary
 
-Molt's WebSocket implementation has several protocol mismatches with Clawdbot Gateway that prevent communication.
+Moltzer's WebSocket implementation has several protocol mismatches with Clawdbot Gateway that prevent communication.
 
 ---
 
@@ -138,9 +138,9 @@ Molt's WebSocket implementation has several protocol mismatches with Clawdbot Ga
 
 ---
 
-## 2. Molt's Current Implementation
+## 2. Moltzer's Current Implementation
 
-### What Molt Sends (INCORRECT)
+### What Moltzer Sends (INCORRECT)
 
 **Request format:**
 ```json
@@ -156,7 +156,7 @@ Molt's WebSocket implementation has several protocol mismatches with Clawdbot Ga
 - No connect handshake
 - No `idempotencyKey` in chat.send
 
-### What Molt Expects (INCORRECT)
+### What Moltzer Expects (INCORRECT)
 
 **Response format expected:**
 ```json
@@ -182,7 +182,7 @@ Molt's WebSocket implementation has several protocol mismatches with Clawdbot Ga
 
 ## 3. Gap Analysis
 
-| Issue | Molt Current | Clawdbot Expected | Severity |
+| Issue | Moltzer Current | Clawdbot Expected | Severity |
 |-------|--------------|-------------------|----------|
 | Request type field | Missing | `"type": "req"` | 🔴 CRITICAL |
 | Connect handshake | Not performed | Required | 🔴 CRITICAL |

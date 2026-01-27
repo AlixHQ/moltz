@@ -3,7 +3,7 @@
 
 ## Executive Summary
 
-This document analyzes the competitive landscape for **Molt**, focusing on the two dominant AI chat clients: **ChatGPT** (OpenAI) and **Claude** (Anthropic). Based on user feedback from X/Twitter, feature analysis, and UX research, this report identifies critical features, differentiation opportunities, and scope recommendations.
+This document analyzes the competitive landscape for **Moltzerzer**, focusing on the two dominant AI chat clients: **ChatGPT** (OpenAI) and **Claude** (Anthropic). Based on user feedback from X/Twitter, feature analysis, and UX research, this report identifies critical features, differentiation opportunities, and scope recommendations.
 
 ---
 
@@ -54,7 +54,7 @@ This document analyzes the competitive landscape for **Molt**, focusing on the t
 
 ## 2. Feature Comparison Matrix
 
-| Feature | ChatGPT Desktop | Claude Desktop | Molt | Priority |
+| Feature | ChatGPT Desktop | Claude Desktop | Moltzer | Priority |
 |---------|----------------|----------------|------|----------|
 | **Core Functionality** |
 | Multi-model support | ❌ (OpenAI only) | ❌ (Anthropic only) | ✅ **YES** | 🔥 CRITICAL |
@@ -97,7 +97,7 @@ This document analyzes the competitive landscape for **Molt**, focusing on the t
 | Low memory footprint | ⚠️ Electron | ⚠️ Electron | ✅ **Tauri** | 🟡 MEDIUM |
 | Handles long conversations | ⚠️ | ⚠️ | ❓ TBD | 🔴 HIGH |
 
-### Key Molt Advantages (Unique Differentiators)
+### Key Moltzer Advantages (Unique Differentiators)
 - ✅ **Multi-model support** - Switch between GPT, Claude, Gemini in one app
 - ✅ **Better context management** - Purpose-built for long conversations
 - ✅ **Lighter weight** - Tauri vs Electron (less memory, faster startup)
@@ -124,7 +124,7 @@ This document analyzes the competitive landscape for **Molt**, focusing on the t
 - **Pro:** Professional, clean
 - **Con:** Doesn't explain capabilities well
 
-**Best Practice for Molt:**
+**Best Practice for Moltzer:**
 - ✅ **Show, don't tell** - Open to blank chat like competitors
 - ✅ **Optional tutorial** - First-run tip overlays (dismissible)
 - ✅ **Model picker education** - Briefly explain when to use which model
@@ -147,7 +147,7 @@ This document analyzes the competitive landscape for **Molt**, focusing on the t
 - **Pro:** Maintains conversation flow
 - **Con:** Errors can feel vague
 
-**Best Practice for Molt:**
+**Best Practice for Moltzer:**
 - ✅ **Inline, non-modal errors** - Don't break flow with popups
 - ✅ **Explain the "why"** - "Claude API is down" vs "Something went wrong"
 - ✅ **Auto-retry with backoff** - Silently handle transient failures
@@ -188,7 +188,7 @@ Based on user feedback and competitive analysis:
 
 ## 4. Recommendations
 
-### 4.1 Features Molt MUST Have (Table Stakes)
+### 4.1 Features Moltzer MUST Have (Table Stakes)
 
 These are **non-negotiable**. Without them, users will immediately reject the app:
 
@@ -249,7 +249,7 @@ These would be **distractions** from core value:
 
 ## 5. Competitive Positioning
 
-### 5.1 Molt's Core Value Proposition
+### 5.1 Moltzer's Core Value Proposition
 
 **For power users who want:**
 - Freedom to choose the best AI for each task
@@ -257,7 +257,7 @@ These would be **distractions** from core value:
 - Lightweight, fast desktop experience
 - More control over their AI interactions
 
-**Molt is the AI chat client that:**
+**Moltzerzer is the AI chat client that:**
 - Lets you use ANY model (GPT, Claude, Gemini, local)
 - Organizes conversations like a pro tool (folders, search, branches)
 - Runs faster and lighter than Electron competitors
@@ -284,7 +284,7 @@ These would be **distractions** from core value:
 - Needs AI accessible in 0.5 seconds
 - Wants to organize/search all AI conversations
 
-### 5.3 Market Gaps Molt Can Fill
+### 5.3 Market Gaps Moltzer Can Fill
 
 1. **No good multi-model client exists** - Users want one app for all AIs
 2. **Conversation management sucks everywhere** - No folders, no branches, no tags
@@ -332,7 +332,7 @@ These would be **distractions** from core value:
 ## 8. Key Takeaways
 
 ✅ **Ship fast with core features** - Don't try to beat ChatGPT/Claude at everything
-✅ **Multi-model support is THE differentiator** - This is why Molt exists
+✅ **Multi-model support is THE differentiator** - This is why Moltzer exists
 ✅ **Conversation management is opportunity** - Competitors suck at this
 ✅ **Performance matters** - Users notice fast startup, smooth scrolling
 ✅ **Avoid scope creep** - No collaboration, no social features, no feature bloat

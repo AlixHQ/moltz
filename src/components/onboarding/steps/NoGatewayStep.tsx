@@ -73,8 +73,8 @@ export function NoGatewayStep({ onRetryDetection, onManualSetup, onBack, onSkip 
             What is Moltbot?
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-            Moltbot is the <strong>local server</strong> that powers Molt. Think of it like your personal AI assistant's brain — 
-            it runs on your computer, keeps your data private, and connects Molt to your calendar, email, files, and more.
+            Moltbot is the <strong>local server</strong> that powers Moltzer. Think of it like your personal AI assistant's brain — 
+            it runs on your computer, keeps your data private, and connects Moltzer to your calendar, email, files, and more.
           </p>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">

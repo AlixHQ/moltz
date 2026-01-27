@@ -1,6 +1,6 @@
-# Code Signing Guide for Molt Client
+# Code Signing Guide for Moltzerzer client
 
-This guide explains how to set up code signing for macOS, Windows, and Linux releases of the Molt Client.
+This guide explains how to set up code signing for macOS, Windows, and Linux releases of the Moltzer client.
 
 ## Table of Contents
 
@@ -256,7 +256,7 @@ source=Developer ID
 npm run tauri build
 
 # Check signature
-Get-AuthenticodeSignature "src-tauri\target\release\bundle\msi\Molt_1.0.0_x64.msi"
+Get-AuthenticodeSignature "src-tauri\target\release\bundle\msi\moltzer_1.0.0_x64.msi"
 ```
 
 Status should be `Valid`.

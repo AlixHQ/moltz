@@ -1,5 +1,5 @@
 {
-  "name": "molt-client",
+  "name": "moltzer-client",
   "version": "1.0.0",
   "description": "Native cross-platform client for Moltbot",
   "type": "module",

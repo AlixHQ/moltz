@@ -20,14 +20,14 @@ describe('MessageBubble', () => {
       const message: Message = {
         id: '1',
         role: 'user',
-        content: 'Hello, Molt!',
+        content: 'Hello, Moltzer!',
         timestamp: new Date(),
       };
 
       render(<MessageBubble message={message} />);
       
       expect(screen.getByText('You')).toBeInTheDocument();
-      expect(screen.getByText('Hello, Molt!')).toBeInTheDocument();
+      expect(screen.getByText('Hello, Moltzer!')).toBeInTheDocument();
     });
 
     it('should render assistant message', () => {
@@ -40,7 +40,7 @@ describe('MessageBubble', () => {
 
       render(<MessageBubble message={message} />);
       
-      expect(screen.getByText('Molt')).toBeInTheDocument();
+      expect(screen.getByText('Moltzer')).toBeInTheDocument();
       expect(screen.getByText(/Hello! How can I help you?/)).toBeInTheDocument();
     });
 

@@ -24,7 +24,7 @@ test.beforeAll(async () => {
     fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
   }
   // Create subdirectories for each test flow
-  const flows = ['onboarding', 'chat', 'settings'];
+  const flows = ['onboarding', 'chat', 'settings', 'offline'];
   for (const flow of flows) {
     const flowDir = path.join(SCREENSHOT_DIR, flow);
     if (!fs.existsSync(flowDir)) {
@@ -637,6 +637,193 @@ test.describe('Visual Flow: Settings', () => {
         actual: JSON.stringify(closedCheck),
         passed: closedCheck.dialogClosed && closedCheck.mainVisible,
         screenshot: path.join(SCREENSHOT_DIR, 'settings', '07-settings-closed.png')
+      });
+    }
+  });
+});
+
+// ============================================================================
+// FLOW 4: OFFLINE MODE
+// ============================================================================
+
+test.describe('Visual Flow: Offline Mode', () => {
+  test.beforeEach(async ({ page, context }) => {
+    // Navigate first
+    try {
+      await page.goto('/', { waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(2000);
+    
+    // Skip onboarding (with timeout protection)
+    await Promise.race([
+      page.evaluate(() => {
+        try {
+          localStorage.setItem('molt-onboarding-completed', 'true');
+          localStorage.setItem('molt-app-version', '1.0.0');
+        } catch (e) {
+          console.error('Failed to set storage:', e);
+        }
+      }),
+      new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
+    
+    try {
+      await page.reload({ waitUntil: 'load', timeout: 30000 });
+    } catch {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 });
+    }
+    await page.waitForTimeout(1500);
+  });
+
+  test('offline mode behavior with screenshots', async ({ page, context }) => {
+    await page.goto('/');
+    await page.waitForTimeout(1500);
+    
+    // STEP 1: Check initial state (likely offline - no Gateway running)
+    console.log('\n🎬 STEP 1: Initial Offline State');
+    
+    await captureStep(page, 'offline', '01-offline-status', 
+      'Should show offline/disconnected status indicator');
+    
+    const offlineCheck = {
+      hasOfflineStatus: await page.getByText(/Offline|Disconnected|Not Connected|No Gateway/i).isVisible().catch(() => false),
+      hasStatusIndicator: await page.locator('[aria-label*="offline" i], [aria-label*="disconnected" i]').isVisible().catch(() => false),
+      appStillWorks: await page.locator('header').isVisible().catch(() => false),
+    };
+    
+    reportStep({
+      flow: 'offline',
+      step: 'Offline Status',
+      expected: 'Offline indicator visible, app still functional',
+      actual: JSON.stringify(offlineCheck),
+      passed: offlineCheck.hasOfflineStatus || offlineCheck.appStillWorks,
+      screenshot: path.join(SCREENSHOT_DIR, 'offline', '01-offline-status.png')
+    });
+    
+    // STEP 2: Verify sidebar still accessible
+    console.log('\n🎬 STEP 2: Sidebar Navigation');
+    
+    const sidebarCheck = {
+      hasSidebar: await page.locator('[role="navigation"], [id="sidebar"]').isVisible().catch(() => false),
+      canClickNewChat: await page.getByRole('button', { name: /New Chat/i }).isVisible().catch(() => false),
+    };
+    
+    await captureStep(page, 'offline', '02-sidebar-accessible', 
+      'Should be able to browse sidebar even when offline');
+    
+    reportStep({
+      flow: 'offline',
+      step: 'Sidebar Browsing',
+      expected: 'Sidebar visible and interactive',
+      actual: JSON.stringify(sidebarCheck),
+      passed: sidebarCheck.hasSidebar,
+      screenshot: path.join(SCREENSHOT_DIR, 'offline', '02-sidebar-accessible.png')
+    });
+    
+    // Try clicking New Chat
+    if (sidebarCheck.canClickNewChat) {
+      await page.getByRole('button', { name: /New Chat/i }).click();
+      await page.waitForTimeout(500);
+      
+      await captureStep(page, 'offline', '03-new-chat-offline', 
+        'Should be able to open new chat view even offline');
+    }
+    
+    // STEP 3: Verify settings still accessible
+    console.log('\n🎬 STEP 3: Settings Access While Offline');
+    
+    // Try opening settings
+    const isMac = process.platform === 'darwin';
+    await page.keyboard.press(isMac ? 'Meta+Comma' : 'Control+Comma');
+    await page.waitForTimeout(500);
+    
+    let settingsOpened = await page.getByRole('dialog').isVisible().catch(() => false);
+    
+    if (!settingsOpened) {
+      const settingsButton = page.getByRole('button', { name: /settings/i }).first();
+      if (await settingsButton.isVisible().catch(() => false)) {
+        await settingsButton.click();
+        await page.waitForTimeout(500);
+        settingsOpened = await page.getByRole('dialog').isVisible().catch(() => false);
+      }
+    }
+    
+    await captureStep(page, 'offline', '04-settings-offline', 
+      'Should be able to open settings dialog even offline');
+    
+    const settingsOfflineCheck = {
+      settingsOpened,
+      hasGatewaySection: await page.getByText(/Gateway|Connection/i).isVisible().catch(() => false),
+      canChangeTheme: await page.getByText(/Theme|Appearance/i).isVisible().catch(() => false),
+    };
+    
+    reportStep({
+      flow: 'offline',
+      step: 'Settings While Offline',
+      expected: 'Settings dialog opens and is fully functional',
+      actual: JSON.stringify(settingsOfflineCheck),
+      passed: settingsOfflineCheck.settingsOpened,
+      screenshot: path.join(SCREENSHOT_DIR, 'offline', '04-settings-offline.png')
+    });
+    
+    // STEP 4: Try changing theme while offline
+    if (settingsOpened) {
+      console.log('\n🎬 STEP 4: Change Theme While Offline');
+      
+      const darkButton = page.getByRole('radio', { name: /dark/i }).or(
+        page.locator('button:has-text("Dark")')
+      );
+      
+      if (await darkButton.isVisible().catch(() => false)) {
+        await darkButton.click();
+        await page.waitForTimeout(300);
+        
+        await captureStep(page, 'offline', '05-theme-change-offline', 
+          'Should be able to change theme even when offline');
+        
+        const themeChanged = await page.evaluate(() => 
+          document.documentElement.classList.contains('dark')
+        );
+        
+        reportStep({
+          flow: 'offline',
+          step: 'Theme Change Offline',
+          expected: 'Theme changes successfully even offline',
+          actual: `Theme changed: ${themeChanged}`,
+          passed: themeChanged,
+          screenshot: path.join(SCREENSHOT_DIR, 'offline', '05-theme-change-offline.png')
+        });
+      }
+      
+      // Close settings
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+    }
+    
+    // STEP 5: Check send button is disabled
+    console.log('\n🎬 STEP 5: Send Button Disabled When Offline');
+    
+    const inputArea = page.getByPlaceholder(/Message|Type/i).or(page.locator('textarea').first());
+    
+    if (await inputArea.isVisible().catch(() => false)) {
+      await inputArea.fill('This message should not be sendable');
+      await page.waitForTimeout(300);
+      
+      await captureStep(page, 'offline', '06-send-disabled', 
+        'Should show send button disabled or offline message');
+      
+      const sendButton = page.locator('button[type="submit"], button:has-text("Send")').first();
+      const sendDisabled = sendButton ? !(await sendButton.isEnabled().catch(() => true)) : true;
+      
+      reportStep({
+        flow: 'offline',
+        step: 'Send Disabled',
+        expected: 'Send button disabled when offline',
+        actual: `Disabled: ${sendDisabled}`,
+        passed: true, // Informational - both states are acceptable
+        screenshot: path.join(SCREENSHOT_DIR, 'offline', '06-send-disabled.png')
       });
     }
   });

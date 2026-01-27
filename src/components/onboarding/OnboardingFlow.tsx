@@ -46,7 +46,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   // Restore progress on mount
   useEffect(() => {
     console.log('[OnboardingFlow] Mount - checking saved progress');
-    const savedProgress = localStorage.getItem('molt-onboarding-progress');
+    const savedProgress = localStorage.getItem('moltzer-onboarding-progress');
     if (savedProgress) {
       try {
         const progress: OnboardingProgress = JSON.parse(savedProgress);
@@ -82,15 +82,15 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const handleSkip = useCallback(() => {
     console.log('[OnboardingFlow] handleSkip called');
     // Mark onboarding as skipped (not completed)
-    localStorage.setItem("molt-onboarding-skipped", "true");
+    localStorage.setItem("moltzer-onboarding-skipped", "true");
     onComplete();
   }, [onComplete]);
 
   const handleComplete = useCallback(() => {
     console.log('[OnboardingFlow] handleComplete called');
     // Mark onboarding as fully completed
-    localStorage.setItem("molt-onboarding-completed", "true");
-    localStorage.removeItem("molt-onboarding-skipped");
+    localStorage.setItem("moltzer-onboarding-completed", "true");
+    localStorage.removeItem("moltzer-onboarding-skipped");
     onComplete();
   }, [onComplete]);
 
@@ -104,7 +104,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const handleNoGateway = useCallback(() => {
     console.log('[OnboardingFlow] handleNoGateway called');
     // Save progress
-    localStorage.setItem('molt-onboarding-progress', JSON.stringify({
+    localStorage.setItem('moltzer-onboarding-progress', JSON.stringify({
       step: 'detection-failed',
       timestamp: Date.now()
     }));
@@ -119,7 +119,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const handleManualSetup = useCallback(() => {
     console.log('[OnboardingFlow] handleManualSetup called');
     // Save progress (token NOT stored in localStorage - security)
-    localStorage.setItem('molt-onboarding-progress', JSON.stringify({
+    localStorage.setItem('moltzer-onboarding-progress', JSON.stringify({
       step: 'setup-started',
       gatewayUrl,
       timestamp: Date.now()

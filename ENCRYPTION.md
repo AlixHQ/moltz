@@ -2,7 +2,7 @@
 
 ## Overview
 
-Molt Client implements **transparent encryption at rest** for all sensitive conversation data with zero user friction.
+Moltzer client implements **transparent encryption at rest** for all sensitive conversation data with zero user friction.
 
 ## Architecture
 
@@ -56,8 +56,8 @@ Molt Client implements **transparent encryption at rest** for all sensitive conv
 
 2. **Key Storage**
    - Stored in OS keychain via Tauri `keyring` crate
-   - Service: `com.molt.client`
-   - Key name: `molt-client-master-key`
+   - Service: `com.moltzer.client`
+   - Key name: `moltzer-client-master-key`
    - Protected by OS-level authentication
 
 3. **Key Retrieval**

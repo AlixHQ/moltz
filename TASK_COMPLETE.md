@@ -1,7 +1,7 @@
 # Connection Error Handling Task - Completed ✅
 
 ## Summary
-Improved connection stability and error handling in the Molt client application.
+Improved connection stability and error handling in the Moltzer client application.
 
 ## What Was Discovered
 Most of the requested features were **already implemented** in previous commit `e5c5c73`:

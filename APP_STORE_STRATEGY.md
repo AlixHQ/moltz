@@ -1,4 +1,4 @@
-# Molt App Store Strategy
+# Moltzerzer App Store Strategy
 
 **Complete ASO (App Store Optimization) guide for all platforms**
 
@@ -36,7 +36,7 @@ Chat with Claude, GPT, Gemini & more in one lightning-fast native app. 10x light
 #### Long Description (4000 characters max)
 
 ```
-Molt is a lightning-fast, native desktop client for AI chat. Connect to your personal AI gateway and chat with Claude, GPT, Gemini, and other models — all in one beautiful, distraction-free interface.
+Moltzer is a lightning-fast, native desktop client for AI chat. Connect to your personal AI gateway and chat with Claude, GPT, Gemini, and other models — all in one beautiful, distraction-free interface.
 
 BLAZING FAST PERFORMANCE
 • 10MB binary — not 300MB like Electron apps
@@ -81,15 +81,15 @@ BUILT FOR PROS
 • Multi-line input with Shift+Enter
 • Respects your accessibility settings
 
-WHY MOLT?
-We built Molt because we were tired of sluggish Electron apps eating 500MB of RAM for a text box. Molt is built with Tauri v2 and Rust — the same technology behind secure, high-performance native apps. It's what ChatGPT's desktop app should have been.
+WHY Moltzer?
+We built Moltzer because we were tired of sluggish Electron apps eating 500MB of RAM for a text box. Moltzer is built with Tauri v2 and Rust — the same technology behind secure, high-performance native apps. It's what ChatGPT's desktop app should have been.
 
 REQUIREMENTS
 • Requires connection to a Clawdbot Gateway or compatible AI endpoint
 • macOS 11 (Big Sur) or later
 • Internet connection required for AI inference
 
-Questions? Feedback? We'd love to hear from you at support@molt.dev
+Questions? Feedback? We'd love to hear from you at support@moltzer.dev
 ```
 
 ---
@@ -142,13 +142,13 @@ AI,ChatGPT,Claude,chat,assistant,GPT,Gemini,LLM,coding,productivity,Anthropic,Op
 
 ### 1.5 Privacy Policy Requirements
 
-**Required URL:** `https://molt.dev/privacy` *(create this)*
+**Required URL:** `https://moltzer.dev/privacy` *(create this)*
 
 **Privacy Policy Must Include:**
 
 1. **Data Collection:**
    - Conversations stored locally on device (encrypted)
-   - No data transmitted to Molt servers
+   - No data transmitted to Moltzer servers
    - Messages sent to user-configured AI gateway
    
 2. **Third-Party Services:**
@@ -180,12 +180,12 @@ AI,ChatGPT,Claude,chat,assistant,GPT,Gemini,LLM,coding,productivity,Anthropic,Op
 
 | Requirement | Value |
 |-------------|-------|
-| Bundle ID | `com.molt.client` |
+| Bundle ID | `com.moltzer.client` |
 | SKU | `molt-macos-client` |
 | Primary Language | English (US) |
 | Copyright | `© 2025 Molt. All rights reserved.` |
-| Support URL | `https://molt.dev/support` |
-| Marketing URL | `https://molt.dev` |
+| Support URL | `https://moltzer.dev/support` |
+| Marketing URL | `https://moltzer.dev` |
 | Version Number | `1.0.0` |
 | Build Number | Auto-increment (CI) |
 
@@ -214,7 +214,7 @@ Lightning-fast native AI chat client for Claude, GPT, Gemini, and more
 ```
 Molt — The AI Chat Client Windows Deserves
 
-Tired of browser tabs and slow Electron apps? Molt is a native Windows application that lets you chat with Claude, GPT, Gemini, and other AI models in a beautiful, blazing-fast interface.
+Tired of browser tabs and slow Electron apps? Moltzer is a native Windows application that lets you chat with Claude, GPT, Gemini, and other AI models in a beautiful, blazing-fast interface.
 
 ✦ 10× LIGHTER THAN ELECTRON ✦
 • 10MB installer — not the 300MB of typical chat apps
@@ -260,7 +260,7 @@ Tired of browser tabs and slow Electron apps? Molt is a native Windows applicati
 ✦ ABOUT ✦
 Built with Tauri v2 and Rust for maximum performance and security. This is what AI chat apps should be — fast, private, and beautiful.
 
-Questions? support@molt.dev
+Questions? support@moltzer.dev
 ```
 
 ---
@@ -275,9 +275,9 @@ Questions? support@molt.dev
 | Subcategory | Personal Assistant |
 | Languages | English (United States), English (United Kingdom) |
 | Pricing | Free |
-| Website | `https://molt.dev` |
-| Privacy Policy | `https://molt.dev/privacy` |
-| Support Contact | `support@molt.dev` |
+| Website | `https://moltzer.dev` |
+| Privacy Policy | `https://moltzer.dev/privacy` |
+| Support Contact | `support@moltzer.dev` |
 | Publisher ID | *From Partner Center* |
 
 ---
@@ -318,13 +318,13 @@ Submit through Microsoft Partner Center for automatic IARC rating.
 
 1. **Create Flatpak manifest:**
    
-   `com.molt.Client.yml`:
+   `com.moltzer.Client.yml`:
    ```yaml
-   app-id: com.molt.Client
+   app-id: com.moltzer.Client
    runtime: org.freedesktop.Platform
    runtime-version: '23.08'
    sdk: org.freedesktop.Sdk
-   command: molt-client
+   command: moltzer-client
    
    finish-args:
      - --share=ipc
@@ -336,41 +336,41 @@ Submit through Microsoft Partner Center for automatic IARC rating.
      - --filesystem=xdg-config/molt:create
    
    modules:
-     - name: molt-client
+     - name: moltzer-client
        buildsystem: simple
        build-commands:
-         - install -Dm755 molt-client /app/bin/molt-client
-         - install -Dm644 molt.desktop /app/share/applications/com.molt.Client.desktop
-         - install -Dm644 molt.svg /app/share/icons/hicolor/scalable/apps/com.molt.Client.svg
+         - install -Dm755 moltzer-client /app/bin/moltzer-client
+         - install -Dm644 molt.desktop /app/share/applications/com.moltzer.Client.desktop
+         - install -Dm644 molt.svg /app/share/icons/hicolor/scalable/apps/com.moltzer.Client.svg
        sources:
          - type: archive
-           url: https://github.com/dokterdok/molt-client/releases/download/v1.0.0/molt-linux-x64.tar.gz
+           url: https://github.com/dokterdok/moltzer-client/releases/download/v1.0.0/molt-linux-x64.tar.gz
            sha256: <SHA256_HASH>
    ```
 
 2. **Create desktop entry:**
    
-   `com.molt.Client.desktop`:
+   `com.moltzer.Client.desktop`:
    ```ini
    [Desktop Entry]
    Name=Molt
    Comment=Native AI chat client for Claude, GPT, and more
-   Exec=molt-client %U
-   Icon=com.molt.Client
+   Exec=moltzer-client %U
+   Icon=com.moltzer.Client
    Terminal=false
    Type=Application
    Categories=Utility;Network;Chat;
    Keywords=AI;ChatGPT;Claude;GPT;chat;assistant;
-   StartupWMClass=molt-client
+   StartupWMClass=moltzer-client
    ```
 
 3. **Create AppStream metadata:**
    
-   `com.molt.Client.metainfo.xml`:
+   `com.moltzer.Client.metainfo.xml`:
    ```xml
    <?xml version="1.0" encoding="UTF-8"?>
    <component type="desktop-application">
-     <id>com.molt.Client</id>
+     <id>com.moltzer.Client</id>
      <name>Molt</name>
      <summary>Lightning-fast native AI chat client</summary>
      <metadata_license>CC0-1.0</metadata_license>
@@ -378,7 +378,7 @@ Submit through Microsoft Partner Center for automatic IARC rating.
      
      <description>
        <p>
-         Molt is a native desktop client for AI chat. Connect to Claude, GPT, 
+         Moltzer is a native desktop client for AI chat. Connect to Claude, GPT, 
          Gemini, and other models in one beautiful, distraction-free interface.
        </p>
        <p>Features:</p>
@@ -391,18 +391,18 @@ Submit through Microsoft Partner Center for automatic IARC rating.
        </ul>
      </description>
      
-     <launchable type="desktop-id">com.molt.Client.desktop</launchable>
+     <launchable type="desktop-id">com.moltzer.Client.desktop</launchable>
      
-     <url type="homepage">https://molt.dev</url>
-     <url type="bugtracker">https://github.com/dokterdok/molt-client/issues</url>
+     <url type="homepage">https://moltzer.dev</url>
+     <url type="bugtracker">https://github.com/dokterdok/moltzer-client/issues</url>
      
      <screenshots>
        <screenshot type="default">
-         <image>https://molt.dev/screenshots/main-dark.png</image>
+         <image>https://moltzer.dev/screenshots/main-dark.png</image>
          <caption>Chat interface in dark mode</caption>
        </screenshot>
        <screenshot>
-         <image>https://molt.dev/screenshots/search.png</image>
+         <image>https://moltzer.dev/screenshots/search.png</image>
          <caption>Full-text search across all conversations</caption>
        </screenshot>
      </screenshots>
@@ -421,7 +421,7 @@ Submit through Microsoft Partner Center for automatic IARC rating.
 
 4. **Submit PR to Flathub:**
    - Fork `flathub/flathub`
-   - Create `com.molt.Client` directory
+   - Create `com.moltzer.Client` directory
    - Add manifest, desktop file, metainfo
    - Submit PR with description
 
@@ -448,7 +448,7 @@ Submit through Microsoft Partner Center for automatic IARC rating.
    
    apps:
      molt:
-       command: bin/molt-client
+       command: bin/moltzer-client
        desktop: share/applications/molt.desktop
        extensions:
          - gnome
@@ -461,7 +461,7 @@ Submit through Microsoft Partner Center for automatic IARC rating.
    parts:
      molt:
        plugin: dump
-       source: https://github.com/dokterdok/molt-client/releases/download/v1.0.0/molt-linux-x64.tar.gz
+       source: https://github.com/dokterdok/moltzer-client/releases/download/v1.0.0/molt-linux-x64.tar.gz
        stage-packages:
          - libwebkit2gtk-4.1-0
          - libgtk-3-0
@@ -470,13 +470,13 @@ Submit through Microsoft Partner Center for automatic IARC rating.
 2. **Build and test locally:**
    ```bash
    snapcraft --use-lxd
-   sudo snap install ./molt_1.0.0_amd64.snap --dangerous
+   sudo snap install ./moltzer_1.0.0_amd64.snap --dangerous
    ```
 
 3. **Register and upload:**
    ```bash
    snapcraft register molt
-   snapcraft upload molt_1.0.0_amd64.snap --release=stable
+   snapcraft upload moltzer_1.0.0_amd64.snap --release=stable
    ```
 
 4. **Configure store listing** on snapcraft.io:
@@ -514,7 +514,7 @@ Submit through Microsoft Partner Center for automatic IARC rating.
 
 ### 4.1 The 5-Screenshot Story
 
-Each screenshot should tell a part of Molt's story. Order matters!
+Each screenshot should tell a part of Moltzer's story. Order matters!
 
 | # | Screen | Purpose | Key Elements |
 |---|--------|---------|--------------|
@@ -661,13 +661,13 @@ You can use it like this:
 
 | Time | Scene | Visual | Audio/Text |
 |------|-------|--------|-----------|
-| 0-3s | **Title Card** | Molt logo animation, tagline | "Molt — AI Chat, Reimagined" |
+| 0-3s | **Title Card** | Moltzer logo animation, tagline | "Molt — AI Chat, Reimagined" |
 | 3-7s | **Problem** | Browser with 10 tabs, slow loading spinner | "Tired of slow, bloated chat apps?" |
-| 7-12s | **Solution: Speed** | Molt launching instantly, first message sent | "Meet Molt. Lightning fast." |
+| 7-12s | **Solution: Speed** | Moltzer launching instantly, first message sent | "Meet Molt. Lightning fast." |
 | 12-17s | **Feature: Models** | Model picker opens, select Claude → GPT | "Chat with any AI model" |
 | 17-22s | **Feature: Search** | ⌘K pressed, search "python", jump to result | "Find anything instantly" |
 | 22-26s | **Feature: Privacy** | Lock icon animation, encrypted indicator | "Your data stays yours" |
-| 26-30s | **CTA** | App Store badge, download URL | "Download Molt today" |
+| 26-30s | **CTA** | App Store badge, download URL | "Download Moltzerzer today" |
 
 ---
 
@@ -752,8 +752,8 @@ You can use it like this:
 
 - [ ] All screenshots captured at correct resolutions
 - [ ] App preview video edited and exported
-- [ ] Privacy policy published at `https://molt.dev/privacy`
-- [ ] Support website live at `https://molt.dev/support`
+- [ ] Privacy policy published at `https://moltzer.dev/privacy`
+- [ ] Support website live at `https://moltzer.dev/support`
 - [ ] App binaries built and tested on all platforms
 - [ ] Code signing configured (macOS notarization, Windows)
 - [ ] Version number and build number finalized
@@ -833,4 +833,4 @@ You can use it like this:
 
 ---
 
-*Document maintained by Molt team. Last updated January 2025.*
+*Document maintained by Moltzer team. Last updated January 2025.*

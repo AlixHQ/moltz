@@ -1,17 +1,17 @@
-# Molt Client Architecture
+# Moltzerzer client Architecture
 
 ## Overview
 
-Molt Client is designed to operate in two distinct modes:
+Moltzer client is designed to operate in two distinct modes:
 
-1. **Personal Mode** - Direct connection to Moltbot Gateway (current implementation)
-2. **Team Mode** - Connection through Molt Backend for org management, RBAC, and audit
+1. **Personal Mode** - Direct connection to Moltzerbot Gateway (current implementation)
+2. **Team Mode** - Connection through Moltzer Backend for org management, RBAC, and audit
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         PERSONAL MODE                                │
 │  ┌─────────────┐         ┌─────────────┐         ┌─────────────┐   │
-│  │ Molt Client │ ──WS──► │   Gateway   │ ──────► │   Moltbot   │   │
+│  │ Moltzer client │ ──WS──► │   Gateway   │ ──────► │   Moltbot   │   │
 │  │  (Tauri)    │         │  (direct)   │         │             │   │
 │  └─────────────┘         └─────────────┘         └─────────────┘   │
 │        │                                                            │
@@ -24,7 +24,7 @@ Molt Client is designed to operate in two distinct modes:
 ┌─────────────────────────────────────────────────────────────────────┐
 │                           TEAM MODE                                  │
 │  ┌─────────────┐         ┌─────────────┐         ┌─────────────┐   │
-│  │ Molt Client │ ──WS──► │Molt Backend │ ──WS──► │   Gateway   │   │
+│  │ Moltzer client │ ──WS──► │Molt Backend │ ──WS──► │   Gateway   │   │
 │  │  (Tauri)    │         │  (proxy)    │         │             │   │
 │  └─────────────┘         └─────────────┘         └─────────────┘   │
 │                                │                        │           │
@@ -564,7 +564,7 @@ interface Store {
 ## File Structure (Future)
 
 ```
-molt-client/
+moltzer-client/
 ├── src/                      # React frontend
 │   ├── components/
 │   ├── hooks/

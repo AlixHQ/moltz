@@ -8,7 +8,7 @@ Molt takes security and privacy seriously. This document outlines our security p
 
 ### End-to-End Encryption
 
-All conversations stored in Molt are encrypted using **AES-GCM 256-bit** encryption:
+All conversations stored in Moltzerzer are encrypted using **AES-GCM 256-bit** encryption:
 
 - **At Rest:** All messages in the local IndexedDB database are encrypted
 - **Master Key:** Stored securely in your OS's credential manager:
@@ -21,7 +21,7 @@ All conversations stored in Molt are encrypted using **AES-GCM 256-bit** encrypt
 
 - **WebSocket Security:** Automatic fallback from `ws://` to `wss://` for secure connections
 - **Auth Tokens:** Optional authentication tokens stored in OS keychain
-- **No Telemetry:** Molt doesn't collect or transmit usage data
+- **No Telemetry:** Moltzer doesn't collect or transmit usage data
 
 ### Code Security
 
@@ -43,7 +43,7 @@ All conversations stored in Molt are encrypted using **AES-GCM 256-bit** encrypt
 
 ### How to Report
 
-1. **Email:** Send details to **security@molt.dev** (or create a private security advisory on GitHub)
+1. **Email:** Send details to **security@moltzer.dev** (or create a private security advisory on GitHub)
 2. **Include:**
    - Description of the vulnerability
    - Steps to reproduce
@@ -78,11 +78,11 @@ All conversations stored in Molt are encrypted using **AES-GCM 256-bit** encrypt
 
 ### General Security
 
-- Download Molt only from official sources:
-  - [GitHub Releases](https://github.com/dokterdok/molt-client/releases)
+- Download Moltzerzer only from official sources:
+  - [GitHub Releases](https://github.com/dokterdok/moltzer-client/releases)
   - Official package managers (when available)
 - Verify checksums of downloaded binaries
-- Keep Molt and your OS updated
+- Keep Moltzer and your OS updated
 - Don't install untrusted plugins or extensions
 
 ## 🔐 Encryption Details
@@ -144,7 +144,7 @@ Subscribe to **Watch → Custom → Security alerts** on GitHub to get notified.
 
 ## ✅ Security Audit
 
-Molt has not yet undergone a formal third-party security audit. If you're interested in sponsoring an audit, please reach out to security@molt.dev.
+Molt has not yet undergone a formal third-party security audit. If you're interested in sponsoring an audit, please reach out to security@moltzer.dev.
 
 ## 🙏 Acknowledgments
 
@@ -154,4 +154,4 @@ We're grateful to security researchers who responsibly disclose vulnerabilities.
 
 **Last Updated:** January 2026
 
-For questions about this policy, contact: security@molt.dev
+For questions about this policy, contact: security@moltzer.dev

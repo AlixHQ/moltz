@@ -14,7 +14,7 @@ describe('ChatInput', () => {
     it('should render input field', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
-      expect(screen.getByPlaceholderText('Message Molt...')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Message Moltzer...')).toBeInTheDocument();
     });
 
     it('should render attach button', () => {
@@ -90,7 +90,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, 'Hello, Molt!');
       
       expect(input).toHaveValue('Hello, Molt!');
@@ -100,7 +100,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, 'Test message');
       await user.keyboard('{Enter}');
       
@@ -111,7 +111,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, 'Line 1');
       await user.keyboard('{Shift>}{Enter}{/Shift}');
       
@@ -122,7 +122,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      const input = screen.getByPlaceholderText('Message Moltzer...') as HTMLTextAreaElement;
       await user.type(input, 'Test message');
       await user.keyboard('{Enter}');
       
@@ -133,7 +133,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, 'Test message');
       
       const sendButton = screen.getByLabelText(/Send message/i);
@@ -155,7 +155,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, 'Test');
       
       const sendButton = screen.getByLabelText(/Send message/i);
@@ -166,7 +166,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, '   ');
       await user.keyboard('{Enter}');
       
@@ -179,7 +179,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       const { container } = render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.click(input);
       
       const inputContainer = container.querySelector('.border-primary\\/50');
@@ -199,7 +199,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const textarea = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      const textarea = screen.getByPlaceholderText('Message Moltzer...') as HTMLTextAreaElement;
       
       // Type multiple lines
       await user.type(textarea, 'Line 1{Shift>}{Enter}{/Shift}Line 2{Shift>}{Enter}{/Shift}Line 3');
@@ -212,7 +212,7 @@ describe('ChatInput', () => {
     it('should have max height constraint', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
-      const textarea = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      const textarea = screen.getByPlaceholderText('Message Moltzer...') as HTMLTextAreaElement;
       expect(textarea.style.maxHeight).toBe('200px');
     });
   });
@@ -244,7 +244,7 @@ describe('ChatInput', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
       const longMessage = 'a'.repeat(10000);
-      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      const input = screen.getByPlaceholderText('Message Moltzer...') as HTMLTextAreaElement;
       // Use fireEvent.change instead of userEvent.type for very long strings (faster)
       fireEvent.change(input, { target: { value: longMessage } });
       fireEvent.keyDown(input, { key: 'Enter' });
@@ -256,7 +256,7 @@ describe('ChatInput', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
       const specialChars = '<script>alert("xss")</script>';
-      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      const input = screen.getByPlaceholderText('Message Moltzer...') as HTMLTextAreaElement;
       // Use fireEvent.change for special characters that userEvent doesn't handle well
       fireEvent.change(input, { target: { value: specialChars } });
       fireEvent.keyDown(input, { key: 'Enter' });
@@ -268,7 +268,7 @@ describe('ChatInput', () => {
       const user = userEvent.setup();
       render(<ChatInput onSend={mockOnSend} />);
       
-      const input = screen.getByPlaceholderText('Message Molt...');
+      const input = screen.getByPlaceholderText('Message Moltzer...');
       await user.type(input, '你好 🌍 Привет');
       await user.keyboard('{Enter}');
       
@@ -279,7 +279,7 @@ describe('ChatInput', () => {
       render(<ChatInput onSend={mockOnSend} />);
       
       const emojiText = '😀 😃 😄 😁';
-      const input = screen.getByPlaceholderText('Message Molt...') as HTMLTextAreaElement;
+      const input = screen.getByPlaceholderText('Message Moltzer...') as HTMLTextAreaElement;
       // Use fireEvent.change for emoji as userEvent has encoding issues
       fireEvent.change(input, { target: { value: emojiText } });
       fireEvent.keyDown(input, { key: 'Enter' });

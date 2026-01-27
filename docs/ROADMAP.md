@@ -1,4 +1,4 @@
-# Molt Client - Product Roadmap
+# Moltzerzer client - Product Roadmap
 
 **Last updated:** 2025-01-23  
 **Status:** Pre-release (1.0.0-dev)
@@ -209,7 +209,7 @@
 
 ## 🌟 V2.0 Major Features (3-6 Month Horizon)
 
-**Goal:** Transform Molt into a team-ready, extensible AI platform.
+**Goal:** Transform Moltzer into a team-ready, extensible AI platform.
 
 ### Multi-User & Collaboration
 
@@ -339,7 +339,7 @@
 
 ## 🔮 Future Considerations (12+ Months)
 
-**Goal:** Expand Molt ecosystem beyond desktop.
+**Goal:** Expand Moltzer ecosystem beyond desktop.
 
 ### Mobile Apps
 
@@ -489,11 +489,11 @@ This roadmap is a living document. Contributions welcome!
 
 Have thoughts on this roadmap? Let us know!
 
-- GitHub Discussions: [Roadmap Discussion](https://github.com/dokterdok/molt-client/discussions)
-- Discord: [Molt Community](https://discord.gg/molt) *(placeholder)*
+- GitHub Discussions: [Roadmap Discussion](https://github.com/dokterdok/moltzer-client/discussions)
+- Discord: [Moltzer Community](https://discord.gg/molt) *(placeholder)*
 - Email: feedback@molt.app *(placeholder)*
 
 ---
 
 **Last updated:** 2025-01-23  
-**Roadmap maintained by:** Molt Core Team
+**Roadmap maintained by:** Moltzer Core Team

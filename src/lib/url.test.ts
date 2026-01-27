@@ -152,7 +152,7 @@ describe('URL Utilities', () => {
         'ws://localhost:18789',
         'ws://127.0.0.1:18789',
         'wss://gateway.example.com',
-        'wss://molt.example.com:8443',
+        'wss://moltzer.example.com:8443',
       ];
 
       validGatewayUrls.forEach(url => {

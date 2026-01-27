@@ -1,4 +1,4 @@
-# Architecture Decisions: Molt Client vs Clawdbot Gateway
+# Architecture Decisions: Moltzer client vs Clawdbot Gateway
 
 **Last updated:** 2026-01-27  
 **Purpose:** Define clear boundaries between client and server responsibilities based on Clawdbot Gateway capabilities
@@ -14,7 +14,7 @@ Clawdbot Gateway is a **feature-complete WebSocket server** that handles:
 - Message delivery across channels (WhatsApp, Telegram, Discord, etc.)
 - HTTP APIs (OpenAI-compatible, OpenResponses, Tools Invoke)
 
-**Molt Client should be a thin UI layer** that focuses exclusively on:
+**Moltzerzer client should be a thin UI layer** that focuses exclusively on:
 - Chat interface and user experience
 - Local data caching for performance
 - OS-native integrations (keychain, notifications, menu bar)
@@ -126,7 +126,7 @@ Clawdbot Gateway is a **feature-complete WebSocket server** that handles:
 
 ## 3. Missing Gateway Features (Potential PRs)
 
-### 3.1 Features Molt Needs
+### 3.1 Features Moltzer Needs
 
 | Feature | Current Gateway Support | Benefit to Other Clients | Aligned with Vision? |
 |---------|------------------------|--------------------------|---------------------|
@@ -219,12 +219,12 @@ interface SessionEntry {
 
 ---
 
-## 4. Client Boundaries: What Molt Should NOT Do
+## 4. Client Boundaries: What Moltzer Should NOT Do
 
 ### 4.1 Anti-Patterns to Avoid
 
 ❌ **Direct tool invocation**
-- Molt should NEVER implement tools (exec, browser, file access)
+- Moltzer should NEVER implement tools (exec, browser, file access)
 - All tool calls go through Gateway via `chat.send` or agent runs
 
 ❌ **Direct model API calls**
@@ -249,14 +249,14 @@ interface SessionEntry {
 
 ### 4.2 Keep It Focused on Chat UX
 
-**Molt's job:**
+**Moltzerzer's job:**
 1. Connect to Gateway via WebSocket
 2. Send `chat.send` requests with user messages
 3. Stream responses and render them beautifully
 4. Cache conversations locally for speed
 5. Provide native OS integrations (keychain, notifications, menu bar)
 
-**Molt's philosophy:**
+**Moltzerzer's philosophy:**
 - **Thin client, fat server:** Let Gateway do the heavy lifting
 - **Zero secrets:** No API keys, no auth tokens (except gateway token in keychain)
 - **UI-first:** Invest in polish, not reimplementing Gateway features
@@ -264,7 +264,7 @@ interface SessionEntry {
 
 ---
 
-## 5. Current Molt Architecture Assessment
+## 5. Current Moltzer Architecture Assessment
 
 ### 5.1 What's Good
 
@@ -411,7 +411,7 @@ loop {
 
 ## 6. Recommended Gateway Extensions (Optional)
 
-These are **not required** for Molt to function but would improve the ecosystem:
+These are **not required** for Moltzer to function but would improve the ecosystem:
 
 ### 6.1 Operator Dashboard Integration
 
@@ -445,7 +445,7 @@ These are **not required** for Molt to function but would improve the ecosystem:
 
 ### Key Takeaways
 
-1. **Gateway is complete:** Molt should NOT reimplement tools, agents, or session logic.
+1. **Gateway is complete:** Moltzer should NOT reimplement tools, agents, or session logic.
 2. **Client is UI:** Focus on chat experience, native integrations, local caching.
 3. **Trust the Gateway:** Don't second-guess model selection, routing, or tool execution.
 4. **Align protocol:** Update `gateway.rs` to match Gateway schema exactly.
@@ -463,6 +463,6 @@ These are **not required** for Molt to function but would improve the ecosystem:
 
 ---
 
-**Maintainer:** Molt team  
+**Maintainer:** Moltzer team  
 **Reference:** [Clawdbot Gateway Docs](https://docs.clawd.bot/gateway)  
 **Last Review:** 2026-01-27

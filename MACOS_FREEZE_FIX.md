@@ -106,7 +106,7 @@ const needsOnboarding = !hasValidGatewayUrl ||
 
 ### On macOS:
 1. **Fresh Install Test:**
-   - Delete app data: `~/Library/Application Support/com.molt.client`
+   - Delete app data: `~/Library/Application Support/com.moltzer.client`
    - Launch app → Should show onboarding immediately
    - UI should remain clickable/responsive throughout
 

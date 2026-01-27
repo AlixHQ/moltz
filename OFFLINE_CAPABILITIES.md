@@ -1,4 +1,4 @@
-# Molt Offline & Local-First Capabilities
+# Moltzerzer Offline & Local-First Capabilities
 
 > **Status:** Design Specification  
 > **Version:** 1.0  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Molt is already architecturally suited for offline-first operation. All conversations are stored locally in IndexedDB, search happens client-side, and the only network dependency is the Clawdbot Gateway for sending messages. This document specifies how to:
+Moltzer is already architecturally suited for offline-first operation. All conversations are stored locally in IndexedDB, search happens client-side, and the only network dependency is the Clawdbot Gateway for sending messages. This document specifies how to:
 
 1. Gracefully handle network unavailability
 2. Integrate local LLMs for true offline AI
@@ -590,7 +590,7 @@ export function LocalModelPicker() {
 
 ### 3.1 Sync Architecture
 
-Molt is primarily a local-first app. Sync is optional and designed for:
+Moltzer is primarily a local-first app. Sync is optional and designed for:
 - Multiple devices (laptop + desktop)
 - Backup to user-controlled storage
 - Sharing conversations
@@ -1136,7 +1136,7 @@ interface DBQueuedMessage {
   model: string;
 }
 
-// In MoltDB constructor
+// in MoltzerDB constructor
 this.version(2).stores({
   messages: 'id, conversationId, timestamp, *searchWords',
   conversations: 'id, updatedAt, isPinned',
@@ -1483,13 +1483,13 @@ curl http://localhost:11434/api/generate -d '{
 
 ```bash
 # Optional: custom Ollama URL
-MOLT_OLLAMA_URL=http://localhost:11434
+moltzer_OLLAMA_URL=http://localhost:11434
 
 # Optional: custom sync folder
-MOLT_SYNC_PATH=/path/to/sync
+moltzer_SYNC_PATH=/path/to/sync
 
 # Debug: verbose connection logging
-MOLT_DEBUG_CONNECTION=1
+moltzer_DEBUG_CONNECTION=1
 ```
 
 ---
@@ -1507,4 +1507,4 @@ MOLT_DEBUG_CONNECTION=1
 
 ---
 
-*Document maintained by the Molt team. Last updated: 2025-01-20*
+*Document maintained by the Moltzer team. Last updated: 2025-01-20*

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-**Goal**: Allow users to experience Molt without requiring Gateway setup, reducing the barrier to adoption while demonstrating the app's value.
+**Goal**: Allow users to experience Moltzer without requiring Gateway setup, reducing the barrier to adoption while demonstrating the app's value.
 
 **Recommendation**: Implement **Direct API Mode** for V1, with a **Cloud Gateway** as the ideal long-term solution.
 
@@ -100,7 +100,7 @@ demo.moltbot.io
 | Time to Implement | 1-2 weeks | |
 
 **Pros**:
-- Full Molt experience
+- Full Moltzer experience
 - No user setup required
 - Easy upgrade path (just change Gateway URL)
 
@@ -122,12 +122,12 @@ demo.moltbot.io
 
 ### Option C: Direct API Mode (Recommended for V1)
 
-**Description**: Molt connects directly to AI providers (OpenAI, Anthropic, Google) without Gateway.
+**Description**: Moltzer connects directly to AI providers (OpenAI, Anthropic, Google) without Gateway.
 
 **Implementation**:
 ```
 ┌─────────────────┐
-│   Molt Client   │
+│   Moltzer client   │
 └────────┬────────┘
          │ BYOK (Bring Your Own Key)
          ↓
@@ -254,7 +254,7 @@ class DirectAPIClient {
 **Implementation**:
 ```
 ┌─────────────────┐
-│   Molt Client   │
+│   Moltzer client   │
 └────────┬────────┘
          │ Local HTTP
          ↓
@@ -300,7 +300,7 @@ class DirectAPIClient {
 
 ### Long-term: Cloud Gateway
 
-Once Molt has traction:
+Once Moltzer has traction:
 1. Launch `demo.moltbot.io` with rate-limited free tier
 2. Users can try full Gateway experience
 3. Easy upgrade: change URL to self-hosted Gateway
@@ -315,7 +315,7 @@ Once Molt has traction:
 #### Connection Screen (Updated)
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                    Connect to Molt                         │
+│                    Connect to Moltzer                         │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  ┌─────────────────────────────────────────────────────┐  │
@@ -374,7 +374,7 @@ Once Molt has traction:
 When in Direct API mode, show subtle indicator:
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ Molt Chat                                    ⚡ Direct API   │
+│ Moltzer Chat                                    ⚡ Direct API   │
 ├──────────────────────────────────────────────────────────────┤
 ```
 
@@ -669,7 +669,7 @@ Add keychain storage for API keys (already exists, just expand):
 ```rust
 #[tauri::command]
 pub fn set_api_key(provider: &str, key: &str) -> Result<(), String> {
-    let service = format!("molt.direct.{}", provider);
+    let service = format!("moltzer.direct.{}", provider);
     keyring::Entry::new(&service, "api_key")?
         .set_password(key)
         .map_err(|e| e.to_string())
@@ -677,7 +677,7 @@ pub fn set_api_key(provider: &str, key: &str) -> Result<(), String> {
 
 #[tauri::command]
 pub fn get_api_key(provider: &str) -> Result<String, String> {
-    let service = format!("molt.direct.{}", provider);
+    let service = format!("moltzer.direct.{}", provider);
     keyring::Entry::new(&service, "api_key")?
         .get_password()
         .map_err(|e| e.to_string())

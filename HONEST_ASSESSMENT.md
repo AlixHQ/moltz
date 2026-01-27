@@ -1,4 +1,4 @@
-# Molt - Brutally Honest Assessment
+# Moltzerzer - Brutally Honest Assessment
 
 **Date:** 2025-01-27  
 **Reviewer:** Claude (subagent)  
@@ -75,7 +75,7 @@ Failing tests are in:
 ## 3. Integration Points
 
 ### ⚠️ WebSocket Protocol - CRITICAL CONCERN
-**Molt sends:**
+**Moltzer sends:**
 ```json
 {"id":"uuid","method":"chat.send","params":{"message":"...","sessionKey":"...","model":"..."}}
 ```
@@ -211,7 +211,7 @@ README promises these shortcuts:
 
 1. **Verify Gateway Protocol**
    - Get actual Clawdbot Gateway docs
-   - Compare with Molt's expected format
+   - Compare with Moltzerzer's expected format
    - Could be completely incompatible
 
 2. **Fix get_models**

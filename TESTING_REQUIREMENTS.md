@@ -1,6 +1,6 @@
-# Molt Testing Requirements
+# Moltzerzer Testing Requirements
 
-Comprehensive analysis of testing complexity for all Molt features.
+Comprehensive analysis of testing complexity for all Moltzer features.
 
 **Legend:**
 - 🟢 **AUTONOMOUS**: Can test fully without human interaction
@@ -141,9 +141,9 @@ test('should show installation instructions', async ({ page }) => {
 4. Restart app
 5. Open Settings → verify token is loaded (shows placeholder, not actual value)
 6. Verify token is stored in OS keychain:
-   - **macOS:** `security find-generic-password -s com.molt.client`
+   - **macOS:** `security find-generic-password -s com.moltzer.client`
    - **Windows:** Credential Manager
-   - **Linux:** `secret-tool lookup service com.molt.client key gateway_token`
+   - **Linux:** `secret-tool lookup service com.moltzer.client key gateway_token`
 
 ### Automated E2E (Playwright)
 
@@ -607,8 +607,8 @@ test('should persist settings across reload', async ({ page }) => {
    - Reload app
    - Verify messages display correctly (decrypted transparently)
 3. **Verify Master Key:**
-   - Check OS keychain for `molt-client-master-key`
-   - **macOS:** `security find-generic-password -s com.molt.client -a molt-client-master-key`
+   - Check OS keychain for `moltzer-client-master-key`
+   - **macOS:** `security find-generic-password -s com.moltzer.client -a moltzer-client-master-key`
    - Verify key exists and is base64 string
 4. **Verify Key Generation:**
    - Delete master key from keychain
@@ -1096,7 +1096,7 @@ test('should upload file attachment', async ({ page }) => {
 
 ### Notes
 
-- **NOT YET IMPLEMENTED** in Molt (UI exists, functionality planned for v1.1)
+- **NOT YET IMPLEMENTED** in Moltzerzer (UI exists, functionality planned for v1.1)
 - **PARKED FOR MANUAL REVIEW** with David
 - Requires Gateway support for multipart/form-data or base64 encoding
 - Security: validate file types, size limits
@@ -1152,7 +1152,7 @@ test('should render image in message', async ({ page }) => {
 
 ### Notes
 
-- **NOT YET FULLY IMPLEMENTED** in Molt (markdown images might work, inline display TBD)
+- **NOT YET FULLY IMPLEMENTED** in Moltzerzer (markdown images might work, inline display TBD)
 - **PARKED FOR MANUAL REVIEW** with David
 - Consider lazy loading for performance
 - Accessibility: require alt text, keyboard navigation

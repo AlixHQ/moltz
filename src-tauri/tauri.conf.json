@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Molt",
+  "productName": "Moltzer",
   "version": "1.0.0",
-  "identifier": "com.molt.client",
+  "identifier": "com.moltzer.client",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:5173",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Molt",
+        "title": "Moltzer",
         "width": 1200,
         "height": 800,
         "minWidth": 800,
@@ -60,7 +60,7 @@
       "active": true,
       "dialog": true,
       "endpoints": [
-        "https://github.com/dokterdok/molt-client/releases/latest/download/latest.json"
+        "https://github.com/dokterdok/moltzer-client/releases/latest/download/latest.json"
       ],
       "pubkey": "YOUR_PUBLIC_KEY_HERE"
     }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Molt Client features **Slack/Discord-style window chrome** on macOS with integrated traffic lights and native drag regions.
+Moltzer client features **Slack/Discord-style window chrome** on macOS with integrated traffic lights and native drag regions.
 
 ---
 
@@ -167,7 +167,7 @@ We use `pl-[70px]` to ensure content starts after the traffic lights.
 On macOS:
 ```
 ┌─[●●●]─────────────────────────┐
-│  🦞 Molt        ● Online      │ ← Draggable, traffic lights integrated
+│  🦞 Moltzer        ● Online      │ ← Draggable, traffic lights integrated
 ├───────────────────────────────┤
 │  [New Chat]                   │
 │  [Search...]                  │
@@ -176,8 +176,8 @@ On macOS:
 
 On Windows/Linux:
 ```
-┌─ Molt ──────────────[─][□][×]─┐ ← System title bar
-│  🦞 Molt        ● Online      │
+┌─ Moltzer ──────────────[─][□][×]─┐ ← System title bar
+│  🦞 Moltzer        ● Online      │
 ├───────────────────────────────┤
 │  [New Chat]                   │
 ```

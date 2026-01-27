@@ -1,6 +1,6 @@
-# Molt Setup Guide
+# Moltzerzer Setup Guide
 
-Complete guide to installing and configuring Molt and Clawdbot Gateway.
+Complete guide to installing and configuring Moltzer and Clawdbot Gateway.
 
 ---
 
@@ -9,8 +9,8 @@ Complete guide to installing and configuring Molt and Clawdbot Gateway.
 - [Prerequisites](#prerequisites)
 - [Installing Clawdbot Gateway](#installing-clawdbot-gateway)
 - [Installing Molt](#installing-molt)
-- [Configuring Gateway for Molt](#configuring-gateway-for-molt)
-- [Connecting Molt to Gateway](#connecting-molt-to-gateway)
+- [Configuring Gateway for Moltzer](#configuring-gateway-for-molt)
+- [Connecting Moltzer to Gateway](#connecting-molt-to-gateway)
 - [Troubleshooting](#troubleshooting)
 - [Advanced Configuration](#advanced-configuration)
 
@@ -20,7 +20,7 @@ Complete guide to installing and configuring Molt and Clawdbot Gateway.
 
 ### System Requirements
 
-**Molt Client:**
+**Moltzerzer client:**
 - **macOS:** 10.15 (Catalina) or later
 - **Windows:** Windows 10 or later
 - **Linux:** Modern distro with WebKit2GTK 4.1+
@@ -35,7 +35,7 @@ Complete guide to installing and configuring Molt and Clawdbot Gateway.
 
 ### Network Requirements
 
-- **Local Gateway:** Molt and Gateway can run on the same machine (default)
+- **Local Gateway:** Moltzer and Gateway can run on the same machine (default)
 - **Remote Gateway:** Ensure firewall allows WebSocket connections (ports 18789 or custom)
 - **TLS/SSL:** Optional but recommended for remote connections (use `wss://` URLs)
 
@@ -115,29 +115,29 @@ npm start
 ### macOS
 
 **Method 1: Download .dmg**
-1. Go to [Releases](https://github.com/dokterdok/molt-client/releases)
+1. Go to [Releases](https://github.com/dokterdok/moltzer-client/releases)
 2. Download `Molt-1.0.0.dmg`
 3. Open the .dmg file
-4. Drag Molt to Applications folder
-5. Launch Molt from Applications
+4. Drag Moltzer to Applications folder
+5. Launch Moltzerzer from Applications
 
 **Method 2: Homebrew** *(if available)*
 ```bash
-brew install molt-client
+brew install moltzer-client
 ```
 
 **Note:** First launch may show "Molt cannot be opened because the developer cannot be verified"
-- Right-click Molt → Open → Open anyway
+- Right-click Moltzer → Open → Open anyway
 - This only needs to be done once
 
 ### Windows
 
 **Method 1: Download .msi installer**
-1. Go to [Releases](https://github.com/dokterdok/molt-client/releases)
+1. Go to [Releases](https://github.com/dokterdok/moltzer-client/releases)
 2. Download `Molt-1.0.0.msi`
 3. Run the installer
 4. Follow the installation wizard
-5. Launch Molt from Start Menu
+5. Launch Moltzerzer from Start Menu
 
 **Method 2: Portable .exe**
 1. Download `Molt-1.0.0.exe`
@@ -151,7 +151,7 @@ brew install molt-client
 **Method 1: AppImage** *(Recommended)*
 ```bash
 # Download AppImage
-wget https://github.com/dokterdok/molt-client/releases/download/v1.0.0/Molt-1.0.0.AppImage
+wget https://github.com/dokterdok/moltzer-client/releases/download/v1.0.0/Molt-1.0.0.AppImage
 
 # Make executable
 chmod +x Molt-1.0.0.AppImage
@@ -162,7 +162,7 @@ chmod +x Molt-1.0.0.AppImage
 
 **Method 2: .deb (Debian/Ubuntu)**
 ```bash
-wget https://github.com/dokterdok/molt-client/releases/download/v1.0.0/Molt-1.0.0.deb
+wget https://github.com/dokterdok/moltzer-client/releases/download/v1.0.0/Molt-1.0.0.deb
 sudo dpkg -i Molt-1.0.0.deb
 molt
 ```
@@ -172,7 +172,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions.
 
 ---
 
-## Configuring Gateway for Molt
+## Configuring Gateway for Moltzer
 
 ### Basic Configuration
 
@@ -203,8 +203,8 @@ nano ~/.config/clawdbot/clawdbot.json
 clawdbot gateway restart
 ```
 
-**Update Molt settings:**
-- Open Molt → Settings
+**Update Moltzer settings:**
+- Open Moltzerzer → Settings
 - Change Gateway URL to `ws://localhost:8080`
 
 ### Enable/Disable Authentication
@@ -251,22 +251,22 @@ To access Gateway from another machine:
    # Windows Defender Firewall → Allow app through firewall
    ```
 
-3. **In Molt, use the remote IP:**
+3. **in Moltzer, use the remote IP:**
    ```
    ws://192.168.1.100:18789
    ```
 
 4. **For security, use TLS/SSL:**
    - Set up reverse proxy (nginx, Caddy)
-   - Use `wss://` URL in Molt
+   - Use `wss://` URL in Moltzer
 
 ---
 
-## Connecting Molt to Gateway
+## Connecting Moltzer to Gateway
 
 ### First Launch Setup
 
-1. **Launch Molt** — You'll see the onboarding screen
+1. **Launch Moltzer** — You'll see the onboarding screen
 
 2. **Enter Gateway details:**
    - **Gateway URL:** `ws://localhost:18789` (or your custom URL)
@@ -297,14 +297,14 @@ If you skipped onboarding or need to reconnect:
 
 4. **Save changes:**
    - Click "Save Changes"
-   - Molt will reconnect automatically
+   - Moltzer will reconnect automatically
 
 ### Automatic Protocol Detection
 
 Molt automatically tries both `ws://` and `wss://` if one fails:
 
 - Enter `ws://example.com:18789`
-- If connection fails, Molt tries `wss://example.com:18789`
+- If connection fails, Moltzer tries `wss://example.com:18789`
 - The working URL is saved automatically
 
 **No need to guess!**
@@ -313,7 +313,7 @@ Molt automatically tries both `ws://` and `wss://` if one fails:
 
 ## Troubleshooting
 
-### Molt won't connect to Gateway
+### Moltzerzer won't connect to Gateway
 
 **Symptoms:**
 - "Connection lost" banner
@@ -356,7 +356,7 @@ Molt automatically tries both `ws://` and `wss://` if one fails:
 
 5. **Try protocol fallback:**
    - Change `ws://` to `wss://` (or vice versa)
-   - Molt should auto-detect, but manual override can help
+   - Moltzer should auto-detect, but manual override can help
 
 ### Gateway crashes or won't start
 
@@ -401,7 +401,7 @@ tail -f ~/.config/clawdbot/logs/gateway.log
     }
     ```
 
-### Molt crashes on startup
+### Moltzerzer crashes on startup
 
 **macOS:**
 ```bash
@@ -441,13 +441,13 @@ journalctl -xe | grep molt
 1. **Check keychain access:**
    ```bash
    # macOS: Open Keychain Access.app
-   # Search for "molt-client-master-key"
+   # Search for "moltzer-client-master-key"
    
    # Windows: Control Panel → Credential Manager
-   # Look for "com.molt.client"
+   # Look for "com.moltzer.client"
    
    # Linux: Check secret-service
-   secret-tool lookup service com.molt.client key molt-client-master-key
+   secret-tool lookup service com.moltzer.client key moltzer-client-master-key
    ```
 
 2. **Reset encryption key** *(deletes all local data)*:
@@ -497,7 +497,7 @@ server {
 }
 ```
 
-**Molt URL:**
+**Moltzer URL:**
 ```
 wss://gateway.example.com
 ```
@@ -518,13 +518,13 @@ Override default config via environment variables:
 
 ```bash
 # macOS/Linux
-export MOLT_GATEWAY_URL="ws://localhost:8080"
-export MOLT_GATEWAY_TOKEN="your-token-here"
+export moltzer_GATEWAY_URL="ws://localhost:8080"
+export moltzer_GATEWAY_TOKEN="your-token-here"
 ./Molt-1.0.0.AppImage
 
 # Windows PowerShell
-$env:MOLT_GATEWAY_URL="ws://localhost:8080"
-$env:MOLT_GATEWAY_TOKEN="your-token-here"
+$env:moltzer_GATEWAY_URL="ws://localhost:8080"
+$env:moltzer_GATEWAY_TOKEN="your-token-here"
 & "C:\Program Files\Molt\Molt.exe"
 ```
 
@@ -534,10 +534,10 @@ Enable developer tools for debugging:
 
 ```bash
 # macOS/Linux
-MOLT_DEVTOOLS=1 ./Molt-1.0.0.AppImage
+moltzer_DEVTOOLS=1 ./Molt-1.0.0.AppImage
 
 # Windows
-$env:MOLT_DEVTOOLS=1
+$env:moltzer_DEVTOOLS=1
 & "C:\Program Files\Molt\Molt.exe"
 ```
 
@@ -547,14 +547,14 @@ Then press **⌘⌥I** (Mac) or **Ctrl+Shift+I** (Windows/Linux)
 
 ## Next Steps
 
-- **Read [FEATURES.md](FEATURES.md)** — Explore all Molt features
+- **Read [FEATURES.md](FEATURES.md)** — Explore all Moltzer features
 - **Read [SECURITY.md](SECURITY.md)** — Understand how your data is protected
-- **Join the community** — [GitHub Discussions](https://github.com/dokterdok/molt-client/discussions)
+- **Join the community** — [GitHub Discussions](https://github.com/dokterdok/moltzer-client/discussions)
 
 ---
 
 ## Need Help?
 
-- **GitHub Issues:** [Report a bug](https://github.com/dokterdok/molt-client/issues/new)
-- **Discussions:** [Ask a question](https://github.com/dokterdok/molt-client/discussions/new)
-- **Email:** support@molt.dev
+- **GitHub Issues:** [Report a bug](https://github.com/dokterdok/moltzer-client/issues/new)
+- **Discussions:** [Ask a question](https://github.com/dokterdok/moltzer-client/discussions/new)
+- **Email:** support@moltzer.dev
