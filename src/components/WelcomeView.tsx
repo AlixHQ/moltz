@@ -6,24 +6,24 @@ export function WelcomeView() {
 
   const suggestions = [
     {
-      icon: "💡",
-      title: "Explain quantum computing",
-      description: "Break down complex concepts in simple terms",
+      icon: "📅",
+      title: "What's on my calendar today?",
+      description: "Check your schedule and upcoming meetings",
     },
     {
-      icon: "✍️",
-      title: "Write a professional email",
-      description: "Help with business communication",
+      icon: "📧",
+      title: "Check my unread emails",
+      description: "Summarize what needs your attention",
     },
     {
-      icon: "⚛️",
-      title: "React best practices",
-      description: "Modern web development tips",
+      icon: "🎙️",
+      title: "What did we discuss in my last meeting?",
+      description: "Review transcripts and action items",
     },
     {
-      icon: "🍳",
-      title: "Weekly meal plan",
-      description: "Healthy recipes and shopping lists",
+      icon: "💬",
+      title: "Send a message to the team",
+      description: "Draft and send via Slack, email, or chat",
     },
   ];
 
@@ -44,7 +44,7 @@ export function WelcomeView() {
             Molt
           </h1>
           <p className="text-lg text-muted-foreground">
-            Your AI assistant powered by Claude
+            Your personal AI that gets things done
           </p>
         </div>
 
