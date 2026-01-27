@@ -4,6 +4,7 @@ import { useStore } from "../stores/store";
 import { ChatInput, PreparedAttachment } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { ConfirmDialog } from "./ui/confirm-dialog";
+import { MessageSkeleton } from "./ui/skeleton";
 import {
   ArrowDown,
   AlertTriangle,
@@ -32,9 +33,22 @@ export function ChatView() {
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [lastFailedMessage, setLastFailedMessage] = useState<{ content: string; attachments: PreparedAttachment[] } | null>(null);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const lastConversationIdRef = useRef<string | null>(null);
   
   // Edit confirmation state
   const [pendingEdit, setPendingEdit] = useState<{ messageId: string; newContent: string; subsequentCount: number } | null>(null);
+  
+  // Show loading state when switching conversations
+  useEffect(() => {
+    if (currentConversation && lastConversationIdRef.current !== currentConversation.id) {
+      setMessagesLoading(true);
+      lastConversationIdRef.current = currentConversation.id;
+      // Brief delay to simulate loading (messages load from memory instantly, but we want the skeleton for visual feedback)
+      const timer = setTimeout(() => setMessagesLoading(false), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [currentConversation?.id]);
 
   // Auto-scroll to bottom on new messages (only if already near bottom)
   useEffect(() => {
@@ -274,7 +288,13 @@ export function ChatView() {
         onScroll={handleScroll}
       >
         <div className="max-w-3xl mx-auto px-4 py-6">
-          {!hasMessages ? (
+          {messagesLoading ? (
+            <div className="space-y-6">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <MessageSkeleton key={i} isUser={i % 2 === 0} />
+              ))}
+            </div>
+          ) : !hasMessages ? (
             <EmptyConversation />
           ) : (
             <div className="space-y-6">
