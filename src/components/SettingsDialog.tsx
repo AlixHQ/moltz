@@ -78,7 +78,7 @@ export function SettingsDialog({ open, onClose, onRerunSetup }: SettingsDialogPr
     if (open && connected) {
       fetchModels();
     }
-  }, [open, connected]);
+  }, [open, connected, fetchModels]);
 
   // Validate URL and suggest wss:// for non-localhost
   const validateUrl = (url: string): string | null => {

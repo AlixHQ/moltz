@@ -5,7 +5,6 @@ import { ChatInput, PreparedAttachment } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { ConfirmDialog } from "./ui/confirm-dialog";
 import { MessageSkeleton } from "./ui/skeleton";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   ArrowDown,
   AlertTriangle,
@@ -56,7 +55,7 @@ export function ChatView() {
     if (isNearBottom) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [currentConversation?.messages, isNearBottom]);
+  }, [currentConversation, isNearBottom]);
 
   // Track scroll position
   const handleScroll = () => {

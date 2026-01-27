@@ -7,6 +7,8 @@
 //! - Health monitoring with ping/pong
 //! - Request-level and streaming timeouts
 
+#![allow(dead_code)]
+
 use crate::protocol::{
     calculate_backoff, validate_frame, ConnectionQuality, ConnectionState,
     GatewayError, HealthMetrics, QueuedMessage, RawGatewayError, ValidatedFrame,

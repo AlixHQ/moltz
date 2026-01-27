@@ -6,6 +6,8 @@
 //! - Connection state management
 //! - Retry strategies
 
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use thiserror::Error;

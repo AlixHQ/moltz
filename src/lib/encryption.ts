@@ -133,10 +133,7 @@ export async function decrypt(ciphertext: string): Promise<string> {
  * Encrypt a message object
  * Encrypts the content field
  */
-export async function encryptMessage(message: {
-  content: string;
-  [key: string]: any;
-}): Promise<typeof message> {
+export async function encryptMessage<T extends { content: string }>(message: T): Promise<T> {
   return {
     ...message,
     content: await encrypt(message.content),
@@ -147,10 +144,7 @@ export async function encryptMessage(message: {
  * Decrypt a message object
  * Decrypts the content field
  */
-export async function decryptMessage(message: {
-  content: string;
-  [key: string]: any;
-}): Promise<typeof message> {
+export async function decryptMessage<T extends { content: string }>(message: T): Promise<T> {
   return {
     ...message,
     content: await decrypt(message.content),
