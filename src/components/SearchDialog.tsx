@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useStore } from "../stores/store";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { searchPersistedMessages } from "../lib/persistence";
 
 interface SearchDialogProps {
   open: boolean;
@@ -36,51 +37,54 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
     }
   }, [open]);
 
-  // Search across all messages
-  const performSearch = useCallback((searchQuery: string) => {
+  // Search across all messages (including encrypted data in IndexedDB)
+  const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
       return;
     }
 
     setIsSearching(true);
-    const queryLower = searchQuery.toLowerCase();
-    const searchResults: SearchResult[] = [];
+    
+    try {
+      // Search encrypted messages in IndexedDB
+      const messages = await searchPersistedMessages(searchQuery);
+      
+      const searchResults: SearchResult[] = messages.map(msg => {
+        // Extract a snippet around the match
+        const queryLower = searchQuery.toLowerCase();
+        const index = msg.content.toLowerCase().indexOf(queryLower);
+        const start = Math.max(0, index - 50);
+        const end = Math.min(msg.content.length, index + searchQuery.length + 50);
+        let snippet = msg.content.slice(start, end);
+        if (start > 0) snippet = "..." + snippet;
+        if (end < msg.content.length) snippet = snippet + "...";
 
-    // Search through all conversations and messages
-    conversations.forEach(conv => {
-      conv.messages.forEach(msg => {
-        if (msg.content.toLowerCase().includes(queryLower)) {
-          // Extract a snippet around the match
-          const index = msg.content.toLowerCase().indexOf(queryLower);
-          const start = Math.max(0, index - 50);
-          const end = Math.min(msg.content.length, index + searchQuery.length + 50);
-          let snippet = msg.content.slice(start, end);
-          if (start > 0) snippet = "..." + snippet;
-          if (end < msg.content.length) snippet = snippet + "...";
-
-          searchResults.push({
-            conversationId: conv.id,
-            conversationTitle: conv.title,
-            messageId: msg.id,
-            content: msg.content,
-            role: msg.role,
-            timestamp: msg.timestamp,
-            matchSnippet: snippet,
-          });
-        }
+        return {
+          conversationId: msg.conversationId,
+          conversationTitle: msg.conversationTitle,
+          messageId: msg.id,
+          content: msg.content,
+          role: msg.role,
+          timestamp: msg.timestamp,
+          matchSnippet: snippet,
+        };
       });
-    });
 
-    // Sort by timestamp (most recent first)
-    searchResults.sort((a, b) => 
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+      // Sort by timestamp (most recent first)
+      searchResults.sort((a, b) => 
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
 
-    setResults(searchResults.slice(0, 50)); // Limit results
-    setIsSearching(false);
-    setSelectedIndex(0);
-  }, [conversations]);
+      setResults(searchResults.slice(0, 50)); // Limit results
+      setSelectedIndex(0);
+    } catch (err) {
+      console.error('Search failed:', err);
+      setResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
 
   // Debounced search
   useEffect(() => {

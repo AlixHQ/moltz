@@ -8,11 +8,13 @@ import { useStore } from "./stores/store";
 import { cn } from "./lib/utils";
 import { ToastContainer, useToast } from "./components/ui/toast";
 import { Spinner } from "./components/ui/spinner";
+import { loadPersistedData } from "./lib/persistence";
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isConnecting, setIsConnecting] = useState(true);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const { toasts, dismissToast, showError, showSuccess, showWarning } = useToast();
   const { 
     currentConversation,
@@ -22,6 +24,34 @@ export default function App() {
     completeCurrentMessage,
     settings 
   } = useStore();
+
+  // Load persisted data from IndexedDB on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { conversations } = await loadPersistedData();
+        
+        // Load settings from localStorage (not encrypted)
+        const savedSettings = localStorage.getItem('molt-settings');
+        if (savedSettings) {
+          const parsedSettings = JSON.parse(savedSettings);
+          useStore.getState().updateSettings(parsedSettings);
+        }
+
+        // Restore conversations to store
+        if (conversations.length > 0) {
+          useStore.setState({ conversations });
+        }
+      } catch (err) {
+        console.error('Failed to load persisted data:', err);
+        showError('Failed to load saved conversations');
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    loadData();
+  }, [showError]);
 
   // Apply theme on mount and when settings change
   useEffect(() => {
@@ -294,8 +324,19 @@ export default function App() {
         <div className="flex-1 min-h-0 relative">
           {currentConversation ? <ChatView /> : <WelcomeView />}
           
+          {/* Data loading overlay */}
+          {isLoadingData && (
+            <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 z-50 animate-in fade-in duration-300">
+              <Spinner size="lg" />
+              <div className="text-center">
+                <p className="text-sm font-medium mb-1">Loading conversations</p>
+                <p className="text-xs text-muted-foreground">Decrypting data...</p>
+              </div>
+            </div>
+          )}
+          
           {/* Initial connection loading overlay */}
-          {isConnecting && reconnectAttempts === 1 && (
+          {!isLoadingData && isConnecting && reconnectAttempts === 1 && (
             <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 z-40 animate-in fade-in duration-300">
               <Spinner size="lg" />
               <div className="text-center">

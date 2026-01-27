@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { 
+  persistConversation, 
+  deletePersistedConversation, 
+  updatePersistedConversation,
+  persistMessage
+} from "../lib/persistence";
 
 export interface Message {
   id: string;
@@ -88,9 +93,17 @@ interface Store {
 
 const generateId = () => crypto.randomUUID();
 
-export const useStore = create<Store>()(
-  persist(
-    (set, get) => ({
+/**
+ * Debounced persistence helper
+ * Prevents excessive database writes during rapid updates (e.g., streaming)
+ */
+let persistTimer: number | undefined;
+const debouncedPersist = (fn: () => void, delay = 500) => {
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = window.setTimeout(fn, delay);
+};
+
+export const useStore = create<Store>()((set, get) => ({
       // Connection
       connected: false,
       setConnected: (connected) => set({ connected }),
@@ -127,6 +140,11 @@ export const useStore = create<Store>()(
           currentConversationId: conversation.id,
         }));
 
+        // Persist to IndexedDB (async, non-blocking)
+        persistConversation(conversation).catch(err => {
+          console.error('Failed to persist new conversation:', err);
+        });
+
         return conversation;
       },
 
@@ -140,6 +158,11 @@ export const useStore = create<Store>()(
           currentConversationId:
             state.currentConversationId === id ? null : state.currentConversationId,
         }));
+
+        // Delete from IndexedDB
+        deletePersistedConversation(id).catch(err => {
+          console.error('Failed to delete conversation from DB:', err);
+        });
       },
 
       updateConversation: (id, updates) => {
@@ -148,6 +171,14 @@ export const useStore = create<Store>()(
             c.id === id ? { ...c, ...updates, updatedAt: new Date() } : c
           ),
         }));
+
+        // Persist to IndexedDB
+        const conversation = get().conversations.find(c => c.id === id);
+        if (conversation) {
+          updatePersistedConversation(conversation).catch(err => {
+            console.error('Failed to update conversation in DB:', err);
+          });
+        }
       },
 
       pinConversation: (id) => {
@@ -156,6 +187,14 @@ export const useStore = create<Store>()(
             c.id === id ? { ...c, isPinned: !c.isPinned } : c
           ),
         }));
+
+        // Persist to IndexedDB
+        const conversation = get().conversations.find(c => c.id === id);
+        if (conversation) {
+          updatePersistedConversation(conversation).catch(err => {
+            console.error('Failed to persist pin status:', err);
+          });
+        }
       },
 
       // Messages
@@ -184,6 +223,19 @@ export const useStore = create<Store>()(
           currentStreamingMessageId: message.isStreaming ? message.id : null,
         }));
 
+        // Persist message to IndexedDB (debounced for streaming)
+        if (message.isStreaming) {
+          debouncedPersist(() => {
+            persistMessage(conversationId, message).catch(err => {
+              console.error('Failed to persist streaming message:', err);
+            });
+          }, 1000);
+        } else {
+          persistMessage(conversationId, message).catch(err => {
+            console.error('Failed to persist message:', err);
+          });
+        }
+
         return message;
       },
 
@@ -205,6 +257,17 @@ export const useStore = create<Store>()(
               : c
           ),
         }));
+
+        // Debounced persistence for streaming (every 1s)
+        const conversation = get().conversations.find(c => c.id === currentConversationId);
+        const message = conversation?.messages.find(m => m.id === currentStreamingMessageId);
+        if (message) {
+          debouncedPersist(() => {
+            persistMessage(currentConversationId, message).catch(err => {
+              console.error('Failed to persist streaming update:', err);
+            });
+          }, 1000);
+        }
       },
 
       completeCurrentMessage: () => {
@@ -226,6 +289,15 @@ export const useStore = create<Store>()(
           ),
           currentStreamingMessageId: null,
         }));
+
+        // Final persistence after streaming completes
+        const conversation = get().conversations.find(c => c.id === currentConversationId);
+        const message = conversation?.messages.find(m => m.id === currentStreamingMessageId);
+        if (message) {
+          persistMessage(currentConversationId, { ...message, isStreaming: false }).catch(err => {
+            console.error('Failed to persist completed message:', err);
+          });
+        }
       },
 
       // Settings
@@ -241,14 +313,11 @@ export const useStore = create<Store>()(
         set((state) => ({
           settings: { ...state.settings, ...updates },
         }));
+        
+        // Persist settings to localStorage (settings are not encrypted)
+        if (typeof window !== 'undefined') {
+          const currentSettings = get().settings;
+          localStorage.setItem('molt-settings', JSON.stringify({ ...currentSettings, ...updates }));
+        }
       },
-    }),
-    {
-      name: "molt-storage",
-      partialize: (state) => ({
-        conversations: state.conversations,
-        settings: state.settings,
-      }),
-    }
-  )
-);
+    }));
