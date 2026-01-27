@@ -3,6 +3,7 @@
 //! Rust backend handling WebSocket communication with Moltbot Gateway
 
 mod gateway;
+mod keychain;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -29,6 +30,9 @@ pub fn run() {
             gateway::send_message,
             gateway::get_connection_status,
             gateway::get_models,
+            keychain::keychain_get,
+            keychain::keychain_set,
+            keychain::keychain_delete,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
