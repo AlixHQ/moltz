@@ -42,14 +42,14 @@
     
     <!-- Soft glow for lobster -->
     <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
     
-    <!-- Rounder macOS 26 Tahoe shape (more circular than Big Sur) -->
+    <!-- Rounder macOS 26 Tahoe shape -->
     <clipPath id="iconShape">
       <path d="M 184 64 
                C 112 64 64 112 64 184
@@ -78,72 +78,128 @@
     <rect width="1024" height="1024" fill="url(#bottomShadow)"/>
   </g>
   
-  <!-- Molt lobster/shrimp icon -->
+  <!-- Realistic lobster (🦞 emoji style) -->
   <g filter="url(#softGlow)">
-    <!-- Main body -->
-    <ellipse cx="512" cy="560" rx="140" ry="170" fill="#FFFFFF" opacity="0.96"/>
-    
-    <!-- Head -->
-    <ellipse cx="512" cy="400" rx="100" ry="105" fill="#FFFFFF" opacity="0.96"/>
-    
-    <!-- Eyes with highlights -->
-    <circle cx="470" cy="380" r="20" fill="#1A1A1A"/>
-    <circle cx="554" cy="380" r="20" fill="#1A1A1A"/>
-    <circle cx="476" cy="374" r="8" fill="#FFFFFF" opacity="0.9"/>
-    <circle cx="560" cy="374" r="8" fill="#FFFFFF" opacity="0.9"/>
-    
-    <!-- Antennae -->
-    <path d="M 440 350 Q 400 280 370 240 Q 350 210 340 190" 
-          stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" 
-          fill="none" opacity="0.92" stroke-linejoin="round"/>
-    <path d="M 584 350 Q 624 280 654 240 Q 674 210 684 190" 
-          stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" 
-          fill="none" opacity="0.92" stroke-linejoin="round"/>
+    <!-- Long antennae (characteristic of lobsters) -->
+    <path d="M 435 220 Q 380 160 340 100 Q 320 70 305 45" 
+          stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" 
+          fill="none" opacity="0.94" stroke-linejoin="round"/>
+    <path d="M 589 220 Q 644 160 684 100 Q 704 70 719 45" 
+          stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" 
+          fill="none" opacity="0.94" stroke-linejoin="round"/>
     
     <!-- Antenna tips -->
-    <circle cx="340" cy="190" r="12" fill="#FFFFFF" opacity="0.92"/>
-    <circle cx="684" cy="190" r="12" fill="#FFFFFF" opacity="0.92"/>
+    <circle cx="305" cy="45" r="8" fill="#FFFFFF" opacity="0.94"/>
+    <circle cx="719" cy="45" r="8" fill="#FFFFFF" opacity="0.94"/>
     
-    <!-- Left claw -->
-    <g opacity="0.94">
-      <ellipse cx="320" cy="520" rx="70" ry="48" fill="#FFFFFF" 
-               transform="rotate(-35 320 520)"/>
-      <!-- Claw pincers -->
-      <path d="M 270 500 L 235 480 L 230 505 L 250 510 Z" fill="#FFFFFF"/>
-      <path d="M 270 535 L 235 555 L 240 530 L 255 527 Z" fill="#FFFFFF"/>
-    </g>
+    <!-- Head/carapace (main body shell) -->
+    <ellipse cx="512" cy="320" rx="130" ry="140" fill="#FFFFFF" opacity="0.96"/>
     
-    <!-- Right claw -->
-    <g opacity="0.94">
-      <ellipse cx="704" cy="520" rx="70" ry="48" fill="#FFFFFF" 
-               transform="rotate(35 704 520)"/>
-      <!-- Claw pincers -->
-      <path d="M 754 500 L 789 480 L 794 505 L 774 510 Z" fill="#FFFFFF"/>
-      <path d="M 754 535 L 789 555 L 784 530 L 769 527 Z" fill="#FFFFFF"/>
-    </g>
-    
-    <!-- Body segments -->
-    <circle cx="512" cy="600" r="45" fill="#FFFFFF" opacity="0.85"/>
-    <circle cx="512" cy="660" r="42" fill="#FFFFFF" opacity="0.83"/>
-    <circle cx="512" cy="715" r="38" fill="#FFFFFF" opacity="0.81"/>
-    
-    <!-- Tail -->
-    <g opacity="0.88">
-      <!-- Main tail segments -->
-      <ellipse cx="490" cy="770" rx="35" ry="60" fill="#FFFFFF" transform="rotate(-15 490 770)"/>
-      <ellipse cx="534" cy="770" rx="35" ry="60" fill="#FFFFFF" transform="rotate(15 534 770)"/>
+    <!-- Eyes on stalks -->
+    <g opacity="0.95">
+      <!-- Left eye -->
+      <ellipse cx="465" cy="260" rx="12" ry="18" fill="#FFFFFF"/>
+      <circle cx="465" cy="250" r="14" fill="#1A1A1A"/>
+      <circle cx="468" cy="247" r="6" fill="#FFFFFF" opacity="0.9"/>
       
-      <!-- Tail fan -->
-      <path d="M 420 810 Q 390 840 375 865 L 405 872 Q 425 850 440 825 Z" 
-            fill="#FFFFFF" opacity="0.9"/>
-      <path d="M 460 820 Q 450 855 445 885 L 475 888 Q 478 855 480 830 Z" 
-            fill="#FFFFFF" opacity="0.9"/>
-      <path d="M 512 825 Q 512 860 512 890 L 542 890 Q 542 860 542 830 Z" 
-            fill="#FFFFFF" opacity="0.9"/>
-      <path d="M 564 820 Q 574 855 579 885 L 549 888 Q 546 855 544 830 Z" 
-            fill="#FFFFFF" opacity="0.9"/>
-      <path d="M 604 810 Q 634 840 649 865 L 619 872 Q 599 850 584 825 Z" 
-            fill="#FFFFFF" opacity="0.9"/>
+      <!-- Right eye -->
+      <ellipse cx="559" cy="260" rx="12" ry="18" fill="#FFFFFF"/>
+      <circle cx="559" cy="250" r="14" fill="#1A1A1A"/>
+      <circle cx="562" cy="247" r="6" fill="#FFFFFF" opacity="0.9"/>
+    </g>
+    
+    <!-- Large claws (crusher and pincer) -->
+    <!-- Left claw (crusher - larger) -->
+    <g opacity="0.95">
+      <!-- Claw arm -->
+      <ellipse cx="300" cy="380" rx="50" ry="35" fill="#FFFFFF" transform="rotate(-25 300 380)"/>
+      <ellipse cx="240" cy="420" rx="55" ry="38" fill="#FFFFFF" transform="rotate(-35 240 420)"/>
+      
+      <!-- Large crusher claw -->
+      <ellipse cx="180" cy="470" rx="75" ry="55" fill="#FFFFFF" transform="rotate(-30 180 470)"/>
+      
+      <!-- Claw pincers -->
+      <path d="M 130 445 Q 95 420 75 410 L 85 440 Q 105 445 125 448 Z" fill="#FFFFFF"/>
+      <path d="M 130 495 Q 95 520 75 530 L 85 500 Q 105 495 125 492 Z" fill="#FFFFFF"/>
+      
+      <!-- Claw detail lines -->
+      <ellipse cx="180" cy="465" rx="25" ry="15" fill="#FF5722" opacity="0.15" transform="rotate(-30 180 465)"/>
+    </g>
+    
+    <!-- Right claw (pincer - slightly smaller) -->
+    <g opacity="0.95">
+      <!-- Claw arm -->
+      <ellipse cx="724" cy="380" rx="50" ry="35" fill="#FFFFFF" transform="rotate(25 724 380)"/>
+      <ellipse cx="784" cy="420" rx="55" ry="38" fill="#FFFFFF" transform="rotate(35 784 420)"/>
+      
+      <!-- Pincer claw -->
+      <ellipse cx="844" cy="470" rx="70" ry="50" fill="#FFFFFF" transform="rotate(30 844 470)"/>
+      
+      <!-- Claw pincers -->
+      <path d="M 894 445 Q 929 420 949 410 L 939 440 Q 919 445 899 448 Z" fill="#FFFFFF"/>
+      <path d="M 894 495 Q 929 520 949 530 L 939 500 Q 919 495 899 492 Z" fill="#FFFFFF"/>
+      
+      <!-- Claw detail lines -->
+      <ellipse cx="844" cy="465" rx="22" ry="14" fill="#FF5722" opacity="0.15" transform="rotate(30 844 465)"/>
+    </g>
+    
+    <!-- Walking legs (4 pairs) -->
+    <g opacity="0.93">
+      <!-- Left legs -->
+      <path d="M 420 380 L 350 440 L 330 460" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <path d="M 430 420 L 370 470 L 355 495" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <path d="M 440 460 L 390 510 L 380 535" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M 450 500 L 410 545 L 405 570" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
+      
+      <!-- Right legs -->
+      <path d="M 604 380 L 674 440 L 694 460" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <path d="M 594 420 L 654 470 L 669 495" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <path d="M 584 460 L 634 510 L 644 535" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <path d="M 574 500 L 614 545 L 619 570" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
+    </g>
+    
+    <!-- Segmented abdomen/tail (classic lobster tail segments) -->
+    <g opacity="0.94">
+      <!-- Segment 1 (closest to body) -->
+      <ellipse cx="512" cy="480" rx="115" ry="55" fill="#FFFFFF"/>
+      <rect x="410" y="475" width="204" height="4" fill="#FF5722" opacity="0.2" rx="2"/>
+      
+      <!-- Segment 2 -->
+      <ellipse cx="512" cy="550" rx="105" ry="50" fill="#FFFFFF"/>
+      <rect x="420" y="545" width="184" height="4" fill="#FF5722" opacity="0.2" rx="2"/>
+      
+      <!-- Segment 3 -->
+      <ellipse cx="512" cy="615" rx="95" ry="48" fill="#FFFFFF"/>
+      <rect x="430" y="610" width="164" height="4" fill="#FF5722" opacity="0.2" rx="2"/>
+      
+      <!-- Segment 4 -->
+      <ellipse cx="512" cy="675" rx="85" ry="45" fill="#FFFFFF"/>
+      <rect x="440" y="670" width="144" height="4" fill="#FF5722" opacity="0.2" rx="2"/>
+      
+      <!-- Segment 5 (before tail fan) -->
+      <ellipse cx="512" cy="730" rx="75" ry="42" fill="#FFFFFF"/>
+      <rect x="450" y="725" width="124" height="4" fill="#FF5722" opacity="0.2" rx="2"/>
+    </g>
+    
+    <!-- Tail fan (telson and uropods) -->
+    <g opacity="0.92">
+      <!-- Center telson -->
+      <ellipse cx="512" cy="825" rx="55" ry="75" fill="#FFFFFF"/>
+      
+      <!-- Left uropods -->
+      <ellipse cx="440" cy="825" rx="50" ry="70" fill="#FFFFFF" transform="rotate(-20 440 825)"/>
+      <ellipse cx="380" cy="835" rx="42" ry="65" fill="#FFFFFF" transform="rotate(-35 380 835)"/>
+      
+      <!-- Right uropods -->
+      <ellipse cx="584" cy="825" rx="50" ry="70" fill="#FFFFFF" transform="rotate(20 584 825)"/>
+      <ellipse cx="644" cy="835" rx="42" ry="65" fill="#FFFFFF" transform="rotate(35 644 835)"/>
+      
+      <!-- Tail fan details -->
+      <path d="M 380 835 Q 370 870 368 900" stroke="#FF5722" stroke-width="3" opacity="0.2" fill="none"/>
+      <path d="M 440 825 Q 435 865 432 895" stroke="#FF5722" stroke-width="3" opacity="0.2" fill="none"/>
+      <path d="M 512 825 Q 512 870 512 905" stroke="#FF5722" stroke-width="3" opacity="0.2" fill="none"/>
+      <path d="M 584 825 Q 589 865 592 895" stroke="#FF5722" stroke-width="3" opacity="0.2" fill="none"/>
+      <path d="M 644 835 Q 654 870 656 900" stroke="#FF5722" stroke-width="3" opacity="0.2" fill="none"/>
     </g>
   </g>
   
