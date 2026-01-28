@@ -1,29 +1,31 @@
-# Moltzer - Real Issues Assessment
+# Moltzer - Status
 
-**Date:** 2026-01-28 07:07
-**Updated:** All critical issues fixed
+**Date:** 2026-01-28 07:49
+**Repo:** https://github.com/AlixHQ/moltzer-community
+**License:** Apache 2.0
 
-## Fixed This Session
+## ✅ Completed Features
 
-### ✅ Protocol Bug - Attachments sent wrong field
-- With attachments, code sent `input` array
-- Gateway expects `message` string + `attachments` array
-- **Fixed:** Now correctly sends message + attachments
+### Core Functionality
+- ✅ Protocol fix (attachments)
+- ✅ Bundle optimization (815KB → 206KB main)
+- ✅ System prompt support
+- ✅ Token usage tracking & display
 
-### ✅ Bundle Size - Was 815KB, now 184KB
-- Added manual chunk splitting
-- React, Radix UI, Markdown, Dexie now separate chunks
-- Main bundle under 500KB warning threshold
+### Native Experience (Gruber Polish)
+- ✅ Global hotkey (Cmd/Ctrl+Shift+Space) - Quick Ask
+- ✅ Native menu bar (File, Edit, View, Conversation, Window, Help)
+- ✅ System tray icon with menu
+- ✅ Spring animations for messages
+- ✅ User-friendly error messages
+- ✅ Standard shortcuts (⌘N, ⌘W, ⌘K, ⌘,)
 
-### ✅ System Prompt Support
-- Added `defaultSystemPrompt` to Settings
-- Added `systemPrompt` to Conversation type
-- UI in Settings dialog for default prompt
-
-### ✅ Token Usage Tracking
-- Gateway now emits usage stats on completion
-- Frontend stores usage per message
-- Display "X tokens" on assistant messages
+### Quality
+- ✅ Build passes
+- ✅ 239/239 tests pass
+- ✅ 0 lint errors (9 warnings in test files)
+- ✅ Apache 2.0 license
+- ✅ Migrated to AlixHQ org
 
 ---
 

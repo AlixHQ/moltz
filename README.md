@@ -15,7 +15,7 @@ ChatGPT-style interface for your personal AI assistant, built with Tauri for tru
 
 <img src=".github/social-preview.png" alt="Moltzer desktop client showing a conversation interface with Claude AI, featuring a dark theme and modern UI design" width="800" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);" />
 
-[Download](https://github.com/AlixHQ/moltzer-community/releases) ï [Quick Start](#-quick-start) ï [Features](#-features) ï [Documentation](./SETUP.md) ï [Contributing](./CONTRIBUTING.md)
+[Download](https://github.com/AlixHQ/moltzer-community/releases) ÔøΩ [Quick Start](#-quick-start) ÔøΩ [Features](#-features) ÔøΩ [Documentation](./SETUP.md) ÔøΩ [Contributing](./CONTRIBUTING.md)
 
 </div>
 
@@ -30,7 +30,7 @@ Moltzer is a **native desktop application** that connects to your Clawdbot Gatew
 - **Native look & feel** on every platform
 - **Secure credential storage** via OS keychain
 
-Think of it as "ChatGPT for Clawdbot" ó but better, because it's yours.
+Think of it as "ChatGPT for Clawdbot" ÔøΩ but better, because it's yours.
 
 ---
 
@@ -49,36 +49,43 @@ Think of it as "ChatGPT for Clawdbot" ó but better, because it's yours.
 ## ? Features
 
 ### ?? Performance
-- **Lightning fast** ó Native binary with zero bloat
-- **Streaming responses** ó See AI responses as they're generated in real-time
-- **Instant search** ó Full-text search across all conversations with highlighting
-- **Smart caching** ó Local IndexedDB storage for instant conversation loading
+- **Lightning fast** ÔøΩ Native binary with zero bloat
+- **Streaming responses** ÔøΩ See AI responses as they're generated in real-time
+- **Instant search** ÔøΩ Full-text search across all conversations with highlighting
+- **Smart caching** ÔøΩ Local IndexedDB storage for instant conversation loading
 
 ### ?? Conversations
-- **Unlimited chat history** ó All conversations stored locally with encryption
-- **Pin important chats** ó Keep your most-used conversations at the top
-- **Auto-generated titles** ó First message becomes the conversation title
-- **Rich markdown** ó Code blocks with syntax highlighting, tables, lists, and more
+- **Unlimited chat history** ÔøΩ All conversations stored locally with encryption
+- **Pin important chats** ÔøΩ Keep your most-used conversations at the top
+- **Auto-generated titles** ÔøΩ First message becomes the conversation title
+- **Rich markdown** ÔøΩ Code blocks with syntax highlighting, tables, lists, and more
 
 ### ?? Security & Privacy
-- **End-to-end encryption** ó All conversations encrypted at rest using AES-GCM 256-bit
-- **OS keychain integration** ó Master keys stored securely in macOS Keychain, Windows Credential Manager, or Linux Secret Service
-- **Zero cloud storage** ó Your data never leaves your device
-- **Secure WebSocket** ó Automatic wss:// fallback for secure connections
+- **End-to-end encryption** ÔøΩ All conversations encrypted at rest using AES-GCM 256-bit
+- **OS keychain integration** ÔøΩ Master keys stored securely in macOS Keychain, Windows Credential Manager, or Linux Secret Service
+- **Zero cloud storage** ÔøΩ Your data never leaves your device
+- **Secure WebSocket** ÔøΩ Automatic wss:// fallback for secure connections
 
 ### ?? User Experience
-- **Dark/Light/System themes** ó Automatically follows your OS preference
-- **Keyboard shortcuts** ó Navigate like a power user (see [Features](#keyboard-shortcuts))
-- **Model picker** ó Switch between Claude, GPT, Gemini, and more
-- **Thinking mode** ó Enable extended reasoning for complex tasks
-- **Responsive design** ó Works beautifully on any screen size
+- **Dark/Light/System themes** ‚Äî Automatically follows your OS preference
+- **Keyboard shortcuts** ‚Äî Navigate like a power user (see [Features](#keyboard-shortcuts))
+- **Model picker** ‚Äî Switch between Claude, GPT, Gemini, and more
+- **Thinking mode** ‚Äî Enable extended reasoning for complex tasks
+- **Responsive design** ‚Äî Works beautifully on any screen size
+
+### üöÄ Native Experience
+- **Global hotkey** ‚Äî `Cmd+Shift+Space` (Mac) / `Ctrl+Shift+Space` (Windows) for instant Quick Ask
+- **System tray icon** ‚Äî Always accessible from menu bar, even when window is hidden
+- **Native menus** ‚Äî Full Mac/Windows menu bar with standard shortcuts
+- **Spring animations** ‚Äî Messages pop in with physics-based animations
+- **User-friendly errors** ‚Äî No more cryptic technical messages
 
 ### ?? Developer Features
-- **TypeScript** ó Full type safety throughout the codebase
-- **React 18** ó Modern React with hooks and concurrent rendering
-- **Zustand** ó Lightweight state management (no Redux complexity)
-- **Dexie** ó IndexedDB wrapper for powerful local storage
-- **Tauri v2** ó Rust-based framework for maximum performance and security
+- **TypeScript** ÔøΩ Full type safety throughout the codebase
+- **React 18** ÔøΩ Modern React with hooks and concurrent rendering
+- **Zustand** ÔøΩ Lightweight state management (no Redux complexity)
+- **Dexie** ÔøΩ IndexedDB wrapper for powerful local storage
+- **Tauri v2** ÔøΩ Rust-based framework for maximum performance and security
 
 ---
 
@@ -134,7 +141,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions.
 
 ### First Launch
 
-1. **Launch Moltzer** ó The app will guide you through initial setup
+1. **Launch Moltzer** ÔøΩ The app will guide you through initial setup
 
 2. **Configure Gateway connection:**
    - Enter Gateway URL (e.g., `ws://localhost:18789`)
@@ -188,16 +195,23 @@ Moltzer will connect to your Clawdbot Gateway and stream Claude's response in re
 
 ---
 
-## ?? Keyboard Shortcuts
+## ‚å®Ô∏è Keyboard Shortcuts
 
-### Global
+### Global (System-wide)
 
 | Shortcut | Action |
 |----------|--------|
-| **?N** / **Ctrl+N** | New conversation |
-| **?K** / **Ctrl+K** | Search messages |
-| **?,** / **Ctrl+,** | Open settings |
-| **?\\** / **Ctrl+\\** | Toggle sidebar |
+| **‚åò‚áßSpace** / **Ctrl+Shift+Space** | Quick Ask (works from anywhere!) |
+
+### In App
+
+| Shortcut | Action |
+|----------|--------|
+| **‚åòN** / **Ctrl+N** | New conversation |
+| **‚åòK** / **Ctrl+K** | Search messages |
+| **‚åò,** / **Ctrl+,** | Open settings |
+| **‚åò\\** / **Ctrl+\\** | Toggle sidebar |
+| **‚åòW** / **Ctrl+W** | Close conversation |
 
 ### Chat Input
 
@@ -224,27 +238,27 @@ Moltzer is built with a modern, maintainable architecture:
 ```text
 molt-client/
 +-- src/                          # React frontend
-¶   +-- components/               # UI components
-¶   ¶   +-- ChatView.tsx         # Main chat interface
-¶   ¶   +-- Sidebar.tsx          # Conversation list
-¶   ¶   +-- MessageBubble.tsx    # Individual messages
-¶   ¶   +-- ChatInput.tsx        # Message input
-¶   ¶   +-- SettingsDialog.tsx   # Settings UI
-¶   ¶   +-- ui/                  # Reusable UI primitives
-¶   +-- stores/                  # Zustand state management
-¶   ¶   +-- store.ts            # Global app state
-¶   +-- lib/                     # Utilities & core logic
-¶   ¶   +-- db.ts               # IndexedDB (Dexie)
-¶   ¶   +-- encryption.ts       # AES-GCM encryption
-¶   ¶   +-- persistence.ts      # Data sync layer
-¶   +-- App.tsx                 # Root component
+ÔøΩ   +-- components/               # UI components
+ÔøΩ   ÔøΩ   +-- ChatView.tsx         # Main chat interface
+ÔøΩ   ÔøΩ   +-- Sidebar.tsx          # Conversation list
+ÔøΩ   ÔøΩ   +-- MessageBubble.tsx    # Individual messages
+ÔøΩ   ÔøΩ   +-- ChatInput.tsx        # Message input
+ÔøΩ   ÔøΩ   +-- SettingsDialog.tsx   # Settings UI
+ÔøΩ   ÔøΩ   +-- ui/                  # Reusable UI primitives
+ÔøΩ   +-- stores/                  # Zustand state management
+ÔøΩ   ÔøΩ   +-- store.ts            # Global app state
+ÔøΩ   +-- lib/                     # Utilities & core logic
+ÔøΩ   ÔøΩ   +-- db.ts               # IndexedDB (Dexie)
+ÔøΩ   ÔøΩ   +-- encryption.ts       # AES-GCM encryption
+ÔøΩ   ÔøΩ   +-- persistence.ts      # Data sync layer
+ÔøΩ   +-- App.tsx                 # Root component
 +-- src-tauri/                   # Rust backend
-¶   +-- src/
-¶   ¶   +-- lib.rs              # Tauri app setup
-¶   ¶   +-- gateway.rs          # WebSocket client
-¶   ¶   +-- keychain.rs         # OS credential storage
-¶   +-- Cargo.toml              # Rust dependencies
-¶   +-- tauri.conf.json         # Tauri configuration
+ÔøΩ   +-- src/
+ÔøΩ   ÔøΩ   +-- lib.rs              # Tauri app setup
+ÔøΩ   ÔøΩ   +-- gateway.rs          # WebSocket client
+ÔøΩ   ÔøΩ   +-- keychain.rs         # OS credential storage
+ÔøΩ   +-- Cargo.toml              # Rust dependencies
+ÔøΩ   +-- tauri.conf.json         # Tauri configuration
 +-- package.json                # Node dependencies
 ```
 
@@ -265,10 +279,10 @@ molt-client/
 
 ## ?? Documentation
 
-- **[SETUP.md](SETUP.md)** ó Detailed setup guide (Gateway installation, troubleshooting)
-- **[FEATURES.md](FEATURES.md)** ó Complete feature documentation
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** ó Developer guide (building, architecture, PRs)
-- **[SECURITY.md](SECURITY.md)** ó Security details (encryption, data storage)
+- **[SETUP.md](SETUP.md)** ÔøΩ Detailed setup guide (Gateway installation, troubleshooting)
+- **[FEATURES.md](FEATURES.md)** ÔøΩ Complete feature documentation
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** ÔøΩ Developer guide (building, architecture, PRs)
+- **[SECURITY.md](SECURITY.md)** ÔøΩ Security details (encryption, data storage)
 
 ---
 
@@ -426,15 +440,15 @@ See [GitHub Issues](https://github.com/AlixHQ/moltzer-community/issues) for full
 
 ## ?? License
 
-MIT License ó see [LICENSE](LICENSE) for details.
+MIT License ÔøΩ see [LICENSE](LICENSE) for details.
 
 ---
 
 ## ?? Acknowledgments
 
-- **[Clawdbot](https://github.com/clawdbot/clawdbot)** ó The AI gateway powering Moltzer
-- **[Tauri](https://tauri.app/)** ó Making native apps lightweight again
-- **[Anthropic](https://anthropic.com/)** ó Claude API
+- **[Clawdbot](https://github.com/clawdbot/clawdbot)** ÔøΩ The AI gateway powering Moltzer
+- **[Tauri](https://tauri.app/)** ÔøΩ Making native apps lightweight again
+- **[Anthropic](https://anthropic.com/)** ÔøΩ Claude API
 - The open source community
 
 ---
@@ -450,8 +464,8 @@ MIT License ó see [LICENSE](LICENSE) for details.
 <div align="center">
   <p>Made with ?? by the Moltzer Community</p>
   <p>
-    <a href="https://github.com/AlixHQ/moltzer-community">GitHub</a> ï
-    <a href="https://moltzer.dev">Website</a> ï
+    <a href="https://github.com/AlixHQ/moltzer-community">GitHub</a> ÔøΩ
+    <a href="https://moltzer.dev">Website</a> ÔøΩ
     <a href="https://twitter.com/Moltzerclient">Twitter</a>
   </p>
 </div>
