@@ -329,6 +329,149 @@ async fn resolve_with_system_dns(host: &str, port: u16) -> Result<std::net::Sock
     result
 }
 
+/// Create IPv4-only TCP connection and upgrade to WebSocket
+/// This bypasses tokio-tungstenite's connection logic which has issues on macOS with Tailscale
+async fn connect_with_manual_tcp(url_str: &str) -> Result<
+    tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
+    GatewayError,
+> {
+    log_protocol_error("Manual TCP", &format!("Connecting to {}", url_str));
+    
+    let parsed_url = url::Url::parse(url_str).map_err(|e| GatewayError::Network {
+        message: format!("Invalid URL: {}", e),
+        retryable: false,
+        retry_after: None,
+    })?;
+    
+    let host = parsed_url.host_str().ok_or_else(|| GatewayError::Network {
+        message: "URL missing host".to_string(),
+        retryable: false,
+        retry_after: None,
+    })?;
+    
+    let port = parsed_url.port().unwrap_or(if url_str.starts_with("wss://") { 443 } else { 80 });
+    let use_tls = url_str.starts_with("wss://");
+    
+    // Step 1: Create IPv4-only TCP connection using socket2 (blocking operation)
+    log_protocol_error("Manual TCP", &format!("Resolving {} (IPv4 only)...", host));
+    
+    let host_clone = host.to_string();
+    let tcp_stream = tokio::task::spawn_blocking(move || {
+        use socket2::{Socket, Domain, Type, Protocol};
+        use std::net::{SocketAddr, ToSocketAddrs};
+        
+        // Resolve hostname - IPv4 only
+        let addrs: Vec<SocketAddr> = format!("{}:{}", host_clone, port)
+            .to_socket_addrs()
+            .map_err(|e| format!("DNS resolution failed: {}", e))?
+            .filter(|a| a.is_ipv4())
+            .collect();
+        
+        if addrs.is_empty() {
+            return Err("No IPv4 addresses found".to_string());
+        }
+        
+        log_protocol_error("Manual TCP", &format!("Resolved to {} IPv4 addr(s): {:?}", addrs.len(), addrs));
+        
+        // Create IPv4-only socket
+        let socket = Socket::new(Domain::IPV4, Type::STREAM, Some(Protocol::TCP))
+            .map_err(|e| format!("Socket creation failed: {}", e))?;
+        
+        // Set socket options
+        socket.set_nodelay(true)
+            .map_err(|e| format!("Failed to set TCP_NODELAY: {}", e))?;
+        
+        // Try first IPv4 address
+        let addr = addrs[0];
+        log_protocol_error("Manual TCP", &format!("Connecting to {} (IPv4)...", addr));
+        
+        socket.connect_timeout(&addr.into(), Duration::from_secs(10))
+            .map_err(|e| format!("TCP connect failed: {}", e))?;
+        
+        log_protocol_error("Manual TCP", "TCP connection established");
+        
+        // Convert to std::net::TcpStream
+        let std_stream: std::net::TcpStream = socket.into();
+        std_stream.set_nonblocking(true)
+            .map_err(|e| format!("Failed to set non-blocking: {}", e))?;
+        
+        Ok(std_stream)
+    })
+    .await
+    .map_err(|e| GatewayError::Network {
+        message: format!("Task error: {}", e),
+        retryable: true,
+        retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+    })?
+    .map_err(|e| GatewayError::Network {
+        message: e,
+        retryable: true,
+        retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+    })?;
+    
+    // Step 2: Convert to tokio TcpStream
+    let tokio_stream = tokio::net::TcpStream::from_std(tcp_stream)
+        .map_err(|e| GatewayError::Network {
+            message: format!("Failed to convert to tokio stream: {}", e),
+            retryable: false,
+            retry_after: None,
+        })?;
+    
+    log_protocol_error("Manual TCP", "Converted to tokio stream");
+    
+    // Step 3: Upgrade to WebSocket
+    if use_tls {
+        log_protocol_error("Manual TCP", "Performing TLS handshake...");
+        
+        // Perform TLS handshake using native-tls
+        let tls_connector = native_tls::TlsConnector::builder()
+            .build()
+            .map_err(|e| GatewayError::Network {
+                message: format!("TLS connector error: {}", e),
+                retryable: false,
+                retry_after: None,
+            })?;
+        
+        let connector = tokio_native_tls::TlsConnector::from(tls_connector);
+        let tls_stream = connector.connect(host, tokio_stream).await
+            .map_err(|e| GatewayError::Network {
+                message: format!("TLS handshake failed: {}", e),
+                retryable: true,
+                retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+            })?;
+        
+        log_protocol_error("Manual TCP", "TLS handshake complete, upgrading to WebSocket...");
+        
+        // Wrap TLS stream in MaybeTlsStream and upgrade to WebSocket
+        let maybe_tls_stream = tokio_tungstenite::MaybeTlsStream::NativeTls(tls_stream);
+        let ws_stream = tokio_tungstenite::client_async(url_str, maybe_tls_stream).await
+            .map_err(|e| GatewayError::Network {
+                message: format!("WebSocket upgrade failed: {}", e),
+                retryable: true,
+                retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+            })?
+            .0;
+        
+        log_protocol_error("Manual TCP", "WebSocket connection established (TLS)");
+        Ok(ws_stream)
+    } else {
+        log_protocol_error("Manual TCP", "Upgrading to WebSocket (plain)...");
+        
+        // Wrap plain TCP stream in MaybeTlsStream and upgrade to WebSocket
+        let maybe_tls_stream = tokio_tungstenite::MaybeTlsStream::Plain(tokio_stream);
+        let ws_stream = tokio_tungstenite::client_async(url_str, maybe_tls_stream).await
+            .map_err(|e| GatewayError::Network {
+                message: format!("WebSocket upgrade failed: {}", e),
+                retryable: true,
+                retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+            })?
+            .0;
+        
+        log_protocol_error("Manual TCP", "WebSocket connection established (plain)");
+        Ok(ws_stream)
+    }
+}
+
 /// Try to connect with protocol fallback (ws:// <-> wss://)
 async fn try_connect_with_fallback(
     url: &str,
@@ -343,114 +486,192 @@ async fn try_connect_with_fallback(
     GatewayError,
 > {
     let timeout_duration = Duration::from_secs(30);
-
-    // For Tailscale URLs, test IPv4 connectivity first (diagnostic only, don't rewrite URL)
-    if url.contains(".ts.net") {
-        if let Ok(parsed) = url::Url::parse(url) {
-            if let Some(host) = parsed.host_str() {
-                let port = parsed.port().unwrap_or(if url.starts_with("wss") { 443 } else { 80 });
-                
-                // Test IPv4-only TCP connection (diagnostic)
-                log_protocol_error("Tailscale", "Testing IPv4-only TCP connection...");
-                match test_tcp_connection_ipv4(host, port).await {
-                    Ok(addr) => {
-                        log_protocol_error("Tailscale", &format!("IPv4 test SUCCESS: {}", addr));
-                    }
-                    Err(e) => {
-                        log_protocol_error("Tailscale", &format!("IPv4 test FAILED: {}", e));
-                    }
-                }
-            }
-        }
-    }
     
-    // Keep original URL for WebSocket (TLS needs hostname for SNI)
-    let connect_url = url.to_string();
-
-    // Use native-tls connector
-    let tls_connector = native_tls::TlsConnector::builder()
-        .build()
-        .map_err(|e| GatewayError::Network {
-            message: format!("TLS connector error: {}", e),
-            retryable: false,
-            retry_after: None,
-        })?;
-    let connector = Connector::NativeTls(tls_connector);
-
-    // First, try the URL as provided (or rewritten for Tailscale)
-    let first_attempt = tokio::time::timeout(
-        timeout_duration, 
-        connect_async_tls_with_config(&connect_url, None, false, Some(connector.clone()))
-    ).await;
-
-    match first_attempt {
-        Ok(Ok((stream, _))) => Ok((stream, url.to_string(), false)),
-        Ok(Err(first_err)) => {
-            log_protocol_error("Primary connection failed", &first_err.to_string());
-
-            // Try alternate protocol
-            let alternate_url = if url.starts_with("ws://") {
-                url.replacen("ws://", "wss://", 1)
-            } else if url.starts_with("wss://") {
-                url.replacen("wss://", "ws://", 1)
-            } else {
-                return Err(GatewayError::Network {
-                    message: format!("Invalid WebSocket URL: {}", url),
-                    retryable: false,
-                    retry_after: None,
-                });
-            };
-
-            let second_attempt =
-                tokio::time::timeout(
-                    timeout_duration, 
-                    connect_async_tls_with_config(&alternate_url, None, false, Some(connector.clone()))
+    // Detect if this is a Tailscale or macOS connection that needs manual TCP handling
+    #[cfg(target_os = "macos")]
+    let needs_manual_tcp = true; // Always use manual TCP on macOS for reliability
+    #[cfg(not(target_os = "macos"))]
+    let needs_manual_tcp = url.contains(".ts.net"); // Only for Tailscale on other platforms
+    
+    if needs_manual_tcp {
+        log_protocol_error("Connection Strategy", "Using manual TCP (macOS/Tailscale workaround)");
+        
+        // Try manual TCP connection with the original URL
+        let first_attempt = tokio::time::timeout(
+            timeout_duration,
+            connect_with_manual_tcp(url)
+        ).await;
+        
+        match first_attempt {
+            Ok(Ok(stream)) => {
+                log_protocol_error("Manual TCP", "SUCCESS with original URL");
+                return Ok((stream, url.to_string(), false));
+            }
+            Ok(Err(e)) => {
+                log_protocol_error("Manual TCP", &format!("Failed: {}", e));
+                
+                // Try alternate protocol
+                let alternate_url = if url.starts_with("ws://") {
+                    url.replacen("ws://", "wss://", 1)
+                } else if url.starts_with("wss://") {
+                    url.replacen("wss://", "ws://", 1)
+                } else {
+                    return Err(GatewayError::Network {
+                        message: format!("Invalid WebSocket URL: {}", url),
+                        retryable: false,
+                        retry_after: None,
+                    });
+                };
+                
+                log_protocol_error("Manual TCP", &format!("Trying alternate protocol: {}", alternate_url));
+                
+                let second_attempt = tokio::time::timeout(
+                    timeout_duration,
+                    connect_with_manual_tcp(&alternate_url)
                 ).await;
-
-            match second_attempt {
-                Ok(Ok((stream, _))) => Ok((stream, alternate_url, true)),
-                Ok(Err(e)) => {
-                    log_protocol_error("Fallback connection failed", &e.to_string());
-                    Err(GatewayError::Network {
-                        message: format!(
-                            "Unable to connect to Gateway. Tried {} and {}",
-                            url, alternate_url
-                        ),
-                        retryable: true,
-                        retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
-                    })
+                
+                match second_attempt {
+                    Ok(Ok(stream)) => {
+                        log_protocol_error("Manual TCP", "SUCCESS with alternate protocol");
+                        return Ok((stream, alternate_url, true));
+                    }
+                    Ok(Err(e2)) => {
+                        log_protocol_error("Manual TCP", &format!("Alternate also failed: {}", e2));
+                        return Err(GatewayError::Network {
+                            message: format!(
+                                "Unable to connect to Gateway. Tried {} and {}. Last error: {}",
+                                url, alternate_url, e2
+                            ),
+                            retryable: true,
+                            retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+                        });
+                    }
+                    Err(_) => {
+                        return Err(GatewayError::Timeout {
+                            timeout_secs: timeout_duration.as_secs(),
+                            request_id: None,
+                        });
+                    }
                 }
-                Err(_) => Err(GatewayError::Timeout {
-                    timeout_secs: timeout_duration.as_secs(),
-                    request_id: None,
-                }),
+            }
+            Err(_) => {
+                log_protocol_error("Manual TCP", "Timeout on first attempt");
+                
+                // Try alternate protocol on timeout
+                let alternate_url = if url.starts_with("ws://") {
+                    url.replacen("ws://", "wss://", 1)
+                } else if url.starts_with("wss://") {
+                    url.replacen("wss://", "ws://", 1)
+                } else {
+                    return Err(GatewayError::Timeout {
+                        timeout_secs: timeout_duration.as_secs(),
+                        request_id: None,
+                    });
+                };
+                
+                let second_attempt = tokio::time::timeout(
+                    timeout_duration,
+                    connect_with_manual_tcp(&alternate_url)
+                ).await;
+                
+                match second_attempt {
+                    Ok(Ok(stream)) => Ok((stream, alternate_url, true)),
+                    _ => Err(GatewayError::Timeout {
+                        timeout_secs: timeout_duration.as_secs() * 2,
+                        request_id: None,
+                    }),
+                }
             }
         }
-        Err(_) => {
-            // Timeout on first attempt, try alternate
-            let alternate_url = if url.starts_with("ws://") {
-                url.replacen("ws://", "wss://", 1)
-            } else if url.starts_with("wss://") {
-                url.replacen("wss://", "ws://", 1)
-            } else {
-                return Err(GatewayError::Timeout {
-                    timeout_secs: timeout_duration.as_secs(),
-                    request_id: None,
-                });
-            };
+    } else {
+        // Standard tokio-tungstenite connection for non-macOS, non-Tailscale
+        log_protocol_error("Connection Strategy", "Using standard tokio-tungstenite");
+        
+        // Use native-tls connector
+        let tls_connector = native_tls::TlsConnector::builder()
+            .build()
+            .map_err(|e| GatewayError::Network {
+                message: format!("TLS connector error: {}", e),
+                retryable: false,
+                retry_after: None,
+            })?;
+        let connector = Connector::NativeTls(tls_connector);
 
-            let second_attempt =
-                tokio::time::timeout(
-                    timeout_duration, 
-                    connect_async_tls_with_config(&alternate_url, None, false, Some(connector))
-                ).await;
+        // First, try the URL as provided
+        let first_attempt = tokio::time::timeout(
+            timeout_duration, 
+            connect_async_tls_with_config(url, None, false, Some(connector.clone()))
+        ).await;
 
-            match second_attempt {
-                Ok(Ok((stream, _))) => Ok((stream, alternate_url, true)),
-                _ => Err(GatewayError::Timeout {
-                    timeout_secs: timeout_duration.as_secs() * 2,
-                    request_id: None,
-                }),
+        match first_attempt {
+            Ok(Ok((stream, _))) => Ok((stream, url.to_string(), false)),
+            Ok(Err(first_err)) => {
+                log_protocol_error("Primary connection failed", &first_err.to_string());
+
+                // Try alternate protocol
+                let alternate_url = if url.starts_with("ws://") {
+                    url.replacen("ws://", "wss://", 1)
+                } else if url.starts_with("wss://") {
+                    url.replacen("wss://", "ws://", 1)
+                } else {
+                    return Err(GatewayError::Network {
+                        message: format!("Invalid WebSocket URL: {}", url),
+                        retryable: false,
+                        retry_after: None,
+                    });
+                };
+
+                let second_attempt =
+                    tokio::time::timeout(
+                        timeout_duration, 
+                        connect_async_tls_with_config(&alternate_url, None, false, Some(connector.clone()))
+                    ).await;
+
+                match second_attempt {
+                    Ok(Ok((stream, _))) => Ok((stream, alternate_url, true)),
+                    Ok(Err(e)) => {
+                        log_protocol_error("Fallback connection failed", &e.to_string());
+                        Err(GatewayError::Network {
+                            message: format!(
+                                "Unable to connect to Gateway. Tried {} and {}",
+                                url, alternate_url
+                            ),
+                            retryable: true,
+                            retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+                        })
+                    }
+                    Err(_) => Err(GatewayError::Timeout {
+                        timeout_secs: timeout_duration.as_secs(),
+                        request_id: None,
+                    }),
+                }
+            }
+            Err(_) => {
+                // Timeout on first attempt, try alternate
+                let alternate_url = if url.starts_with("ws://") {
+                    url.replacen("ws://", "wss://", 1)
+                } else if url.starts_with("wss://") {
+                    url.replacen("wss://", "ws://", 1)
+                } else {
+                    return Err(GatewayError::Timeout {
+                        timeout_secs: timeout_duration.as_secs(),
+                        request_id: None,
+                    });
+                };
+
+                let second_attempt =
+                    tokio::time::timeout(
+                        timeout_duration, 
+                        connect_async_tls_with_config(&alternate_url, None, false, Some(connector))
+                    ).await;
+
+                match second_attempt {
+                    Ok(Ok((stream, _))) => Ok((stream, alternate_url, true)),
+                    _ => Err(GatewayError::Timeout {
+                        timeout_secs: timeout_duration.as_secs() * 2,
+                        request_id: None,
+                    }),
+                }
             }
         }
     }
