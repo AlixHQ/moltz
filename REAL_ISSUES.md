@@ -1,6 +1,23 @@
 # Moltzer - Real Issues Assessment
 
-**Date:** 2026-01-28 06:40
+**Date:** 2026-01-28 06:47
+**Updated:** Fixed protocol bug and bundle size
+
+## Fixed This Session
+
+### ✅ Protocol Bug - Attachments sent wrong field
+- With attachments, code sent `input` array
+- Gateway expects `message` string + `attachments` array
+- **Fixed:** Now correctly sends message + attachments
+
+### ✅ Bundle Size - Was 815KB, now 184KB
+- Added manual chunk splitting
+- React, Radix UI, Markdown, Dexie now separate chunks
+- Main bundle under 500KB warning threshold
+
+---
+
+**Original Assessment Date:** 2026-01-28 06:40
 **Purpose:** Identify what's actually wrong, not what looks good on paper
 
 ---
