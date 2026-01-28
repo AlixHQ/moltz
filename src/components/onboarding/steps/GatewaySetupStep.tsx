@@ -31,54 +31,160 @@ interface ConnectResult {
 
 type ConnectionState = "idle" | "detecting" | "testing" | "success" | "error" | "cancelled";
 
+// Detect URL type for context-specific troubleshooting
+function detectUrlType(url: string): "tailscale" | "local" | "lan" | "remote" {
+  const lower = url.toLowerCase();
+  if (lower.includes(".ts.net") || lower.includes("tailscale")) {
+    return "tailscale";
+  }
+  if (lower.includes("localhost") || lower.includes("127.0.0.1") || lower.includes("::1")) {
+    return "local";
+  }
+  if (lower.match(/192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\./)) {
+    return "lan";
+  }
+  return "remote";
+}
+
+// Tailscale-specific troubleshooting tips
+interface TroubleshootingTip {
+  title: string;
+  description: string;
+  command?: string;
+}
+
+function getTailscaleTips(): TroubleshootingTip[] {
+  return [
+    {
+      title: "Check Tailscale is running",
+      description: "Make sure Tailscale is connected on both devices",
+      command: "tailscale status"
+    },
+    {
+      title: "Verify Gateway binds to Tailscale",
+      description: "Gateway config should have bind: \"tailnet\" or bind: \"lan\"",
+      command: "clawdbot config get gateway.bind"
+    },
+    {
+      title: "Check firewall rules",
+      description: "Port 18789 must be accessible on the Gateway machine"
+    },
+    {
+      title: "Ping the Gateway host",
+      description: "Test basic connectivity to the Tailscale hostname",
+      command: "ping your-host.ts.net"
+    }
+  ];
+}
+
+function getLanTips(): TroubleshootingTip[] {
+  return [
+    {
+      title: "Check Gateway is running",
+      description: "Gateway must be running and accessible on the network",
+      command: "clawdbot gateway status"
+    },
+    {
+      title: "Verify Gateway binds to LAN",
+      description: "Gateway config should have bind: \"lan\" (not \"loopback\")",
+      command: "clawdbot config get gateway.bind"
+    },
+    {
+      title: "Check firewall",
+      description: "Port 18789 must be open for incoming connections"
+    }
+  ];
+}
+
 // Derive a helpful hint and actionable fix based on error content
-function getErrorHint(errorStr: string): { hint: string; action?: string; command?: string } {
+function getErrorHint(errorStr: string, url: string): { 
+  hint: string; 
+  action?: string; 
+  command?: string;
+  tips?: TroubleshootingTip[];
+  urlType?: "tailscale" | "local" | "lan" | "remote";
+} {
   const lower = errorStr.toLowerCase();
+  const urlType = detectUrlType(url);
+  
+  // Add context-specific tips based on URL type
+  let tips: TroubleshootingTip[] | undefined;
+  if (urlType === "tailscale") {
+    tips = getTailscaleTips();
+  } else if (urlType === "lan") {
+    tips = getLanTips();
+  }
   
   if (lower.includes("401") || lower.includes("403") || lower.includes("unauthorized") || lower.includes("forbidden")) {
     return {
       hint: "The authentication token is wrong or missing.",
       action: "Where to find your token",
-      command: "clawdbot gateway status"
+      command: "clawdbot gateway status",
+      tips,
+      urlType
     };
   }
   if (lower.includes("400") || lower.includes("bad request")) {
     return {
       hint: "The URL format looks incorrect.",
-      action: "Should start with ws:// or wss://"
+      action: "Should start with ws:// or wss://",
+      tips,
+      urlType
     };
   }
   if (lower.includes("404") || lower.includes("not found")) {
     return {
       hint: "The Gateway endpoint was not found.",
-      action: "Try the default: ws://localhost:18789"
+      action: "Try the default: ws://localhost:18789",
+      tips,
+      urlType
     };
   }
   if (lower.includes("connection refused") || lower.includes("econnrefused")) {
+    const baseHint = urlType === "tailscale" 
+      ? "Can't connect to Tailscale Gateway. It may not be running or not bound to Tailscale."
+      : urlType === "lan"
+      ? "Can't connect to LAN Gateway. It may not be running or bound to loopback only."
+      : "Gateway is not running or not reachable.";
     return {
-      hint: "Gateway is not running or not reachable.",
+      hint: baseHint,
       action: "Start Gateway with",
-      command: "clawdbot gateway start"
+      command: "clawdbot gateway start",
+      tips,
+      urlType
     };
   }
   if (lower.includes("timeout") || lower.includes("timed out")) {
+    const baseHint = urlType === "tailscale"
+      ? "Connection timed out. Check that Tailscale is connected on both devices."
+      : "Connection timed out — Gateway may be down.";
     return {
-      hint: "Connection timed out — Gateway may be down.",
+      hint: baseHint,
       action: "Check Gateway status",
-      command: "clawdbot gateway status"
+      command: "clawdbot gateway status",
+      tips,
+      urlType
     };
   }
   if (lower.includes("network") || lower.includes("dns") || lower.includes("resolve")) {
+    const baseHint = urlType === "tailscale"
+      ? "Can't resolve Tailscale hostname. Make sure Tailscale is running."
+      : "Can't reach the Gateway server.";
     return {
-      hint: "Can't reach the Gateway server.",
-      action: "Check your network connection or firewall settings"
+      hint: baseHint,
+      action: urlType === "tailscale" ? "Check Tailscale status" : "Check your network connection",
+      command: urlType === "tailscale" ? "tailscale status" : undefined,
+      tips,
+      urlType
     };
   }
   
   return {
     hint: "Gateway connection failed.",
     action: "Make sure Gateway is running",
-    command: "clawdbot gateway start"
+    command: "clawdbot gateway start",
+    tips,
+    urlType
   };
 }
 
@@ -102,7 +208,13 @@ export function GatewaySetupStep({
   const [isVisible, setIsVisible] = useState(false);
   const [connectionState, setConnectionState] = useState<ConnectionState>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [errorHint, setErrorHint] = useState<{ hint: string; action?: string; command?: string } | null>(null);
+  const [errorHint, setErrorHint] = useState<{ 
+    hint: string; 
+    action?: string; 
+    command?: string;
+    tips?: TroubleshootingTip[];
+    urlType?: "tailscale" | "local" | "lan" | "remote";
+  } | null>(null);
   const [autoDetected, setAutoDetected] = useState(false);
   const [suggestedPort, setSuggestedPort] = useState<string | null>(null);
   const [protocolNotice, setProtocolNotice] = useState<string>("");
@@ -292,7 +404,7 @@ export function GatewaySetupStep({
       // Show the actual error message with a contextual hint
       const formattedError = formatErrorMessage(err);
       setErrorMessage(formattedError);
-      setErrorHint(getErrorHint(formattedError));
+      setErrorHint(getErrorHint(formattedError, trimmedUrl));
       
       // Auto-suggest port fix if port looks wrong
       if (trimmedUrl.includes("localhost") || trimmedUrl.includes("127.0.0.1")) {
@@ -530,6 +642,43 @@ export function GatewaySetupStep({
                     >
                       Try default port {suggestedPort} instead? →
                     </button>
+                  </div>
+                )}
+
+                {/* Smart troubleshooting tips */}
+                {errorHint?.tips && errorHint.tips.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-red-500/20">
+                    <p className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      {errorHint.urlType === "tailscale" ? "Tailscale Troubleshooting" : "Troubleshooting Tips"}
+                    </p>
+                    <div className="space-y-3">
+                      {errorHint.tips.map((tip, i) => (
+                        <div key={i} className="pl-2 border-l-2 border-red-500/30">
+                          <p className="text-sm font-medium text-foreground">{tip.title}</p>
+                          <p className="text-xs text-muted-foreground">{tip.description}</p>
+                          {tip.command && (
+                            <div className="flex items-center gap-2 mt-1.5 bg-black/80 dark:bg-black/60 rounded p-1.5 font-mono text-[11px] text-green-400">
+                              <code className="flex-1">{tip.command}</code>
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await navigator.clipboard.writeText(tip.command || "");
+                                  } catch (e) {
+                                    console.error("Failed to copy:", e);
+                                  }
+                                }}
+                                className="px-1.5 py-0.5 bg-white/10 hover:bg-white/20 rounded text-[9px] font-medium text-white transition-colors"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
