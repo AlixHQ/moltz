@@ -247,10 +247,12 @@ export const useStore = create<Store>()((set, get) => ({
             state.currentConversationId === id ? null : state.currentConversationId,
         }));
 
-        // Delete from IndexedDB
-        deletePersistedConversation(id).catch(err => {
-          console.error('Failed to delete conversation from DB:', err);
-        });
+        // Delete from IndexedDB (queued after any pending create)
+        enqueuePersistence(id, () =>
+          deletePersistedConversation(id).catch(err => {
+            console.error('Failed to delete conversation from DB:', err);
+          })
+        );
       },
 
       updateConversation: (id, updates) => {
@@ -317,17 +319,21 @@ export const useStore = create<Store>()((set, get) => ({
           currentStreamingMessageId: message.isStreaming ? message.id : null,
         }));
 
-        // Persist message to IndexedDB (debounced for streaming)
+        // Persist message to IndexedDB (queued after any pending create, debounced for streaming)
         if (message.isStreaming) {
           debouncedPersist(() => {
-            persistMessage(conversationId, message).catch(err => {
-              console.error('Failed to persist streaming message:', err);
-            });
+            enqueuePersistence(conversationId, () =>
+              persistMessage(conversationId, message).catch(err => {
+                console.error('Failed to persist streaming message:', err);
+              })
+            );
           }, 1000);
         } else {
-          persistMessage(conversationId, message).catch(err => {
-            console.error('Failed to persist message:', err);
-          });
+          enqueuePersistence(conversationId, () =>
+            persistMessage(conversationId, message).catch(err => {
+              console.error('Failed to persist message:', err);
+            })
+          );
         }
 
         return message;
@@ -348,14 +354,17 @@ export const useStore = create<Store>()((set, get) => ({
           ),
         }));
 
-        // Persist the updated message
-        const conversation = get().conversations.find(c => c.id === conversationId);
-        const message = conversation?.messages.find(m => m.id === messageId);
-        if (message) {
-          persistMessage(conversationId, message).catch(err => {
-            console.error('Failed to persist updated message:', err);
-          });
-        }
+        // Persist the updated message (queued after any pending create)
+        enqueuePersistence(conversationId, () => {
+          const conversation = get().conversations.find(c => c.id === conversationId);
+          const message = conversation?.messages.find(m => m.id === messageId);
+          if (message) {
+            return persistMessage(conversationId, message).catch(err => {
+              console.error('Failed to persist updated message:', err);
+            });
+          }
+          return Promise.resolve();
+        });
       },
 
       markMessageSent: (conversationId, messageId) => {
@@ -372,14 +381,17 @@ export const useStore = create<Store>()((set, get) => ({
           ),
         }));
 
-        // Persist the updated message
-        const conversation = get().conversations.find(c => c.id === conversationId);
-        const message = conversation?.messages.find(m => m.id === messageId);
-        if (message) {
-          persistMessage(conversationId, { ...message, isPending: false }).catch(err => {
-            console.error('Failed to persist message sent status:', err);
-          });
-        }
+        // Persist the updated message (queued after any pending create)
+        enqueuePersistence(conversationId, () => {
+          const conversation = get().conversations.find(c => c.id === conversationId);
+          const message = conversation?.messages.find(m => m.id === messageId);
+          if (message) {
+            return persistMessage(conversationId, { ...message, isPending: false }).catch(err => {
+              console.error('Failed to persist message sent status:', err);
+            });
+          }
+          return Promise.resolve();
+        });
       },
 
       deleteMessage: (conversationId, messageId) => {
@@ -395,10 +407,12 @@ export const useStore = create<Store>()((set, get) => ({
           ),
         }));
 
-        // Delete from IndexedDB
-        deletePersistedMessage(messageId).catch((err: Error) => {
-          console.error('Failed to delete message from DB:', err);
-        });
+        // Delete from IndexedDB (queued after any pending create)
+        enqueuePersistence(conversationId, () =>
+          deletePersistedMessage(messageId).catch((err: Error) => {
+            console.error('Failed to delete message from DB:', err);
+          })
+        );
       },
 
       deleteMessagesAfter: (conversationId, messageId) => {
@@ -422,11 +436,13 @@ export const useStore = create<Store>()((set, get) => ({
           ),
         }));
 
-        // Delete from IndexedDB
+        // Delete from IndexedDB (queued after any pending create)
         const messageIds = messagesToDelete.map(m => m.id);
-        deletePersistedMessages(messageIds).catch((err: Error) => {
-          console.error('Failed to delete messages from DB:', err);
-        });
+        enqueuePersistence(conversationId, () =>
+          deletePersistedMessages(messageIds).catch((err: Error) => {
+            console.error('Failed to delete messages from DB:', err);
+          })
+        );
       },
 
       appendToCurrentMessage: (content) => {

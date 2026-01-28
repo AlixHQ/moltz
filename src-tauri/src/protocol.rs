@@ -178,17 +178,15 @@ impl GatewayError {
         }
 
         // Classify retryable gateway errors
-        let is_retryable = retryable.unwrap_or_else(|| {
-            matches!(
-                code.as_str(),
-                "RATE_LIMITED"
-                    | "SERVICE_UNAVAILABLE"
-                    | "OVERLOADED"
-                    | "TIMEOUT"
-                    | "TEMPORARY_ERROR"
-                    | "RETRY"
-            )
-        });
+        let is_retryable = retryable.unwrap_or(matches!(
+            code.as_str(),
+            "RATE_LIMITED"
+                | "SERVICE_UNAVAILABLE"
+                | "OVERLOADED"
+                | "TIMEOUT"
+                | "TEMPORARY_ERROR"
+                | "RETRY"
+        ));
 
         Self::Gateway {
             code,
@@ -204,10 +202,11 @@ impl GatewayError {
 // ============================================================================
 
 /// Connection state for UI display
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 #[serde(tag = "state")]
 pub enum ConnectionState {
     /// Not connected
+    #[default]
     Disconnected,
     /// Attempting to connect
     Connecting,
@@ -233,12 +232,6 @@ pub enum ConnectionState {
     },
 }
 
-impl Default for ConnectionState {
-    fn default() -> Self {
-        Self::Disconnected
-    }
-}
-
 impl ConnectionState {
     pub fn is_connected(&self) -> bool {
         matches!(self, Self::Connected { .. })
@@ -258,19 +251,14 @@ impl ConnectionState {
 // ============================================================================
 
 /// Connection quality indicator based on latency and reliability
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Default)]
 pub enum ConnectionQuality {
     Excellent, // < 100ms latency, no recent failures
     Good,      // < 300ms latency, minimal failures
     Fair,      // < 1000ms latency, some failures
     Poor,      // > 1000ms latency or frequent failures
+    #[default]
     Unknown,   // Not enough data
-}
-
-impl Default for ConnectionQuality {
-    fn default() -> Self {
-        Self::Unknown
-    }
 }
 
 /// Health metrics for connection quality assessment

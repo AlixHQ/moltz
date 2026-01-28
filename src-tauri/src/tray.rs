@@ -25,8 +25,20 @@ pub mod ids {
 pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
     // Create tray menu
     let show_hide = MenuItem::with_id(app, ids::SHOW_HIDE, "Show Moltzer", true, None::<&str>)?;
-    let new_conv = MenuItem::with_id(app, ids::NEW_CONVERSATION, "New Conversation", true, Some("CmdOrCtrl+N"))?;
-    let quick_ask = MenuItem::with_id(app, ids::QUICK_ASK, "Quick Ask...", true, Some("CmdOrCtrl+Shift+Space"))?;
+    let new_conv = MenuItem::with_id(
+        app,
+        ids::NEW_CONVERSATION,
+        "New Conversation",
+        true,
+        Some("CmdOrCtrl+N"),
+    )?;
+    let quick_ask = MenuItem::with_id(
+        app,
+        ids::QUICK_ASK,
+        "Quick Ask...",
+        true,
+        Some("CmdOrCtrl+Shift+Space"),
+    )?;
     let quit = MenuItem::with_id(app, ids::QUIT, "Quit Moltzer", true, Some("CmdOrCtrl+Q"))?;
 
     let menu = Menu::with_items(app, &[&show_hide, &new_conv, &quick_ask, &quit])?;

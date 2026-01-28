@@ -184,9 +184,9 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
                 />
               </svg>
             </div>
-            <h2 className="text-4xl font-bold mb-3">Gateway Found!</h2>
+            <h2 className="text-4xl font-bold mb-3">Moltzer Gateway Found!</h2>
             <p className="text-lg text-muted-foreground">
-              We detected a Gateway at:
+              We detected a Moltzer Gateway at:
             </p>
           </div>
 
@@ -249,9 +249,9 @@ export function DetectionStep({ onGatewayFound, onNoGateway, onSkip }: Detection
               />
             </svg>
           </div>
-          <h2 className="text-4xl font-bold mb-3">Looking for Gateway...</h2>
+          <h2 className="text-4xl font-bold mb-3">Looking for Moltzer Gateway...</h2>
           <p className="text-lg text-muted-foreground">
-            Checking common ports for a Gateway
+            Checking common ports for a Moltzer Gateway
           </p>
         </div>
 

@@ -39,7 +39,11 @@ pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
 
     // App menu (macOS only shows this as "Moltzer")
     let app_menu = SubmenuBuilder::new(app, "Moltzer")
-        .item(&PredefinedMenuItem::about(app, Some("About Moltzer"), Some(about_metadata))?)
+        .item(&PredefinedMenuItem::about(
+            app,
+            Some("About Moltzer"),
+            Some(about_metadata),
+        )?)
         .separator()
         .item(
             &MenuItemBuilder::with_id(ids::PREFERENCES, "Preferences...")
@@ -101,7 +105,10 @@ pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
                 .build(app)?,
         )
         .separator()
-        .item(&PredefinedMenuItem::fullscreen(app, Some("Enter Full Screen"))?)
+        .item(&PredefinedMenuItem::fullscreen(
+            app,
+            Some("Enter Full Screen"),
+        )?)
         .build()?;
 
     // Conversation menu
@@ -118,24 +125,18 @@ pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
         .item(&PredefinedMenuItem::minimize(app, Some("Minimize"))?)
         .item(&PredefinedMenuItem::maximize(app, Some("Zoom"))?)
         .separator()
-        .item(&PredefinedMenuItem::close_window(app, Some("Close Window"))?)
+        .item(&PredefinedMenuItem::close_window(
+            app,
+            Some("Close Window"),
+        )?)
         .build()?;
 
     // Help menu
     let help_menu = SubmenuBuilder::with_id(app, tauri::menu::HELP_SUBMENU_ID, "Help")
-        .item(
-            &MenuItemBuilder::new("Moltzer Documentation")
-                .build(app)?,
-        )
-        .item(
-            &MenuItemBuilder::new("Clawdbot Gateway Setup")
-                .build(app)?,
-        )
+        .item(&MenuItemBuilder::new("Moltzer Documentation").build(app)?)
+        .item(&MenuItemBuilder::new("Clawdbot Gateway Setup").build(app)?)
         .separator()
-        .item(
-            &MenuItemBuilder::new("Report Issue...")
-                .build(app)?,
-        )
+        .item(&MenuItemBuilder::new("Report Issue...").build(app)?)
         .build()?;
 
     // Build the complete menu

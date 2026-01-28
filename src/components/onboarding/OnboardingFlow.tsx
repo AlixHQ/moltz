@@ -103,6 +103,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     transitionTo("detection");
   }, [transitionTo]);
 
+  // Skip detection goes to manual setup, NOT exit
+  const handleSkipDetection = useCallback(() => {
+    transitionTo("setup");
+  }, [transitionTo]);
+
   const handleManualSetup = useCallback(() => {
     // Save progress (token NOT stored in localStorage - security)
     localStorage.setItem('moltzer-onboarding-progress', JSON.stringify({
@@ -159,7 +164,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       <DetectionStep
         onGatewayFound={handleGatewayFound}
         onNoGateway={handleNoGateway}
-        onSkip={handleSkip}
+        onSkip={handleSkipDetection}
       />
     ),
     "no-gateway": (

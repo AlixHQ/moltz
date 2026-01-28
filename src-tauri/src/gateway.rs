@@ -276,7 +276,7 @@ async fn try_connect_with_fallback(
     let first_attempt = tokio::time::timeout(timeout_duration, connect_async(url)).await;
 
     match first_attempt {
-        Ok(Ok((stream, _))) => return Ok((stream, url.to_string(), false)),
+        Ok(Ok((stream, _))) => Ok((stream, url.to_string(), false)),
         Ok(Err(first_err)) => {
             log_protocol_error("Primary connection failed", &first_err.to_string());
 
@@ -482,7 +482,7 @@ async fn connect_internal(
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             let ws_msg = match msg {
-                OutgoingMessage::Raw(text) => WsMessage::Text(text.into()),
+                OutgoingMessage::Raw(text) => WsMessage::Text(text),
                 OutgoingMessage::Ping => WsMessage::Ping(vec![]),
             };
             if let Err(e) = write.send(ws_msg).await {

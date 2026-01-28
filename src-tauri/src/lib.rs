@@ -32,23 +32,23 @@ pub fn run() {
         .setup(|app| {
             use tauri::Manager;
             app.manage(gateway::GatewayState::default());
-            
+
             // Build and set native menu bar
             #[cfg(desktop)]
             {
                 let menu = menu::build_menu(app.handle())?;
                 app.set_menu(menu)?;
-                
+
                 // Setup system tray
                 tray::setup_tray(app.handle())?;
-                
+
                 // Ensure quickinput window is hidden on startup
                 // (window_state plugin might restore it as visible)
                 if let Some(quickinput) = app.get_webview_window("quickinput") {
                     let _ = quickinput.hide();
                 }
             }
-            
+
             Ok(())
         })
         .on_menu_event(|app, event| {
