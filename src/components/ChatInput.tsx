@@ -265,7 +265,7 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
       }
     } catch (err) {
       console.error("Failed to open file dialog:", err);
-      setFileError("Failed to open file picker");
+      setFileError("Couldn't open file picker. Please try again.");
     } finally {
       setIsLoadingFiles(false);
     }
