@@ -466,9 +466,9 @@ export default function App() {
         if (!eventListenerMounted) return;
         appendToCurrentMessage(event.payload);
       }),
-      listen("gateway:complete", () => {
+      listen<{ usage?: { input?: number; output?: number; totalTokens?: number }; stopReason?: string }>("gateway:complete", (event) => {
         if (!eventListenerMounted) return;
-        completeCurrentMessage();
+        completeCurrentMessage(event.payload?.usage);
       }),
     ]);
 

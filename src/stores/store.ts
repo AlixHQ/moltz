@@ -21,6 +21,15 @@ import {
 import { getGatewayToken, setGatewayToken } from "../lib/keychain";
 
 /**
+ * Token usage statistics for a message
+ */
+export interface TokenUsage {
+  input?: number;
+  output?: number;
+  totalTokens?: number;
+}
+
+/**
  * Single message in a conversation
  */
 export interface Message {
@@ -34,6 +43,8 @@ export interface Message {
   sources?: Source[];
   thinkingContent?: string;
   modelUsed?: string;
+  /** Token usage for this message (assistant messages only) */
+  usage?: TokenUsage;
 }
 
 /**
@@ -132,7 +143,7 @@ interface Store {
   deleteMessage: (conversationId: string, messageId: string) => void;
   deleteMessagesAfter: (conversationId: string, messageId: string) => void;
   appendToCurrentMessage: (content: string) => void;
-  completeCurrentMessage: () => void;
+  completeCurrentMessage: (usage?: TokenUsage) => void;
   currentStreamingMessageId: string | null;
 
   // Settings
@@ -423,7 +434,7 @@ export const useStore = create<Store>()((set, get) => ({
         }
       },
 
-      completeCurrentMessage: () => {
+      completeCurrentMessage: (usage?: TokenUsage) => {
         const { currentConversationId, currentStreamingMessageId } = get();
         if (!currentConversationId || !currentStreamingMessageId) return;
 
@@ -434,7 +445,7 @@ export const useStore = create<Store>()((set, get) => ({
                   ...c,
                   messages: c.messages.map((m) =>
                     m.id === currentStreamingMessageId
-                      ? { ...m, isStreaming: false }
+                      ? { ...m, isStreaming: false, usage }
                       : m
                   ),
                 }
@@ -447,7 +458,7 @@ export const useStore = create<Store>()((set, get) => ({
         const conversation = get().conversations.find(c => c.id === currentConversationId);
         const message = conversation?.messages.find(m => m.id === currentStreamingMessageId);
         if (message) {
-          persistMessage(currentConversationId, { ...message, isStreaming: false }).catch(err => {
+          persistMessage(currentConversationId, { ...message, isStreaming: false, usage }).catch(err => {
             console.error('Failed to persist completed message:', err);
           });
         }

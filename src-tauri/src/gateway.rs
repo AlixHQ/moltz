@@ -163,6 +163,19 @@ pub struct ChatEvent {
     pub message: Option<serde_json::Value>,
     #[serde(rename = "errorMessage")]
     pub error_message: Option<String>,
+    /// Token usage stats
+    pub usage: Option<TokenUsage>,
+    #[serde(rename = "stopReason")]
+    pub stop_reason: Option<String>,
+}
+
+/// Token usage statistics
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TokenUsage {
+    pub input: Option<i32>,
+    pub output: Option<i32>,
+    #[serde(rename = "totalTokens")]
+    pub total_tokens: Option<i32>,
 }
 
 /// Response from Gateway
@@ -634,7 +647,11 @@ async fn handle_validated_frame(
                                     if let Some(run_id) = &chat_event.run_id {
                                         active_runs.lock().await.remove(run_id);
                                     }
-                                    let _ = app.emit("gateway:complete", ());
+                                    // Emit completion with usage stats
+                                    let _ = app.emit("gateway:complete", serde_json::json!({
+                                        "usage": chat_event.usage,
+                                        "stopReason": chat_event.stop_reason,
+                                    }));
                                 }
                                 Some("aborted") => {
                                     if let Some(run_id) = &chat_event.run_id {

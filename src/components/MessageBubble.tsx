@@ -180,6 +180,12 @@ export function MessageBubble({ message, onEdit, onRegenerate, isLastAssistantMe
             )}
           >
             {!message.isPending && formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}
+            {/* Token usage for assistant messages */}
+            {!isUser && message.usage?.totalTokens && (
+              <span className="ml-2 text-muted-foreground/70">
+                · {message.usage.totalTokens.toLocaleString()} tokens
+              </span>
+            )}
           </span>
         </div>
 
