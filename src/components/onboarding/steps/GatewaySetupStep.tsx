@@ -347,8 +347,9 @@ export function GatewaySetupStep({
       }
     }, 100);
 
-    // Auto-detect local Gateway
-    autoDetectGateway();
+    // Auto-detect local Gateway - DISABLED for debugging
+    // autoDetectGateway();
+    setConnectionState("idle");
 
     // Cleanup on unmount
     return () => {
