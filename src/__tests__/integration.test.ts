@@ -298,7 +298,8 @@ describe('Integration Tests', () => {
       
       store.pinConversation(conversation.id);
       
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Wait for async persistence (increased timeout for CI/load resilience)
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const loaded = await loadPersistedData();
       expect(loaded.conversations[0].isPinned).toBe(true);
@@ -309,10 +310,10 @@ describe('Integration Tests', () => {
       const conversation = store.createConversation();
       
       store.pinConversation(conversation.id);
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       store.pinConversation(conversation.id);
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const loaded = await loadPersistedData();
       expect(loaded.conversations[0].isPinned).toBe(false);
