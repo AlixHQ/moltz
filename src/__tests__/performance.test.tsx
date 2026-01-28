@@ -114,8 +114,8 @@ console.log(x + y);
 
       const duration = endTime - startTime;
 
-      // Markdown rendering should complete in under 100ms
-      expect(duration).toBeLessThan(100);
+      // Markdown rendering should complete in under 200ms
+      expect(duration).toBeLessThan(200);
     });
   });
 

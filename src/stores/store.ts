@@ -168,21 +168,46 @@ const generateId = () => crypto.randomUUID();
  * Prevents excessive database writes during rapid updates (e.g., streaming)
  */
 let persistTimer: number | undefined;
+let pendingPersist: (() => void) | undefined;
+
 const debouncedPersist = (fn: () => void, delay = 500) => {
   if (persistTimer) clearTimeout(persistTimer);
+  pendingPersist = fn; // Track pending operation
   persistTimer = window.setTimeout(() => {
-    persistTimer = undefined; // Clear ref after execution
+    persistTimer = undefined;
+    pendingPersist = undefined;
     fn();
   }, delay);
 };
 
-// CRITICAL-6: Clear timer on page unload to prevent memory leak
+// Flush pending persist immediately (for visibility change / unload)
+const flushPendingPersist = () => {
+  if (persistTimer && pendingPersist) {
+    clearTimeout(persistTimer);
+    const fn = pendingPersist;
+    persistTimer = undefined;
+    pendingPersist = undefined;
+    fn(); // Execute immediately
+  }
+};
+
+// CRITICAL-6: Clear timer and flush pending persist on page visibility change / unload
 if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    if (persistTimer) {
-      clearTimeout(persistTimer);
-      persistTimer = undefined;
+  // Flush on visibility change (more reliable than beforeunload)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      flushPendingPersist();
     }
+  });
+
+  // Backup: Clear on unload (may not always fire)
+  window.addEventListener('beforeunload', () => {
+    flushPendingPersist();
+  });
+
+  // Also flush on page freeze (mobile, background tabs)
+  window.addEventListener('freeze', () => {
+    flushPendingPersist();
   });
 }
 
