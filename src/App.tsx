@@ -349,12 +349,12 @@ export default function App() {
 
         // Create retry now function
         const retryNow = () => {
+          // CRITICAL-4 FIX: Guard against unmounted execution
+          if (!isMountedRef.current) return;
           clearTimers();
           connectingFlag = false;
           connectionCancelledRef.current = false;
-          if (isMountedRef.current) {
-            setConnectionError(null);
-          }
+          setConnectionError(null);
           connectToGateway();
         };
         if (isMountedRef.current) {
@@ -406,10 +406,14 @@ export default function App() {
     const unlisten = Promise.all([
       listen("gateway:connected", async () => {
         if (!eventListenerMounted) return;
-        setConnected(true);
-        setIsConnecting(false);
-        setRetryCountdown(null);
-        setRetryNowFn(null);
+        
+        // CRITICAL-5 FIX: Guard all state updates
+        if (eventListenerMounted) {
+          setConnected(true);
+          setIsConnecting(false);
+          setRetryCountdown(null);
+          setRetryNowFn(null);
+        }
         disconnectAttempts = 0;
         // Fetch models on connection (non-blocking)
         invoke<ModelInfo[]>("get_models")
@@ -424,14 +428,20 @@ export default function App() {
       }),
       listen("gateway:disconnected", () => {
         if (!eventListenerMounted) return;
-        setConnected(false);
-        setConnectionError("Connection to Gateway lost");
+        
+        // CRITICAL-5 FIX: Guard all state updates
+        if (eventListenerMounted) {
+          setConnected(false);
+          setConnectionError("Connection to Gateway lost");
+        }
         clearTimers();
 
         // No toast spam - the header bar shows the status
         // Start reconnect with exponential backoff
         disconnectAttempts++;
-        setReconnectAttempts(disconnectAttempts);
+        if (eventListenerMounted) {
+          setReconnectAttempts(disconnectAttempts);
+        }
 
         const backoffIndex = Math.min(
           disconnectAttempts - 1,
@@ -440,14 +450,19 @@ export default function App() {
         const delaySeconds = BACKOFF_DELAYS[backoffIndex];
 
         let countdown = delaySeconds;
-        setRetryCountdown(countdown);
+        if (eventListenerMounted) {
+          setRetryCountdown(countdown);
+        }
 
         const attemptReconnect = async () => {
           if (!eventListenerMounted) return;
           clearTimers();
-          setRetryCountdown(null);
-          setIsConnecting(true);
-          setConnectionError(null);
+          // CRITICAL-5 FIX: Guard all state updates
+          if (eventListenerMounted) {
+            setRetryCountdown(null);
+            setIsConnecting(true);
+            setConnectionError(null);
+          }
 
           try {
             const result = await invoke<ConnectResult>("connect", {
@@ -465,8 +480,11 @@ export default function App() {
                 .updateSettings({ gatewayUrl: result.used_url });
             }
 
-            setConnectionError(null);
-            if (!showOnboarding) {
+            // CRITICAL-5 FIX: Guard state updates
+            if (eventListenerMounted) {
+              setConnectionError(null);
+            }
+            if (!showOnboarding && eventListenerMounted) {
               const protocolMsg = result.protocol_switched
                 ? ` (using ${result.used_url.startsWith("wss://") ? "wss://" : "ws://"})`
                 : "";
@@ -478,11 +496,19 @@ export default function App() {
             console.error("Reconnection failed:", err);
             const errorMessage =
               typeof err === "string" ? err : "Reconnection failed";
-            setConnectionError(errorMessage);
-            setIsConnecting(false);
+            
+            // CRITICAL-5 FIX: Guard all state updates
+            if (eventListenerMounted) {
+              setConnectionError(errorMessage);
+              setIsConnecting(false);
+            }
+            
             // Schedule next retry with backoff
             disconnectAttempts++;
-            setReconnectAttempts(disconnectAttempts);
+            if (eventListenerMounted) {
+              setReconnectAttempts(disconnectAttempts);
+            }
+            
             const nextBackoffIndex = Math.min(
               disconnectAttempts - 1,
               BACKOFF_DELAYS.length - 1,
@@ -490,9 +516,10 @@ export default function App() {
             const nextDelaySeconds = BACKOFF_DELAYS[nextBackoffIndex];
 
             let nextCountdown = nextDelaySeconds;
-            setRetryCountdown(nextCountdown);
-
-            setRetryNowFn(() => attemptReconnect);
+            if (eventListenerMounted) {
+              setRetryCountdown(nextCountdown);
+              setRetryNowFn(() => attemptReconnect);
+            }
 
             countdownInterval = window.setInterval(() => {
               if (!eventListenerMounted) {
@@ -504,13 +531,18 @@ export default function App() {
                 clearTimers();
                 attemptReconnect();
               } else {
-                setRetryCountdown(nextCountdown);
+                // CRITICAL-5 FIX: Guard against state update on unmounted component
+                if (eventListenerMounted) {
+                  setRetryCountdown(nextCountdown);
+                }
               }
             }, 1000);
           }
         };
 
-        setRetryNowFn(() => attemptReconnect);
+        if (eventListenerMounted) {
+          setRetryNowFn(() => attemptReconnect);
+        }
 
         countdownInterval = window.setInterval(() => {
           if (!eventListenerMounted) {
@@ -522,7 +554,10 @@ export default function App() {
             clearTimers();
             attemptReconnect();
           } else {
-            setRetryCountdown(countdown);
+            // CRITICAL-5 FIX: Guard against state update on unmounted component
+            if (eventListenerMounted) {
+              setRetryCountdown(countdown);
+            }
           }
         }, 1000);
       }),
