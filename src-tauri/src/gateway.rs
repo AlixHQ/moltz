@@ -23,6 +23,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, State};
 use tokio::sync::{mpsc, oneshot, Mutex, RwLock};
+use tokio::net::TcpStream;
 use tokio_tungstenite::{connect_async_tls_with_config, tungstenite::Message as WsMessage, Connector};
 
 // ============================================================================
@@ -257,6 +258,27 @@ fn get_platform() -> String {
     return "unknown".to_string();
 }
 
+/// Debug: Test raw TCP connection
+async fn test_tcp_connection(host: &str, port: u16) -> Result<(), String> {
+    let addr = format!("{}:{}", host, port);
+    log_protocol_error("TCP Test", &format!("Attempting raw TCP to {}", addr));
+    
+    match tokio::time::timeout(Duration::from_secs(5), TcpStream::connect(&addr)).await {
+        Ok(Ok(_stream)) => {
+            log_protocol_error("TCP Test", &format!("SUCCESS - connected to {}", addr));
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            log_protocol_error("TCP Test", &format!("FAILED - {}: {}", addr, e));
+            Err(format!("TCP connect failed: {}", e))
+        }
+        Err(_) => {
+            log_protocol_error("TCP Test", &format!("TIMEOUT - {}", addr));
+            Err("TCP connect timeout".to_string())
+        }
+    }
+}
+
 /// Try to connect with protocol fallback (ws:// <-> wss://)
 async fn try_connect_with_fallback(
     url: &str,
@@ -271,6 +293,14 @@ async fn try_connect_with_fallback(
     GatewayError,
 > {
     let timeout_duration = Duration::from_secs(15); // Increased for Tailscale/remote connections
+
+    // Debug: Extract host and test TCP first
+    if let Ok(parsed) = url::Url::parse(url) {
+        if let Some(host) = parsed.host_str() {
+            let port = parsed.port().unwrap_or(if url.starts_with("wss") { 443 } else { 80 });
+            let _ = test_tcp_connection(host, port).await;
+        }
+    }
 
     // Use native-tls connector for better macOS compatibility
     let tls_connector = native_tls::TlsConnector::new()
