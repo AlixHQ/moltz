@@ -1,6 +1,8 @@
 ﻿import { useEffect, useState, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
+import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
+import { Window } from "@tauri-apps/api/window";
 import { Sidebar } from "./components/Sidebar";
 import { ChatView } from "./components/ChatView";
 import { WelcomeView } from "./components/WelcomeView";
@@ -470,11 +472,48 @@ export default function App() {
         if (!eventListenerMounted) return;
         completeCurrentMessage(event.payload?.usage);
       }),
+      // Listen for quick input submissions
+      listen<{ message: string }>("quickinput:submit", (event) => {
+        if (!eventListenerMounted) return;
+        const { message } = event.payload;
+        if (message) {
+          // Create a new conversation with the message from quick input
+          const { createConversation, selectConversation } = useStore.getState();
+          
+          // Create new conversation
+          const newConv = createConversation();
+          selectConversation(newConv.id);
+          
+          // Add the user message - the ChatView will detect and send it
+          // We use a small delay to ensure the conversation is set
+          setTimeout(() => {
+            // Set the message in the input field via a custom event
+            window.dispatchEvent(new CustomEvent("quickinput:setmessage", { detail: { message } }));
+          }, 100);
+        }
+      }),
     ]);
+
+    // Register global shortcut for quick input (Cmd/Ctrl+Shift+Space)
+    const shortcut = navigator.platform.includes("Mac") ? "Command+Shift+Space" : "Control+Shift+Space";
+    register(shortcut, async () => {
+      const quickInputWindow = new Window("quickinput");
+      const isVisible = await quickInputWindow.isVisible();
+      if (isVisible) {
+        await quickInputWindow.hide();
+      } else {
+        await quickInputWindow.show();
+        await quickInputWindow.setFocus();
+      }
+    }).catch(err => {
+      console.error("Failed to register global shortcut:", err);
+    });
 
     return () => {
       eventListenerMounted = false;
       clearTimers();
+      // Unregister global shortcut
+      unregister(shortcut).catch(() => {});
       unlisten.then((listeners) => {
         listeners.forEach((fn) => fn());
       });

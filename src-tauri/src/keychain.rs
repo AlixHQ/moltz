@@ -1,5 +1,5 @@
 //! Keychain integration for secure credential storage
-//! 
+//!
 //! Uses the OS-native credential store:
 //! - macOS: Keychain
 //! - Windows: Credential Manager
@@ -22,11 +22,7 @@ pub async fn keychain_get(service: String, key: String) -> Result<String, String
 /// Set a value in the keychain
 /// Uses spawn_blocking to prevent UI freezing on macOS
 #[tauri::command]
-pub async fn keychain_set(
-    service: String,
-    key: String,
-    value: String,
-) -> Result<(), String> {
+pub async fn keychain_set(service: String, key: String, value: String) -> Result<(), String> {
     tokio::task::spawn_blocking(move || {
         let entry = Entry::new(&service, &key).map_err(|e| e.to_string())?;
         entry.set_password(&value).map_err(|e| e.to_string())

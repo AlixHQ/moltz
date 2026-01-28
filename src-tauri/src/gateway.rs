@@ -1,5 +1,5 @@
 //! Gateway WebSocket client for communicating with Clawdbot Gateway
-//! 
+//!
 //! Implements the Clawdbot Gateway WebSocket protocol v3 with:
 //! - Robust error handling and classification
 //! - Automatic reconnection with exponential backoff
@@ -10,11 +10,10 @@
 #![allow(dead_code)]
 
 use crate::protocol::{
-    calculate_backoff, validate_frame, ConnectionQuality, ConnectionState,
-    GatewayError, HealthMetrics, QueuedMessage, RawGatewayError, ValidatedFrame,
-    BACKOFF_INITIAL_MS, DEFAULT_PING_INTERVAL_SECS, DEFAULT_PING_TIMEOUT_SECS,
-    DEFAULT_REQUEST_TIMEOUT_SECS, DEFAULT_STREAM_TIMEOUT_SECS, MAX_RECONNECT_ATTEMPTS,
-    PROTOCOL_VERSION,
+    calculate_backoff, validate_frame, ConnectionQuality, ConnectionState, GatewayError,
+    HealthMetrics, QueuedMessage, RawGatewayError, ValidatedFrame, BACKOFF_INITIAL_MS,
+    DEFAULT_PING_INTERVAL_SECS, DEFAULT_PING_TIMEOUT_SECS, DEFAULT_REQUEST_TIMEOUT_SECS,
+    DEFAULT_STREAM_TIMEOUT_SECS, MAX_RECONNECT_ATTEMPTS, PROTOCOL_VERSION,
 };
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
@@ -422,9 +421,8 @@ pub async fn connect(
     // Perform actual connection
     match connect_internal(&app, &state.inner, &url, &token).await {
         Ok(result) => {
-            *state.inner.connection_state.write().await = ConnectionState::Connected {
-                session_id: None,
-            };
+            *state.inner.connection_state.write().await =
+                ConnectionState::Connected { session_id: None };
             let _ = app.emit(
                 "gateway:state",
                 ConnectionState::Connected { session_id: None },
@@ -648,10 +646,13 @@ async fn handle_validated_frame(
                                         active_runs.lock().await.remove(run_id);
                                     }
                                     // Emit completion with usage stats
-                                    let _ = app.emit("gateway:complete", serde_json::json!({
-                                        "usage": chat_event.usage,
-                                        "stopReason": chat_event.stop_reason,
-                                    }));
+                                    let _ = app.emit(
+                                        "gateway:complete",
+                                        serde_json::json!({
+                                            "usage": chat_event.usage,
+                                            "stopReason": chat_event.stop_reason,
+                                        }),
+                                    );
                                 }
                                 Some("aborted") => {
                                     if let Some(run_id) = &chat_event.run_id {
@@ -850,9 +851,8 @@ async fn start_reconnection_loop(app: AppHandle, state: Arc<GatewayStateInner>) 
                     Ok(_) => {
                         // Success!
                         state.reconnect_attempt.store(0, Ordering::SeqCst);
-                        *state.connection_state.write().await = ConnectionState::Connected {
-                            session_id: None,
-                        };
+                        *state.connection_state.write().await =
+                            ConnectionState::Connected { session_id: None };
                         let _ = app.emit(
                             "gateway:state",
                             ConnectionState::Connected { session_id: None },
@@ -909,7 +909,11 @@ async fn drain_message_queue(state: &GatewayStateInner) {
             }
 
             // Try to send
-            if tx.send(OutgoingMessage::Raw(msg.json.clone())).await.is_ok() {
+            if tx
+                .send(OutgoingMessage::Raw(msg.json.clone()))
+                .await
+                .is_ok()
+            {
                 processed.insert(msg.id.clone());
             } else if msg.can_retry() {
                 // Put back in queue for retry
@@ -920,7 +924,11 @@ async fn drain_message_queue(state: &GatewayStateInner) {
 
         // Cleanup old processed IDs (keep last 1000)
         if processed.len() > 1000 {
-            let to_remove: Vec<_> = processed.iter().take(processed.len() - 1000).cloned().collect();
+            let to_remove: Vec<_> = processed
+                .iter()
+                .take(processed.len() - 1000)
+                .cloned()
+                .collect();
             for id in to_remove {
                 processed.remove(&id);
             }
@@ -963,19 +971,23 @@ pub async fn send_message(
     } else {
         // Convert attachments to Gateway format:
         // [{type: "image", mimeType: "...", content: "base64..."}]
-        let attachments: Vec<serde_json::Value> = params.attachments.iter().map(|a| {
-            serde_json::json!({
-                "type": match a.mime_type.as_str() {
-                    t if t.starts_with("image/") => "image",
-                    t if t.starts_with("text/") => "text",
-                    _ => "file"
-                },
-                "mimeType": a.mime_type,
-                "fileName": a.filename,
-                "content": a.data,  // Already base64
+        let attachments: Vec<serde_json::Value> = params
+            .attachments
+            .iter()
+            .map(|a| {
+                serde_json::json!({
+                    "type": match a.mime_type.as_str() {
+                        t if t.starts_with("image/") => "image",
+                        t if t.starts_with("text/") => "text",
+                        _ => "file"
+                    },
+                    "mimeType": a.mime_type,
+                    "fileName": a.filename,
+                    "content": a.data,  // Already base64
+                })
             })
-        }).collect();
-        
+            .collect();
+
         serde_json::json!({
             "message": params.message,
             "sessionKey": params.session_key,
@@ -1011,7 +1023,12 @@ pub async fn send_message(
         .map_err(|e| e.to_string())?;
 
     // Track for dedup
-    state.inner.processed_ids.lock().await.insert(request_id.clone());
+    state
+        .inner
+        .processed_ids
+        .lock()
+        .await
+        .insert(request_id.clone());
 
     Ok(request_id)
 }
@@ -1024,13 +1041,17 @@ pub async fn get_connection_status(state: State<'_, GatewayState>) -> Result<boo
 
 /// Get detailed connection state
 #[tauri::command]
-pub async fn get_connection_state(state: State<'_, GatewayState>) -> Result<ConnectionState, String> {
+pub async fn get_connection_state(
+    state: State<'_, GatewayState>,
+) -> Result<ConnectionState, String> {
     Ok(state.inner.connection_state.read().await.clone())
 }
 
 /// Get connection quality
 #[tauri::command]
-pub async fn get_connection_quality(state: State<'_, GatewayState>) -> Result<ConnectionQuality, String> {
+pub async fn get_connection_quality(
+    state: State<'_, GatewayState>,
+) -> Result<ConnectionQuality, String> {
     Ok(state.inner.health_metrics.lock().await.quality())
 }
 
@@ -1091,11 +1112,21 @@ pub async fn get_models(
             Ok(get_fallback_models())
         }
         Ok(Err(_)) => {
-            state.inner.pending_requests.lock().await.remove(&request_id);
+            state
+                .inner
+                .pending_requests
+                .lock()
+                .await
+                .remove(&request_id);
             Ok(get_fallback_models())
         }
         Err(_) => {
-            state.inner.pending_requests.lock().await.remove(&request_id);
+            state
+                .inner
+                .pending_requests
+                .lock()
+                .await
+                .remove(&request_id);
             Ok(get_fallback_models())
         }
     }

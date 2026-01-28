@@ -97,6 +97,25 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
     }
   }, [disabled]);
 
+  // Listen for quick input messages
+  useEffect(() => {
+    const handleQuickInputMessage = (e: CustomEvent<{ message: string }>) => {
+      const { message: quickMessage } = e.detail;
+      if (quickMessage) {
+        setMessage(quickMessage);
+        // Auto-submit after a short delay
+        setTimeout(() => {
+          onSend(quickMessage, []);
+        }, 150);
+      }
+    };
+
+    window.addEventListener("quickinput:setmessage", handleQuickInputMessage as EventListener);
+    return () => {
+      window.removeEventListener("quickinput:setmessage", handleQuickInputMessage as EventListener);
+    };
+  }, [onSend]);
+
   const handleSend = () => {
     if (disabled) return;
     if (!message.trim() && attachments.length === 0) return;

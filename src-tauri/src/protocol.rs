@@ -1,5 +1,5 @@
 //! Protocol types and validation for Clawdbot Gateway communication
-//! 
+//!
 //! This module provides:
 //! - Error classification (network, gateway, auth)
 //! - Protocol message validation
@@ -22,8 +22,8 @@ pub const DEFAULT_PING_INTERVAL_SECS: u64 = 30;
 pub const DEFAULT_PING_TIMEOUT_SECS: u64 = 10;
 
 /// Exponential backoff configuration
-pub const BACKOFF_INITIAL_MS: u64 = 5_000;      // 5 seconds
-pub const BACKOFF_MAX_MS: u64 = 60_000;         // 60 seconds
+pub const BACKOFF_INITIAL_MS: u64 = 5_000; // 5 seconds
+pub const BACKOFF_MAX_MS: u64 = 60_000; // 60 seconds
 pub const BACKOFF_MULTIPLIER: f64 = 2.0;
 pub const MAX_RECONNECT_ATTEMPTS: u32 = 10;
 
@@ -62,10 +62,7 @@ pub enum GatewayError {
 
     /// Authentication errors - not retryable without user action
     #[error("Authentication error: {message}")]
-    Auth {
-        message: String,
-        code: String,
-    },
+    Auth { message: String, code: String },
 
     /// Request timeout - retryable
     #[error("Request timeout after {timeout_secs}s")]
@@ -117,7 +114,10 @@ impl GatewayError {
         match self {
             Self::Auth { .. } => true,
             Self::Gateway { code, .. } => {
-                matches!(code.as_str(), "UNAUTHORIZED" | "FORBIDDEN" | "TOKEN_EXPIRED")
+                matches!(
+                    code.as_str(),
+                    "UNAUTHORIZED" | "FORBIDDEN" | "TOKEN_EXPIRED"
+                )
             }
             _ => false,
         }
@@ -136,13 +136,22 @@ impl GatewayError {
                 format!("[{}] {}", code, message)
             }
             Self::Auth { message, .. } => {
-                format!("Authentication failed: {}. Please check your credentials.", message)
+                format!(
+                    "Authentication failed: {}. Please check your credentials.",
+                    message
+                )
             }
             Self::Timeout { timeout_secs, .. } => {
-                format!("Request timed out after {}s. Please try again.", timeout_secs)
+                format!(
+                    "Request timed out after {}s. Please try again.",
+                    timeout_secs
+                )
             }
             Self::StreamTimeout { idle_secs, .. } => {
-                format!("No response received for {}s. The request may still be processing.", idle_secs)
+                format!(
+                    "No response received for {}s. The request may still be processing.",
+                    idle_secs
+                )
             }
             Self::Validation { message, .. } => {
                 format!("Invalid request: {}", message)
@@ -154,17 +163,31 @@ impl GatewayError {
     }
 
     /// Create from raw gateway error response
-    pub fn from_gateway_response(code: String, message: String, details: Option<serde_json::Value>, retryable: Option<bool>) -> Self {
+    pub fn from_gateway_response(
+        code: String,
+        message: String,
+        details: Option<serde_json::Value>,
+        retryable: Option<bool>,
+    ) -> Self {
         // Classify auth errors
-        if matches!(code.as_str(), "UNAUTHORIZED" | "FORBIDDEN" | "TOKEN_EXPIRED" | "INVALID_TOKEN") {
+        if matches!(
+            code.as_str(),
+            "UNAUTHORIZED" | "FORBIDDEN" | "TOKEN_EXPIRED" | "INVALID_TOKEN"
+        ) {
             return Self::Auth { message, code };
         }
 
         // Classify retryable gateway errors
         let is_retryable = retryable.unwrap_or_else(|| {
-            matches!(code.as_str(), 
-                "RATE_LIMITED" | "SERVICE_UNAVAILABLE" | "OVERLOADED" | 
-                "TIMEOUT" | "TEMPORARY_ERROR" | "RETRY")
+            matches!(
+                code.as_str(),
+                "RATE_LIMITED"
+                    | "SERVICE_UNAVAILABLE"
+                    | "OVERLOADED"
+                    | "TIMEOUT"
+                    | "TEMPORARY_ERROR"
+                    | "RETRY"
+            )
         });
 
         Self::Gateway {
@@ -237,11 +260,11 @@ impl ConnectionState {
 /// Connection quality indicator based on latency and reliability
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum ConnectionQuality {
-    Excellent,  // < 100ms latency, no recent failures
-    Good,       // < 300ms latency, minimal failures
-    Fair,       // < 1000ms latency, some failures
-    Poor,       // > 1000ms latency or frequent failures
-    Unknown,    // Not enough data
+    Excellent, // < 100ms latency, no recent failures
+    Good,      // < 300ms latency, minimal failures
+    Fair,      // < 1000ms latency, some failures
+    Poor,      // > 1000ms latency or frequent failures
+    Unknown,   // Not enough data
 }
 
 impl Default for ConnectionQuality {
@@ -382,21 +405,17 @@ struct RawFrame {
 /// Validate and parse a raw JSON message into a typed frame
 pub fn validate_frame(json: &str) -> Result<ValidatedFrame, GatewayError> {
     // First, validate JSON syntax
-    let raw: RawFrame = serde_json::from_str(json).map_err(|e| {
-        GatewayError::Protocol {
-            message: format!("Invalid JSON: {}", e),
-            code: Some("INVALID_JSON".to_string()),
-            retryable: false,
-        }
+    let raw: RawFrame = serde_json::from_str(json).map_err(|e| GatewayError::Protocol {
+        message: format!("Invalid JSON: {}", e),
+        code: Some("INVALID_JSON".to_string()),
+        retryable: false,
     })?;
 
     // Validate frame type exists
-    let frame_type = raw.frame_type.ok_or_else(|| {
-        GatewayError::Protocol {
-            message: "Missing 'type' field".to_string(),
-            code: Some("MISSING_TYPE".to_string()),
-            retryable: false,
-        }
+    let frame_type = raw.frame_type.ok_or_else(|| GatewayError::Protocol {
+        message: "Missing 'type' field".to_string(),
+        code: Some("MISSING_TYPE".to_string()),
+        retryable: false,
     })?;
 
     match frame_type.as_str() {
@@ -458,13 +477,14 @@ pub fn validate_frame(json: &str) -> Result<ValidatedFrame, GatewayError> {
 pub fn calculate_backoff(attempt: u32) -> Duration {
     let base_ms = BACKOFF_INITIAL_MS as f64;
     let max_ms = BACKOFF_MAX_MS as f64;
-    
-    let delay_ms = (base_ms * BACKOFF_MULTIPLIER.powi(attempt.saturating_sub(1) as i32)).min(max_ms);
-    
+
+    let delay_ms =
+        (base_ms * BACKOFF_MULTIPLIER.powi(attempt.saturating_sub(1) as i32)).min(max_ms);
+
     // Add jitter (±10%)
     let jitter = (rand_simple() * 0.2 - 0.1) * delay_ms;
     let final_delay = (delay_ms + jitter).max(BACKOFF_INITIAL_MS as f64) as u64;
-    
+
     Duration::from_millis(final_delay)
 }
 
@@ -529,7 +549,7 @@ mod tests {
     fn test_validate_response_frame() {
         let json = r#"{"type":"res","id":"req-123","ok":true,"payload":{"data":"test"}}"#;
         let frame = validate_frame(json).unwrap();
-        
+
         match frame {
             ValidatedFrame::Response { id, ok, .. } => {
                 assert_eq!(id, "req-123");
@@ -543,7 +563,7 @@ mod tests {
     fn test_validate_event_frame() {
         let json = r#"{"type":"event","event":"chat","seq":1,"payload":{"content":"Hello"}}"#;
         let frame = validate_frame(json).unwrap();
-        
+
         match frame {
             ValidatedFrame::Event { event, seq, .. } => {
                 assert_eq!(event, "chat");
@@ -596,12 +616,12 @@ mod tests {
         let d1 = calculate_backoff(1);
         let d2 = calculate_backoff(2);
         let d3 = calculate_backoff(3);
-        
+
         // Should be roughly exponential (with jitter)
         assert!(d1.as_millis() >= 4500); // 5000 - 10%
         assert!(d2.as_millis() >= 9000); // 10000 - 10%
         assert!(d3.as_millis() >= 18000); // 20000 - 10%
-        
+
         // Should cap at max
         let d_max = calculate_backoff(10);
         assert!(d_max.as_millis() <= 66000); // 60000 + 10%
@@ -610,16 +630,16 @@ mod tests {
     #[test]
     fn test_connection_quality_assessment() {
         let mut metrics = HealthMetrics::default();
-        
+
         // Unknown without data
         assert_eq!(metrics.quality(), ConnectionQuality::Unknown);
-        
+
         // Good with low latency
         for _ in 0..5 {
             metrics.record_latency(50);
         }
         assert_eq!(metrics.quality(), ConnectionQuality::Excellent);
-        
+
         // Degrades with high latency
         metrics.latencies.clear();
         for _ in 0..5 {
