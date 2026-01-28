@@ -12,6 +12,7 @@ import { cn } from "./lib/utils";
 import { ToastContainer, useToast } from "./components/ui/toast";
 import { Spinner } from "./components/ui/spinner";
 import { loadPersistedData } from "./lib/persistence";
+import { translateError, getErrorTitle } from "./lib/errors";
 
 // Check if running on macOS (for traffic light padding)
 const isMacOS = typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac");
@@ -638,7 +639,7 @@ export default function App() {
                   <span className="sm:hidden">— {retryCountdown}s</span>
                 </>
               ) : connectionError ? (
-                <span className="hidden sm:inline truncate text-xs">— {connectionError.split('\n')[0]}</span>
+                <span className="hidden sm:inline truncate text-xs">— {getErrorTitle(connectionError)}</span>
               ) : null}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -778,38 +779,44 @@ export default function App() {
           )}
           
           {/* Connection error overlay */}
-          {!isLoadingData && !isConnecting && connectionError && reconnectAttempts === 1 && (
-            <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 z-40 animate-in fade-in duration-300">
-              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
-                <svg className="w-8 h-8 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="text-center max-w-md px-4">
-                <p className="text-sm font-medium mb-2">Connection Failed</p>
-                <p className="text-xs text-muted-foreground mb-4 whitespace-pre-line">{connectionError}</p>
-                <div className="flex gap-2 justify-center">
-                  {retryNowFn && (
-                    <button
-                      onClick={retryNowFn}
-                      className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                    >
-                      Retry Now
-                    </button>
+          {!isLoadingData && !isConnecting && connectionError && reconnectAttempts === 1 && (() => {
+            const friendlyError = translateError(connectionError);
+            return (
+              <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 z-40 animate-in fade-in duration-300">
+                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
+                  <svg className="w-8 h-8 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="text-center max-w-md px-4">
+                  <p className="text-sm font-medium mb-2">{friendlyError.title}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{friendlyError.message}</p>
+                  {friendlyError.suggestion && (
+                    <p className="text-xs text-muted-foreground/70 mb-4">{friendlyError.suggestion}</p>
                   )}
-                  <button
-                    onClick={() => {
-                      setConnectionError(null);
-                      setIsConnecting(false);
-                    }}
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors"
-                  >
-                    Use Offline Mode
-                  </button>
+                  <div className="flex gap-2 justify-center mt-4">
+                    {retryNowFn && (
+                      <button
+                        onClick={retryNowFn}
+                        className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                      >
+                        Retry Now
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setConnectionError(null);
+                        setIsConnecting(false);
+                      }}
+                      className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+                    >
+                      Continue Offline
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </main>
       </div>
     </div>
