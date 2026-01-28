@@ -285,6 +285,15 @@ export function ChatView() {
     attachments: PreparedAttachment[],
   ) => {
     if (!currentConversation || isSending) return;
+    
+    // Check connection before attempting to send
+    if (!connected) {
+      setError("Cannot send messages while offline. Please wait for reconnection.");
+      setLastFailedMessage({ content, attachments });
+      setTimeout(() => setError(null), 10000);
+      return;
+    }
+
     setError(null);
     setLastFailedMessage(null);
     setIsSending(true);
@@ -332,7 +341,7 @@ export function ChatView() {
         .markMessageSent(currentConversation.id, userMessage.id);
     } catch (err: unknown) {
       console.error("Failed to send message:", err);
-      const errorMsg = String(err).replace("Error: ", "");
+      const errorMsg = typeof err === "string" ? err : String(err).replace("Error: ", "");
       setError(errorMsg);
       setLastFailedMessage({ content, attachments });
 

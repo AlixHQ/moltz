@@ -54,10 +54,10 @@ Done! You're chatting with AI.
 **Connection failed?**
 ```bash
 # Check Gateway is running
-clawdbot status
+clawdbot gateway status
 
 # If not, start it
-clawdbot start
+clawdbot gateway start
 ```
 
 **Still stuck?** [Full setup guide](./Getting-Started.md) | [Troubleshooting](./Troubleshooting.md)
