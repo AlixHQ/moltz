@@ -938,7 +938,7 @@ pub async fn connect(
 /// Internal connection logic
 async fn connect_internal(
     app: &AppHandle,
-    state_arc: Arc<GatewayStateInner>,
+    state_arc: StateRef,
     url: &str,
     token: &str,
 ) -> Result<ConnectResult, GatewayError> {
@@ -1228,7 +1228,7 @@ async fn start_health_monitor(
     app: AppHandle,
     tx: mpsc::Sender<OutgoingMessage>,
     _health_metrics: Arc<Mutex<HealthMetrics>>,
-    state: Arc<GatewayStateInner>,
+    state: StateRef,
 ) {
     tokio::spawn(async move {
         let ping_interval = Duration::from_secs(DEFAULT_PING_INTERVAL_SECS);
@@ -1255,8 +1255,8 @@ async fn start_health_monitor(
 /// Start streaming timeout monitor
 async fn start_stream_timeout_monitor(
     app: AppHandle,
-    active_runs: Arc<Mutex<HashMap<String, Instant>>>,
-    state: Arc<GatewayStateInner>,
+    active_runs: ActiveRunsMap,
+    state: StateRef,
 ) {
     tokio::spawn(async move {
         let check_interval = Duration::from_secs(5);
@@ -1295,8 +1295,8 @@ async fn start_stream_timeout_monitor(
 
 /// CRITICAL-1: Cleanup task for expired pending requests
 async fn start_pending_requests_cleanup(
-    pending_requests: Arc<Mutex<HashMap<String, PendingRequest>>>,
-    state: Arc<GatewayStateInner>,
+    pending_requests: PendingRequestsMap,
+    state: StateRef,
 ) {
     tokio::spawn(async move {
         let cleanup_interval = Duration::from_secs(30);
@@ -1321,7 +1321,7 @@ async fn start_pending_requests_cleanup(
 }
 
 /// Start reconnection loop with exponential backoff
-async fn start_reconnection_loop(app: AppHandle, state: Arc<GatewayStateInner>) {
+async fn start_reconnection_loop(app: AppHandle, state: StateRef) {
     tokio::spawn(async move {
         loop {
             let attempt = state.reconnect_attempt.fetch_add(1, Ordering::SeqCst) + 1;

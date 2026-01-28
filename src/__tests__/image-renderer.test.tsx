@@ -194,16 +194,16 @@ describe("ImageRenderer", () => {
       const img = screen.getByRole("img");
       img.dispatchEvent(new Event("load", { bubbles: true }));
 
-      await waitFor(async () => {
-        const container = img.parentElement;
-        await user.click(container!);
+      // Wait for load state to update then click image to open lightbox
+      await waitFor(() => {
+        expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
       });
+      
+      await user.click(img);
 
       // Click open in new tab button
-      await waitFor(async () => {
-        const openButton = screen.getByRole("button", { name: /open in new tab/i });
-        await user.click(openButton);
-      });
+      const openButton = await screen.findByRole("button", { name: /open in new tab/i });
+      await user.click(openButton);
 
       expect(windowOpenSpy).toHaveBeenCalledWith(
         "https://example.com/image.png",

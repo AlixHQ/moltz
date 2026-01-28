@@ -149,8 +149,10 @@ export const MessageBubble = memo(function MessageBubble({
           )}
           <span
             className={cn(
-              "text-xs text-muted-foreground transition-opacity duration-200",
-              showTimestamp || message.isPending ? "opacity-100" : "opacity-0",
+              "text-xs text-muted-foreground transition-all duration-200",
+              showTimestamp || message.isPending 
+                ? "opacity-100 translate-x-0" 
+                : "opacity-0 -translate-x-1",
             )}
           >
             {!message.isPending &&

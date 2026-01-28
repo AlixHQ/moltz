@@ -217,7 +217,7 @@ export function ImageRenderer({
           <button
             onClick={openInNewTab}
             className="absolute top-4 right-16 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-            aria-label="Open image in new tab"
+            aria-label="Open in new tab"
           >
             <ExternalLink className="w-6 h-6" />
           </button>

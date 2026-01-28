@@ -145,9 +145,14 @@
 **After:** Color-coded buttons (blue for User, orange for Moltz)  
 **Impact:** Intuitive, matches message badge colors
 
+### 25. ✅ Result Limit Indicator
+**Before:** Users didn't know if results were limited  
+**After:** Shows "(showing top 50 of X)" when more than 50 matches  
+**Impact:** Users understand they can refine search for better results
+
 ## Performance Summary:
 
-**Total optimizations:** 24  
+**Total optimizations:** 25  
 **Estimated speed improvement:** 50-60% faster overall  
 **New features added:** 3 (role filtering, multi-word highlighting, clear button)  
 **UX improvements:** 15+

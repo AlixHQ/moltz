@@ -177,8 +177,8 @@ describe("Sidebar", () => {
     it("should show empty state when no conversations exist", () => {
       render(<Sidebar onToggle={mockOnToggle} />);
 
-      expect(screen.getByText("Ready to chat?")).toBeInTheDocument();
-      expect(screen.getByText("Create your first conversation to get started")).toBeInTheDocument();
+      expect(screen.getByText("No conversations yet")).toBeInTheDocument();
+      expect(screen.getByText("Start a new chat to begin")).toBeInTheDocument();
     });
   });
 
@@ -238,7 +238,7 @@ describe("Sidebar", () => {
       const filterInput = screen.getByLabelText("Filter conversations");
       await user.type(filterInput, "xyznonexistent");
 
-      expect(screen.getByText("No matches found")).toBeInTheDocument();
+      expect(screen.getByText("No matches")).toBeInTheDocument();
       expect(screen.getByText("Try a different search term")).toBeInTheDocument();
     });
 

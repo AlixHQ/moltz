@@ -214,7 +214,7 @@ describe("SettingsDialog", () => {
       await user.click(testButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Connection refused/)).toBeInTheDocument();
+        expect(screen.getByText(/Can't reach Gateway/)).toBeInTheDocument();
       });
     });
   });

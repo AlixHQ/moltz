@@ -426,7 +426,6 @@ export const useStore = create<Store>()((set, get) => ({
   },
 
   deleteMessage: (conversationId, messageId) => {
-    const state = get();
     set((prevState) => ({
       conversations: prevState.conversations.map((c) =>
         c.id === conversationId

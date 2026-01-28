@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { translateError } from "../lib/errors";
+import { useErrorTimeout } from "../hooks/useErrorTimeout";
 
 export function ChatView() {
   const {
@@ -32,7 +33,7 @@ export function ChatView() {
   } = useStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { error, setError, clearError } = useErrorTimeout(10000); // Default 10s auto-clear
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [lastFailedMessage, setLastFailedMessage] = useState<{
@@ -138,9 +139,8 @@ export function ChatView() {
 
       // Check connection before attempting to edit
       if (!connected) {
-        setError("You're offline right now. Reconnect to edit messages.");
+        setError("You're offline right now. Reconnect to edit messages.", 10000);
         setPendingEdit(null);
-        setTimeout(() => setError(null), 10000);
         return;
       }
 
@@ -150,7 +150,7 @@ export function ChatView() {
       // Update the message content
       updateMessage(currentConversation.id, messageId, newContent);
 
-      setError(null);
+      clearError();
       setIsSending(true);
       setPendingEdit(null);
 
@@ -174,8 +174,7 @@ export function ChatView() {
       } catch (err: unknown) {
         console.error("Failed to send edited message:", err);
         const errorMsg = typeof err === "string" ? err : String(err).replace("Error: ", "");
-        setError(errorMsg);
-        setTimeout(() => setError(null), 15000);
+        setError(errorMsg, 15000);
       } finally {
         setIsSending(false);
       }
@@ -186,6 +185,7 @@ export function ChatView() {
       deleteMessagesAfter,
       updateMessage,
       addMessage,
+      connected,
     ],
   );
 
@@ -234,8 +234,7 @@ export function ChatView() {
 
       // Check connection before attempting to regenerate
       if (!connected) {
-        setError("You're offline right now. Reconnect to regenerate responses.");
-        setTimeout(() => setError(null), 10000);
+        setError("You're offline right now. Reconnect to regenerate responses.", 10000);
         return;
       }
 
@@ -256,7 +255,7 @@ export function ChatView() {
       // Delete the assistant message we're regenerating
       deleteMessage(currentConversation.id, messageId);
 
-      setError(null);
+      clearError();
       setIsSending(true);
 
       try {
@@ -279,8 +278,7 @@ export function ChatView() {
       } catch (err: unknown) {
         console.error("Failed to regenerate response:", err);
         const errorMsg = typeof err === "string" ? err : String(err).replace("Error: ", "");
-        setError(errorMsg);
-        setTimeout(() => setError(null), 15000);
+        setError(errorMsg, 15000);
       } finally {
         setIsSending(false);
       }
@@ -292,6 +290,7 @@ export function ChatView() {
       settings.defaultModel,
       deleteMessage,
       addMessage,
+      connected,
     ],
   );
 
@@ -303,13 +302,12 @@ export function ChatView() {
     
     // Check connection before attempting to send
     if (!connected) {
-      setError("You're offline right now. Reconnect to send messages.");
+      setError("You're offline right now. Reconnect to send messages.", 10000);
       setLastFailedMessage({ content, attachments });
-      setTimeout(() => setError(null), 10000);
       return;
     }
 
-    setError(null);
+    clearError();
     setLastFailedMessage(null);
     setIsSending(true);
 
@@ -357,11 +355,8 @@ export function ChatView() {
     } catch (err: unknown) {
       console.error("Failed to send message:", err);
       const errorMsg = typeof err === "string" ? err : String(err).replace("Error: ", "");
-      setError(errorMsg);
+      setError(errorMsg, 15000);
       setLastFailedMessage({ content, attachments });
-
-      // Auto-dismiss error after 15 seconds
-      setTimeout(() => setError(null), 15000);
     } finally {
       setIsSending(false);
     }

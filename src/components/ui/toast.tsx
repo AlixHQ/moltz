@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { cn } from "../../lib/utils";
 
 export interface Toast {
@@ -31,20 +31,26 @@ function ToastItem({
   onDismiss: (id: string) => void;
 }) {
   const [isExiting, setIsExiting] = useState(false);
+  const dismissTimerRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const duration = toast.duration || 5000;
     const timer = setTimeout(() => {
       setIsExiting(true);
-      setTimeout(() => onDismiss(toast.id), 300);
+      dismissTimerRef.current = window.setTimeout(() => onDismiss(toast.id), 300);
     }, duration);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (dismissTimerRef.current !== undefined) {
+        clearTimeout(dismissTimerRef.current);
+      }
+    };
   }, [toast.id, toast.duration, onDismiss]);
 
   const handleDismiss = () => {
     setIsExiting(true);
-    setTimeout(() => onDismiss(toast.id), 300);
+    dismissTimerRef.current = window.setTimeout(() => onDismiss(toast.id), 300);
   };
 
   const icons = {

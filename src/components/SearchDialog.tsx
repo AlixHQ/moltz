@@ -46,11 +46,13 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
       requestAnimationFrame(() => {
         inputRef.current?.focus();
       });
+      // Clear state on open (fresh start each time)
       setQuery("");
       setResults([]);
       setFilteredResults([]);
       setSelectedIndex(0);
       setRoleFilter("all");
+      setTotalMatches(0);
     }
   }, [open]);
 
