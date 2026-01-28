@@ -380,4 +380,97 @@ describe("MessageBubble", () => {
       expect(copyButton).toBeInTheDocument();
     });
   });
+
+  describe("attachments", () => {
+    it("should render image attachments", () => {
+      const message: Message = {
+        id: "1",
+        role: "user",
+        content: "Check out this image",
+        timestamp: new Date(),
+        attachments: [
+          {
+            id: "att-1",
+            filename: "test.jpg",
+            mimeType: "image/jpeg",
+            data: "base64encodeddata",
+          },
+        ],
+      };
+
+      render(<MessageBubble message={message} />);
+      
+      const img = screen.getByAltText("test.jpg");
+      expect(img).toBeInTheDocument();
+    });
+
+    it("should render file attachments", () => {
+      const message: Message = {
+        id: "1",
+        role: "user",
+        content: "Here's a document",
+        timestamp: new Date(),
+        attachments: [
+          {
+            id: "att-1",
+            filename: "document.pdf",
+            mimeType: "application/pdf",
+            url: "https://example.com/doc.pdf",
+          },
+        ],
+      };
+
+      render(<MessageBubble message={message} />);
+      
+      expect(screen.getByText("document.pdf")).toBeInTheDocument();
+    });
+
+    it("should render multiple attachments", () => {
+      const message: Message = {
+        id: "1",
+        role: "user",
+        content: "Multiple files",
+        timestamp: new Date(),
+        attachments: [
+          {
+            id: "att-1",
+            filename: "image1.jpg",
+            mimeType: "image/jpeg",
+            data: "base64data1",
+          },
+          {
+            id: "att-2",
+            filename: "image2.jpg",
+            mimeType: "image/jpeg",
+            data: "base64data2",
+          },
+          {
+            id: "att-3",
+            filename: "file.txt",
+            mimeType: "text/plain",
+            url: "https://example.com/file.txt",
+          },
+        ],
+      };
+
+      render(<MessageBubble message={message} />);
+      
+      expect(screen.getByAltText("image1.jpg")).toBeInTheDocument();
+      expect(screen.getByAltText("image2.jpg")).toBeInTheDocument();
+      expect(screen.getByText("file.txt")).toBeInTheDocument();
+    });
+
+    it("should not render attachments when none exist", () => {
+      const message: Message = {
+        id: "1",
+        role: "user",
+        content: "No attachments",
+        timestamp: new Date(),
+      };
+
+      render(<MessageBubble message={message} />);
+      
+      expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    });
+  });
 });

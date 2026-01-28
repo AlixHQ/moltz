@@ -2,7 +2,23 @@
 
 This document describes the technical architecture of Moltz, including system components, data flow, and design decisions.
 
+**For non-developers:** This is technical documentation for contributors and curious users. If you just want to use Moltz, check out the [User Guide](./User-Guide.md) instead.
+
 **Note:** This documentation includes Mermaid diagrams. View on GitHub or in a Mermaid-compatible markdown viewer for the best experience.
+
+---
+
+## TL;DR for Developers
+
+**Stack:**
+- Frontend: React 18 + TypeScript + Vite
+- Backend: Rust + Tauri 2.0
+- State: Zustand
+- Database: Dexie (IndexedDB)
+- UI: Radix UI + Tailwind CSS
+- Protocol: WebSocket to Clawdbot Gateway
+
+**Why these choices?** Speed, security, and developer experience. See [Design Decisions](#design-decisions) for details.
 
 ---
 

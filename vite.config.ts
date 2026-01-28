@@ -40,7 +40,14 @@ export default defineConfig({
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
             return 'react-vendor';
           }
-          // Split Radix UI
+          // Split Radix UI primitives (dialog, dropdown, scroll-area) separately
+          // These are used in dialogs which are lazy-loaded
+          if (id.includes('node_modules/@radix-ui/react-dialog') ||
+              id.includes('node_modules/@radix-ui/react-dropdown-menu') ||
+              id.includes('node_modules/@radix-ui/react-scroll-area')) {
+            return 'radix-dialogs';
+          }
+          // Other Radix UI components (tooltip, switch, separator, slot)
           if (id.includes('node_modules/@radix-ui')) {
             return 'radix-ui';
           }
@@ -55,6 +62,10 @@ export default defineConfig({
           // Database (lazy-loaded via persistence.ts)
           if (id.includes('dexie')) {
             return 'dexie';
+          }
+          // Framer Motion (lazy-loaded via UpdateNotification)
+          if (id.includes('node_modules/framer-motion')) {
+            return 'framer-motion';
           }
         },
       },

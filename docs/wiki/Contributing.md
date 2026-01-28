@@ -544,6 +544,52 @@ Contributors are recognized in:
 
 ## First-Time Contributors
 
+Never contributed to open source before? **We'd love to be your first!**
+
+### Your First Contribution (Step-by-Step)
+
+#### 1. Pick a Small Task (5 minutes)
+
+Start here:
+- Fix a typo in documentation
+- Add a missing comma
+- Improve a sentence clarity
+- Add an example to a doc
+
+**Why start small?** Learn the process without pressure.
+
+---
+
+#### 2. Make the Change (10 minutes)
+
+**Easy way (GitHub web):**
+1. Find the file on GitHub
+2. Click the pencil icon (Edit)
+3. Make your change
+4. Scroll down → "Propose changes"
+
+**Local way (if comfortable with git):**
+```bash
+git clone https://github.com/YOUR_USERNAME/moltz.git
+# Edit file
+git add .
+git commit -m "docs: fix typo in User Guide"
+git push
+```
+
+---
+
+#### 3. Open Pull Request (5 minutes)
+
+1. GitHub will show "Compare & pull request" button
+2. Click it
+3. Describe what you changed (1-2 sentences)
+4. Click "Create pull request"
+
+**Done!** We'll review it usually within 24-48 hours.
+
+---
+
 ### Good First Issues
 
 Look for issues labeled `good first issue`:

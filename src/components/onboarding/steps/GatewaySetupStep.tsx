@@ -359,6 +359,9 @@ export function GatewaySetupStep({
     return () => {
       isMountedRef.current = false;
       clearTimeout(visibilityTimer);
+      if (autoAdvanceTimerRef.current !== undefined) {
+        clearTimeout(autoAdvanceTimerRef.current);
+      }
     };
   }, [autoDetectGateway]);
 
@@ -517,7 +520,10 @@ export function GatewaySetupStep({
         });
 
       // Auto-advance (if still mounted and not cancelled)
-      setTimeout(() => {
+      if (autoAdvanceTimerRef.current !== undefined) {
+        clearTimeout(autoAdvanceTimerRef.current);
+      }
+      autoAdvanceTimerRef.current = window.setTimeout(() => {
         if (isMountedRef.current && !isCancelledRef.current) {
           onSuccess();
         }

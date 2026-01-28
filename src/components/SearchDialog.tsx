@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { searchPersistedMessages } from "../lib/persistence";
 import { EmptyState } from "./ui/empty-state";
 import { MessageSquare, Frown } from "lucide-react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 
 interface SearchDialogProps {
   open: boolean;
@@ -28,6 +29,8 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
 
   // Focus input when dialog opens
   useEffect(() => {
@@ -137,6 +140,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
 
       {/* Dialog */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="search-dialog-title"

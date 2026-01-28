@@ -7,12 +7,13 @@ Complete guide to using Moltz effectively for AI conversations.
 ## Table of Contents
 
 1. [Basic Usage](#basic-usage)
-2. [Conversations](#conversations)
-3. [Messages](#messages)
-4. [Search](#search)
-5. [Settings](#settings)
-6. [Keyboard Shortcuts](#keyboard-shortcuts)
-7. [Tips & Tricks](#tips--tricks)
+2. [Common Workflows](#common-workflows)
+3. [Conversations](#conversations)
+4. [Messages](#messages)
+5. [Search](#search)
+6. [Settings](#settings)
+7. [Keyboard Shortcuts](#keyboard-shortcuts)
+8. [Tips & Tricks](#tips--tricks)
 
 ---
 
@@ -43,6 +44,95 @@ Complete guide to using Moltz effectively for AI conversations.
 - **Multi-line messages:** `Shift+Enter` adds a new line without sending
 - **Quick edits:** `↑` arrow key edits your last message instantly
 - **Stop generation:** Hit `Esc` if the AI is going off track
+
+---
+
+## Common Workflows
+
+### How do I... ask a quick question without opening the app?
+
+1. Press `Cmd/Ctrl+Shift+Space` (Quick Ask hotkey)
+2. Moltz appears on top of your current app
+3. Type your question
+4. Get your answer
+5. Press `Esc` to dismiss
+
+**Perfect for:** Quick lookups while coding, writing, or browsing.
+
+---
+
+### How do I... attach a file for the AI to analyze?
+
+1. Click the 📎 button in the message input
+2. Select your file (image, PDF, code file, etc.)
+3. The file appears as a preview above the input
+4. Type your question about the file
+5. Press `Enter`
+
+**Example:** "What's wrong with this code?" + attach `buggy-script.py`
+
+---
+
+### How do I... find an old conversation?
+
+**Method 1: Search (fastest)**
+1. Press `Cmd/Ctrl+K`
+2. Type keywords from the conversation
+3. Click the result to jump to it
+
+**Method 2: Scroll the sidebar**
+- Recent conversations appear at the top
+- Pinned conversations stay at the very top
+- Scroll down to find older ones
+
+---
+
+### How do I... get a better response?
+
+**Try these:**
+
+1. **Regenerate:** Hover over AI response → Click 🔄 to get a different answer
+2. **Edit your question:** Press `↑` to edit your last message, then send again
+3. **Add context:** Include more details, examples, or constraints
+4. **Be specific:** Instead of "help with code," say "fix this Python syntax error"
+
+---
+
+### How do I... copy code from an AI response?
+
+Hover over the code block → Click the **Copy** button in the top-right corner.
+
+The code is now on your clipboard, ready to paste.
+
+---
+
+### How do I... export a conversation for sharing?
+
+1. Open the conversation you want to export
+2. Click the **⋯** menu (top-right)
+3. Select **Export as Markdown**
+4. Choose where to save the `.md` file
+5. Share the file with teammates, or commit it to your repo
+
+---
+
+### How do I... keep important conversations at the top?
+
+Right-click the conversation → **Pin to top**
+
+Pinned conversations show a 📌 icon and always appear first in your sidebar.
+
+---
+
+### How do I... switch between dark and light mode?
+
+**Automatic (recommended):**
+- Settings → General → Theme → **System**
+- Moltz follows your OS theme automatically
+
+**Manual:**
+- Settings → General → Theme → **Dark** or **Light**
+- Or press `Cmd/Ctrl+Shift+T` to toggle quickly
 
 ---
 

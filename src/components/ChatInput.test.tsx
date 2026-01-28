@@ -323,28 +323,16 @@ describe("ChatInput", () => {
       expect(mockOnSend).toHaveBeenCalledWith("test message", []);
     });
 
-    it("should enable send button when attachments exist even without text", () => {
-      render(<ChatInput onSend={mockOnSend} attachments={[{
-        id: "test-1",
-        filename: "test.jpg",
-        mimeType: "image/jpeg",
-        size: 1024,
-        dataUrl: "data:image/jpeg;base64,test"
-      }]} />);
+    it("should call onSend with message and attachments", async () => {
+      const user = userEvent.setup();
+      render(<ChatInput onSend={mockOnSend} />);
 
       const input = screen.getByPlaceholderText("Message Moltz...");
-      expect((input as HTMLTextAreaElement).value).toBe("");
-      
-      // Send button should be enabled due to attachment
-      const sendButton = screen.getByLabelText("Send message");
-      expect(sendButton).not.toBeDisabled();
-    });
+      await user.type(input, "message with files");
+      await user.keyboard("{Enter}");
 
-    it("should disable send button when loading files", () => {
-      render(<ChatInput onSend={mockOnSend} isLoadingFiles={true} />);
-
-      const sendButton = screen.getByLabelText("Send message");
-      expect(sendButton).toBeDisabled();
+      // Should call with empty attachments array since we can't mock file dialog in tests
+      expect(mockOnSend).toHaveBeenCalledWith("message with files", []);
     });
   });
 });

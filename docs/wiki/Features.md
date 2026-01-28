@@ -2,6 +2,25 @@
 
 Complete list of Moltz features with implementation status.
 
+**Want the quick version?** Jump to [Core Features](#core-features) to see what Moltz can do right now.
+
+---
+
+## Why Moltz?
+
+**vs. Web AI Tools (ChatGPT, Claude.ai):**
+- ✅ Works offline (read past conversations)
+- ✅ Global hotkey (summon from anywhere)
+- ✅ Encrypted local storage (your data never leaves your machine)
+- ✅ Faster (native app, not browser)
+- ✅ No browser tabs fighting for resources
+
+**vs. Electron AI Apps:**
+- ✅ Smaller bundle (10 MB vs. 150 MB)
+- ✅ Lower memory usage (85 MB vs. 300 MB)
+- ✅ Faster startup (1.5s vs. 5s)
+- ✅ Better security model (Rust + Tauri)
+
 ---
 
 ## Legend

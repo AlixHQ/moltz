@@ -547,6 +547,64 @@ rm ~/.config/com.moltz.client/config.json
 
 ---
 
+## Recommended Settings
+
+### For Remote Work (Home + Office)
+
+**Connection:**
+- Timeout: 30 seconds
+- Auto-connect: Off (manual when you switch networks)
+
+**Privacy:**
+- Export data weekly to backup drive
+- Different tokens for home vs. work Gateway
+
+---
+
+### For Laptop Users (Battery Life)
+
+**Appearance:**
+- Font size: 12-13px (less to render)
+- Message density: Compact
+- Reduce Motion: On (in OS settings)
+
+**Advanced:**
+- Performance mode: On
+- Log level: Quiet
+
+**Expected:** 30% longer battery life
+
+---
+
+### For Accessibility
+
+**Appearance:**
+- Font size: 17-20px
+- Theme: High contrast (system setting)
+- Message density: Comfortable
+
+**Keyboard Shortcuts:**
+- Customize to avoid conflicts
+- Use simple combinations (Ctrl+number keys)
+
+---
+
+### For Power Users
+
+**Keyboard Shortcuts:**
+- Customize everything to muscle memory
+- Quick Ask: Easy-to-reach combo (e.g., `Ctrl+Space`)
+
+**Privacy:**
+- Export data: Monthly to encrypted drive
+- Keep exports encrypted (password-protect)
+
+**Advanced:**
+- Developer console: Enabled
+- Log level: Verbose (for debugging)
+
+---
+
 ## Tips
 
 ### Optimize for Your Setup

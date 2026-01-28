@@ -1,6 +1,8 @@
 import { cn } from "../../lib/utils";
 import { Button } from "./button";
 import { AlertTriangle } from "lucide-react";
+import { useRef } from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -21,6 +23,9 @@ export function ConfirmDialog({
   confirmText = "Confirm",
   confirmVariant = "primary",
 }: ConfirmDialogProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
+
   if (!open) return null;
 
   return (
@@ -29,10 +34,17 @@ export function ConfirmDialog({
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
         onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onClose();
+        }}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close dialog"
       />
 
       {/* Dialog */}
       <div
+        ref={dialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"

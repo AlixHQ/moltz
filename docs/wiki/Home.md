@@ -23,7 +23,8 @@ Think of it as your AI assistant that lives on your machine, not in a browser ta
 ## Documentation Structure
 
 ### 🚀 Getting Started
-- **[Getting Started](./Getting-Started.md)** — Installation and first connection
+- **[Quick Start](./Quick-Start.md)** — Get running in 5 minutes ⚡
+- **[Getting Started](./Getting-Started.md)** — Full installation guide
 - **[User Guide](./User-Guide.md)** — Using Moltz day-to-day
 - **[Configuration](./Configuration.md)** — Settings and customization
 - **[Troubleshooting](./Troubleshooting.md)** — Common issues and solutions
@@ -49,7 +50,8 @@ Think of it as your AI assistant that lives on your machine, not in a browser ta
 
 | I want to... | Go to... |
 |-------------|----------|
-| Install Moltz for the first time | [Getting Started](./Getting-Started.md) |
+| Get started in 5 minutes | [Quick Start](./Quick-Start.md) ⚡ |
+| Full installation guide | [Getting Started](./Getting-Started.md) |
 | Connect to Clawdbot Gateway | [Getting Started → Connection Setup](./Getting-Started.md#connection-setup) |
 | Search conversations | [User Guide → Search](./User-Guide.md#search) |
 | Set up keyboard shortcuts | [Configuration → Shortcuts](./Configuration.md#keyboard-shortcuts) |

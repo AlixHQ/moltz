@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,35 +22,45 @@ export function UpdateNotification({ onUpdateDismissed }: UpdateNotificationProp
   const [isInstalling, setIsInstalling] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
     // Listen for update-available events from backend
     const unlistenAvailable = listen<UpdateInfo>("update-available", (event) => {
-      setUpdateInfo(event.payload);
-      setError(null);
+      if (isMountedRef.current) {
+        setUpdateInfo(event.payload);
+        setError(null);
+      }
     });
 
     // Listen for download progress
     const unlistenProgress = listen<number>("update-download-progress", (event) => {
-      setDownloadProgress(event.payload);
+      if (isMountedRef.current) {
+        setDownloadProgress(event.payload);
+      }
     });
 
     // Listen for download completion
     const unlistenDownloaded = listen("update-downloaded", () => {
-      setIsInstalling(false);
+      if (isMountedRef.current) {
+        setIsInstalling(false);
+      }
       // The app will restart automatically via tauri-plugin-updater
     });
 
     // Check if there's already a pending update
     invoke<UpdateInfo | null>("get_update_status")
       .then((info) => {
-        if (info?.available) {
+        if (isMountedRef.current && info?.available) {
           setUpdateInfo(info);
         }
       })
       .catch((err) => console.error("Failed to get update status:", err));
 
     return () => {
+      isMountedRef.current = false;
       unlistenAvailable.then((fn) => fn());
       unlistenProgress.then((fn) => fn());
       unlistenDownloaded.then((fn) => fn());

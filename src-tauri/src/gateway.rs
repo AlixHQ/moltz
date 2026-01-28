@@ -1397,13 +1397,17 @@ pub async fn send_message(
         .await
         .map_err(|e| e.to_string())?;
 
-    // Track for dedup
-    state
-        .inner
-        .processed_ids
-        .lock()
-        .await
-        .insert(request_id.clone());
+    // Track for dedup with size limit to prevent unbounded growth
+    let mut processed = state.inner.processed_ids.lock().await;
+    
+    // CRITICAL-7: Prevent unbounded growth of processed_ids
+    // Clear the set if it grows too large (10k entries = ~1MB memory)
+    if processed.len() > 10_000 {
+        processed.clear();
+    }
+    
+    processed.insert(request_id.clone());
+    drop(processed);
 
     Ok(request_id)
 }

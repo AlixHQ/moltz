@@ -85,6 +85,15 @@
   width: 4px;
 }
 
+/* PERF: CSS containment for better rendering performance */
+.message-bubble {
+  contain: layout style paint;
+}
+
+.conversation-item {
+  contain: layout style;
+}
+
 /* border-3 utility for custom widths */
 @layer utilities {
   .border-3 {

@@ -590,6 +590,57 @@ Paste relevant logs here.
 
 ---
 
+## Quick Fixes
+
+### Messages won't send
+
+**Try this (in order):**
+1. Check connection status (icon in top-right)
+2. Click **Reconnect** if disconnected
+3. Restart Moltz
+4. Check Gateway is running: `clawdbot status`
+5. Regenerate token: `clawdbot token regenerate`
+
+---
+
+### App won't open after update
+
+**macOS:**
+```bash
+xattr -cr /Applications/Moltz.app
+```
+
+**Windows:** Right-click → Run as Administrator once
+
+**Linux:** Reinstall the package
+
+---
+
+### Keyboard shortcuts not working
+
+**Check:**
+1. Are they enabled in Settings → Keyboard Shortcuts?
+2. Conflict with system shortcuts? (try different keys)
+3. macOS: Did you grant Accessibility permission?
+   - System Preferences → Security & Privacy → Accessibility
+   - Add Moltz to the list
+
+---
+
+### "Out of memory" error
+
+**Immediate fix:**
+1. Quit Moltz
+2. Delete old conversations you don't need
+3. Restart Moltz
+
+**Long-term fix:**
+- Export and archive old conversations monthly
+- Keep active conversations under 500
+- Close other apps if RAM is limited
+
+---
+
 ## FAQ
 
 ### How do I reset Moltz to defaults?

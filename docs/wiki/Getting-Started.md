@@ -2,6 +2,8 @@
 
 This guide will help you install Moltz and connect to Clawdbot Gateway for the first time.
 
+**⚡ In a hurry?** Check the [Quick Start](./Quick-Start.md) guide to get running in 5 minutes.
+
 ---
 
 ## Prerequisites

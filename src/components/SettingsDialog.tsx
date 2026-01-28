@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useStore, ModelInfo } from "../stores/store";
 import { invoke } from "@tauri-apps/api/core";
 import { cn } from "../lib/utils";
@@ -11,6 +11,7 @@ import {
 import { Switch } from "./ui/switch";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toast";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -76,6 +77,8 @@ export function SettingsDialog({
   const [protocolNotice, setProtocolNotice] = useState<string | null>(null);
   const [showToken, setShowToken] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
 
   // Only sync form data when dialog opens, not when settings reference changes
   // This prevents reverting edits when the store updates during typing
@@ -279,6 +282,7 @@ export function SettingsDialog({
 
       {/* Dialog */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-dialog-title"

@@ -28,6 +28,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 
 interface ExportDialogProps {
   open: boolean;
@@ -83,6 +84,8 @@ export function ExportDialog({
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const copiedTimerRef = useRef<number | undefined>();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
 
   // Cleanup copied timer on unmount
   useEffect(() => {
@@ -175,6 +178,7 @@ export function ExportDialog({
       {/* Dialog */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby="export-dialog-title"
