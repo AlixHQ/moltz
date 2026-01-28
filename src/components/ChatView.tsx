@@ -138,7 +138,7 @@ export function ChatView() {
 
       // Check connection before attempting to edit
       if (!connected) {
-        setError("Cannot edit messages while offline. Please wait for reconnection.");
+        setError("You're offline right now. Reconnect to edit messages.");
         setPendingEdit(null);
         setTimeout(() => setError(null), 10000);
         return;
@@ -234,7 +234,7 @@ export function ChatView() {
 
       // Check connection before attempting to regenerate
       if (!connected) {
-        setError("Cannot regenerate responses while offline. Please wait for reconnection.");
+        setError("You're offline right now. Reconnect to regenerate responses.");
         setTimeout(() => setError(null), 10000);
         return;
       }

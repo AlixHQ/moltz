@@ -142,7 +142,7 @@ export const MessageBubble = memo(function MessageBubble({
             {isUser ? "You" : "Moltz"}
           </span>
           {message.isPending && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
+            <span className="text-xs text-muted-foreground flex items-center gap-1 animate-in fade-in duration-200">
               <span className="inline-block w-1 h-1 rounded-full bg-muted-foreground animate-pulse" />
               Sending...
             </span>
@@ -174,6 +174,8 @@ export const MessageBubble = memo(function MessageBubble({
             isUser &&
               !isEditing &&
               "bg-gradient-to-br from-primary/10 to-primary/[0.06] shadow-sm shadow-primary/10 rounded-2xl rounded-tr-sm px-4 py-3",
+            // Pending state: subtle opacity
+            message.isPending && isUser && "opacity-80",
             // Streaming state: subtle border pulse with GPU acceleration
             message.isStreaming &&
               !isUser &&

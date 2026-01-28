@@ -438,7 +438,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
           ) : query ? (
             <EmptyState
               icon={<Frown className="w-8 h-8" strokeWidth={1.5} />}
-              title="Nothing found"
+              title="No results found"
               description={`Try different keywords or check your spelling`}
             />
           ) : (

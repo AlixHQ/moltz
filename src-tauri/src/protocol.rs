@@ -263,16 +263,40 @@ pub enum ConnectionState {
 }
 
 impl ConnectionState {
+    /// Returns true if currently connected to Gateway
     pub fn is_connected(&self) -> bool {
         matches!(self, Self::Connected { .. })
     }
 
+    /// Returns true if connection is in progress (initial or retry)
     pub fn is_connecting(&self) -> bool {
         matches!(self, Self::Connecting | Self::Reconnecting { .. })
     }
 
+    /// Returns true if messages can be sent (connected or will be queued)
     pub fn can_send(&self) -> bool {
-        matches!(self, Self::Connected { .. })
+        matches!(self, Self::Connected { .. } | Self::Reconnecting { .. })
+    }
+
+    /// Returns true if disconnected and not attempting to connect
+    pub fn is_disconnected(&self) -> bool {
+        matches!(self, Self::Disconnected)
+    }
+
+    /// Returns true if connection has failed and requires user action
+    pub fn is_failed(&self) -> bool {
+        matches!(self, Self::Failed { .. })
+    }
+
+    /// Returns a user-friendly status message
+    pub fn status_message(&self) -> &str {
+        match self {
+            Self::Disconnected => "Not connected",
+            Self::Connecting => "Connecting...",
+            Self::Connected { .. } => "Connected",
+            Self::Reconnecting { .. } => "Reconnecting...",
+            Self::Failed { .. } => "Connection failed",
+        }
     }
 }
 
