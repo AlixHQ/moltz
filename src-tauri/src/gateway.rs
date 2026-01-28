@@ -258,23 +258,40 @@ fn get_platform() -> String {
     return "unknown".to_string();
 }
 
-/// Debug: Test raw TCP connection
+/// Debug: Test raw TCP connection using BLOCKING std::net (works better with Tailscale on macOS)
 async fn test_tcp_connection(host: &str, port: u16) -> Result<(), String> {
     let addr = format!("{}:{}", host, port);
-    log_protocol_error("TCP Test", &format!("Attempting raw TCP to {}", addr));
+    log_protocol_error("TCP Test", &format!("Attempting BLOCKING TCP to {}", addr));
     
-    match tokio::time::timeout(Duration::from_secs(5), TcpStream::connect(&addr)).await {
-        Ok(Ok(_stream)) => {
+    let addr_clone = addr.clone();
+    let result = tokio::task::spawn_blocking(move || {
+        use std::net::TcpStream as StdTcpStream;
+        use std::time::Duration as StdDuration;
+        
+        // Try to resolve and connect using std::net (which uses system networking)
+        match std::net::ToSocketAddrs::to_socket_addrs(&addr_clone.as_str()) {
+            Ok(mut addrs) => {
+                if let Some(socket_addr) = addrs.next() {
+                    match StdTcpStream::connect_timeout(&socket_addr, StdDuration::from_secs(5)) {
+                        Ok(_) => Ok(()),
+                        Err(e) => Err(format!("Connect failed: {}", e)),
+                    }
+                } else {
+                    Err("DNS resolved but no addresses".to_string())
+                }
+            }
+            Err(e) => Err(format!("DNS resolution failed: {}", e)),
+        }
+    }).await.map_err(|e| format!("Task error: {}", e))?;
+    
+    match result {
+        Ok(()) => {
             log_protocol_error("TCP Test", &format!("SUCCESS - connected to {}", addr));
             Ok(())
         }
-        Ok(Err(e)) => {
+        Err(e) => {
             log_protocol_error("TCP Test", &format!("FAILED - {}: {}", addr, e));
-            Err(format!("TCP connect failed: {}", e))
-        }
-        Err(_) => {
-            log_protocol_error("TCP Test", &format!("TIMEOUT - {}", addr));
-            Err("TCP connect timeout".to_string())
+            Err(e)
         }
     }
 }
