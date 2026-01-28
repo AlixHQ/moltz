@@ -715,7 +715,7 @@ export function GatewaySetupStep({
 
             {/* Error message with actionable fixes */}
             {connectionState === "error" && errorMessage && (
-              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-3">
+              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 animate-in fade-in slide-in-from-top-2 duration-300 space-y-3 max-h-64 overflow-y-auto">
                 <div className="flex items-start gap-3">
                   <svg
                     className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
