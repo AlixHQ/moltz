@@ -50,6 +50,10 @@ export default defineConfig({
           if (id.includes('dexie')) {
             return 'dexie';
           }
+          // Split framer-motion (animations)
+          if (id.includes('framer-motion')) {
+            return 'framer-motion';
+          }
         },
       },
     },

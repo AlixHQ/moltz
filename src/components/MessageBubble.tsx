@@ -3,6 +3,7 @@ import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize from "rehype-sanitize";
+import { motion } from "framer-motion";
 import { Message, Attachment } from "../stores/store";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -19,6 +20,26 @@ import {
   FileText,
 } from "lucide-react";
 import { ImageRenderer } from "./ImageRenderer";
+
+// Spring animation config for message appearance
+const messageVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 10,
+    scale: 0.98
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 500,
+      damping: 30,
+      mass: 0.8
+    }
+  }
+};
 
 // Type definitions for ReactMarkdown components
 interface CodeProps {
@@ -137,12 +158,16 @@ export function MessageBubble({ message, onEdit, onRegenerate, isLastAssistantMe
   const isUser = message.role === "user";
 
   return (
-    <div 
+    <motion.div 
       className={cn("group flex gap-3", isUser && "flex-row-reverse")}
       onMouseEnter={() => setShowTimestamp(true)}
       onMouseLeave={() => setShowTimestamp(false)}
       role="article"
       aria-label={`Message from ${isUser ? "You" : "Moltzer"} sent ${formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}`}
+      variants={messageVariants}
+      initial="hidden"
+      animate="visible"
+      layout
     >
       {/* Avatar */}
       <div
@@ -428,7 +453,7 @@ export function MessageBubble({ message, onEdit, onRegenerate, isLastAssistantMe
           </span>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
