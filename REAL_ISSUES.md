@@ -1,7 +1,7 @@
 # Moltzer - Real Issues Assessment
 
-**Date:** 2026-01-28 06:47
-**Updated:** Fixed protocol bug and bundle size
+**Date:** 2026-01-28 07:07
+**Updated:** All critical issues fixed
 
 ## Fixed This Session
 
@@ -14,6 +14,16 @@
 - Added manual chunk splitting
 - React, Radix UI, Markdown, Dexie now separate chunks
 - Main bundle under 500KB warning threshold
+
+### ✅ System Prompt Support
+- Added `defaultSystemPrompt` to Settings
+- Added `systemPrompt` to Conversation type
+- UI in Settings dialog for default prompt
+
+### ✅ Token Usage Tracking
+- Gateway now emits usage stats on completion
+- Frontend stores usage per message
+- Display "X tokens" on assistant messages
 
 ---
 
