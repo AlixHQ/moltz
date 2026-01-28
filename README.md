@@ -1,36 +1,37 @@
 <div align="center">
   
-# ?? Moltzer
+# 🦞 Moltzer
 
-**A native, lightweight desktop client for Clawdbot**
+### Your AI, your Mac, your rules.
 
-ChatGPT-style interface for your personal AI assistant, built with Tauri for true native performance
+**A beautiful, private AI chat app that lives in your menu bar.**
 
-[![CI](https://github.com/AlixHQ/moltzer-community/actions/workflows/ci.yml/badge.svg)](https://github.com/AlixHQ/moltzer-community/actions/workflows/ci.yml)
-[![Release](https://github.com/AlixHQ/moltzer-community/actions/workflows/release.yml/badge.svg)](https://github.com/AlixHQ/moltzer-community/actions/workflows/release.yml)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue)](https://github.com/AlixHQ/moltzer-community/releases)
-[![Tauri](https://img.shields.io/badge/tauri-v2-orange)](https://tauri.app/)
-[![Version](https://img.shields.io/badge/version-1.0.0-green)](https://github.com/AlixHQ/moltzer-community/releases/latest)
+<img src=".github/social-preview.png" alt="Moltzer - AI chat that feels native" width="800" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);" />
 
-<img src=".github/social-preview.png" alt="Moltzer desktop client showing a conversation interface with Claude AI, featuring a dark theme and modern UI design" width="800" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);" />
-
-[Download](https://github.com/AlixHQ/moltzer-community/releases) � [Quick Start](#-quick-start) � [Features](#-features) � [Documentation](./SETUP.md) � [Contributing](./CONTRIBUTING.md)
+[**Download for Mac**](https://github.com/AlixHQ/moltzer-community/releases) · [Windows](https://github.com/AlixHQ/moltzer-community/releases) · [Linux](https://github.com/AlixHQ/moltzer-community/releases)
 
 </div>
 
 ---
 
-## ?? What is Moltzer?
+## Why Moltzer?
 
-Moltzer is a **native desktop application** that connects to your Clawdbot Gateway, providing a fast, beautiful interface for chatting with Claude and other AI models. Unlike browser-based or Electron apps, Moltzer uses your operating system's native webview, resulting in:
+**⌘⇧Space** — Ask anything, from anywhere. Moltzer lives in your menu bar, ready when you need it.
 
-- **~10MB binary** (not 300MB like Electron!)
-- **Minimal RAM usage** (~50MB vs 500MB)
-- **Native look & feel** on every platform
-- **Secure credential storage** via OS keychain
+| ChatGPT/Claude.ai | Moltzer |
+|-------------------|---------|
+| Browser tab you lose | Native app that's always there |
+| Your data on their servers | Everything stays on your Mac |
+| Generic web interface | Feels like a real Mac app |
+| No offline access | Read old chats anytime |
 
-Think of it as "ChatGPT for Clawdbot" � but better, because it's yours.
+### What makes it different:
+
+- 🎯 **Global hotkey** — `⌘⇧Space` opens Quick Ask from anywhere
+- 🔒 **Private by default** — Conversations stored locally, encrypted
+- ⚡ **Actually fast** — Native app, not a browser in disguise
+- 🍎 **Mac-native** — Proper menus, shortcuts, menu bar icon
+- 🤖 **Any AI model** — Claude, GPT, Gemini, local models via Clawdbot
 
 ---
 
