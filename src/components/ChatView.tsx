@@ -1,10 +1,11 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useStore } from "../stores/store";
 import { ChatInput, PreparedAttachment } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { ConfirmDialog } from "./ui/confirm-dialog";
 import { MessageSkeleton } from "./ui/skeleton";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   ArrowDown,
   AlertTriangle,
@@ -59,6 +60,17 @@ export function ChatView() {
       return () => clearTimeout(timer);
     }
   }, [currentConversation]);
+
+  // PERF: Virtual scrolling for conversations with many messages (>50)
+  const shouldVirtualize = currentConversation && currentConversation.messages.length > 50;
+  
+  const virtualizer = useVirtualizer({
+    count: currentConversation?.messages.length || 0,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: useCallback(() => 200, []), // Estimated height of each message
+    enabled: shouldVirtualize,
+    overscan: 5, // Render 5 extra items above/below viewport
+  });
 
   // Auto-scroll to bottom on new messages (only if already near bottom)
   useEffect(() => {

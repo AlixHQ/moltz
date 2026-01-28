@@ -1,707 +1,401 @@
-# Troubleshooting Guide
+# Troubleshooting
 
-Common issues and solutions for Moltz users.
-
----
-
-## Table of Contents
-
-1. [Connection Issues](#connection-issues)
-2. [Performance Issues](#performance-issues)
-3. [Installation Issues](#installation-issues)
-4. [Data & Storage Issues](#data--storage-issues)
-5. [Platform-Specific Issues](#platform-specific-issues)
+Real solutions to real problems. No "have you tried turning it off and on again?"
 
 ---
 
-## Connection Issues
+## Connection Problems
 
-### Cannot Connect to Gateway
+### "Cannot connect to Gateway"
 
-**Symptoms:**
-- "Connection refused" error
-- "Connection timeout" error
-- Onboarding stuck on "Testing connection..."
+**Fix #1: Gateway isn't running (95% of cases)**
 
-**Possible Causes:**
-
-#### 1. Gateway Not Running
-
-**Check:**
 ```bash
-# Check if Gateway process is running
-ps aux | grep clawdbot   # macOS/Linux
-tasklist | findstr clawdbot   # Windows
-```
+# macOS/Linux
+clawdbot start
 
-**Solution:**
-```bash
+# Windows
 clawdbot start
 ```
 
-#### 2. Wrong URL
+Wait 5 seconds, then click "Test Connection" in Moltz again.
 
-**Check:**
-- Default: `ws://localhost:18789`
-- Remote: `wss://your-gateway.example.com`
+**Still not working?** Move to Fix #2.
 
-**Solution:**
-- Verify URL in Gateway config
-- Test connectivity: `curl http://localhost:18789/health`
+---
 
-#### 3. Wrong Token
+**Fix #2: Wrong token**
 
-**Check:**
 ```bash
+# Get your current token
 clawdbot token show
 ```
 
-**Solution:**
-```bash
-# Regenerate token
-clawdbot token regenerate
+Copy the token (it's the long random string). 
 
-# Copy new token to Moltz Settings
-```
+In Moltz:
+1. Settings → Connection
+2. Paste the token
+3. Click "Test Connection"
 
-#### 4. Firewall Blocking
-
-**Check:**
-- macOS: System Preferences → Security & Privacy → Firewall
-- Windows: Windows Defender Firewall → Allow an app
-- Linux: `sudo ufw status`
-
-**Solution:**
-- Allow Moltz through firewall
-- Allow port 18789 for Gateway
+**Still not working?** Move to Fix #3.
 
 ---
 
-### Connection Timeout (Tailscale)
+**Fix #3: Gateway is on a different port**
 
-**Symptom:** First connection to Tailscale Gateway takes 2-3 minutes.
-
-**Cause:** macOS async TCP + Tailscale Network Extension interaction.
-
-**Solution:**
-- **Be patient** on first connection (known issue)
-- Subsequent connections are instant
-- Use IPv4-only endpoint if available
-
-**Workaround:**
 ```bash
-# Find Gateway's Tailscale IPv4
-tailscale status | grep gateway-machine
-
-# Use direct IPv4 in Moltz
-wss://100.70.200.79:443
+# Check what port Gateway is using
+clawdbot config get port
 ```
+
+If it says anything other than `18789`, update Moltz:
+1. Settings → Connection
+2. Change `ws://localhost:18789` to `ws://localhost:YOUR_PORT`
+3. Test connection
+
+**Still not working?** [Open an issue](https://github.com/AlixHQ/moltz/issues) with:
+- Output of `clawdbot status`
+- Output of `clawdbot config show`
+- Error from Moltz (Settings → View Logs)
 
 ---
 
-### Connection Drops Randomly
+### "Connection timeout" (takes forever, then fails)
 
-**Symptoms:**
-- "Reconnecting..." appears frequently
-- Messages fail to send
-- Gateway shows as offline intermittently
+**macOS + Tailscale?** This is normal on first connection. Grab coffee, wait 2-3 minutes. After the first time, it connects instantly.
 
-**Possible Causes:**
+**Not using Tailscale?** Your network is slow or unreachable.
 
-#### 1. Network Instability
-
-**Check:**
+**Fix:**
 ```bash
-# Test connection stability
-ping -c 100 gateway-host
+# Can you reach the Gateway?
+ping your-gateway-hostname
 
-# Check for packet loss
+# Can you reach the Gateway port?
+curl -v ws://your-gateway:18789
 ```
 
-**Solution:**
-- Use wired connection instead of WiFi
-- Check router/firewall logs
-- Contact network admin
-
-#### 2. Gateway Crashing
-
-**Check Gateway logs:**
-```bash
-clawdbot logs --tail 100
-```
+If ping fails → Network/DNS problem  
+If curl fails → Gateway not accessible
 
 **Solution:**
-- Update Gateway to latest version
-- Report bug with logs
-- Increase Gateway memory/CPU allocation
-
-#### 3. Moltz Bug
-
-**Check Moltz logs:**
-- macOS: `~/Library/Logs/Moltz/`
-- Windows: `%APPDATA%\Moltz\logs\`
-- Linux: `~/.local/share/moltz/logs/`
-
-**Solution:**
-- Update Moltz to latest version
-- Report issue with logs
+- Check firewall rules
+- Check VPN is connected
+- Verify Gateway URL is correct
 
 ---
 
-### "Protocol Version Mismatch"
+### "Protocol version mismatch"
 
-**Symptom:** Connection fails with version incompatibility error.
+Your Moltz and Gateway versions don't match.
 
-**Cause:** Moltz version incompatible with Gateway version.
-
-**Solution:**
+**Fix:**
 ```bash
-# Update both to latest versions
+# Check Gateway version
+clawdbot --version
+
+# Check Moltz version
+# In Moltz: Settings → About
+```
+
+**If Gateway is older:**
+```bash
 npm update -g clawdbot
-# Download latest Moltz from GitHub Releases
 ```
 
-**Version Compatibility:**
-- Moltz 1.0.x requires Gateway 1.x or higher
-- Both client and Gateway should be updated to latest versions
+**If Moltz is older:**  
+Download latest from [releases](https://github.com/AlixHQ/moltz/releases/latest)
 
 ---
 
-## Performance Issues
+## Performance Problems
 
-### App Feels Slow
+### App is slow/laggy
 
-**Symptoms:**
-- Laggy scrolling
-- Delayed typing
-- High CPU usage
+**Fix #1: Too many conversations**
 
-**Diagnostics:**
-
-#### 1. Check Memory Usage
-
-**macOS:**
-```bash
-# Check Moltz memory usage
-ps aux | grep Moltz
-```
-
-**Windows:** Task Manager → Details → Moltz.exe
-
-**Expected:**
-- Idle: 80-100 MB
-- Active: 150-250 MB
-- Heavy use: 250-400 MB
-
-**If higher:** Possible memory leak, restart app.
-
-#### 2. Check Conversation Count
-
-**Too many conversations?**
-- Open Settings → Advanced → Statistics
-- If > 500 conversations, performance degrades
+Count your conversations. If you have > 500, that's the problem.
 
 **Solution:**
-- Delete old conversations
-- Export + delete archived conversations
+1. Export old conversations (right-click → Export)
+2. Delete them
+3. Restart Moltz
 
-#### 3. Check Message Count
-
-**In Developer Console (Cmd+Shift+I):**
-```javascript
-// Count total messages
-localStorage.getItem('moltz:message_count')
-```
-
-**If > 100K messages:** Consider exporting + clearing history.
-
-#### 4. Reduce Animations
-
-**macOS:**
-- System Preferences → Accessibility → Display → Reduce motion
-
-**Windows:**
-- Settings → Ease of Access → Display → Show animations (off)
-
-**Moltz respects OS preference and disables animations.**
+**Performance target:** < 100 conversations for best experience.
 
 ---
 
-### Slow Search
+**Fix #2: One giant conversation**
 
-**Symptom:** Search takes > 5 seconds to return results.
+How many messages in your longest conversation? If > 1000, that's the problem.
 
-**Cause:** Large database (> 50K messages) without indexes.
-
-**Solution:**
-1. Rebuild search index: Settings → Advanced → Rebuild Index
-2. If still slow, export + import data (rebuilds database)
+**Solution:**  
+Start a new conversation for new topics. Don't put everything in one mega-thread.
 
 ---
 
-### High CPU Usage
+**Fix #3: Hardware is slow**
 
-**Check:**
-- Which process? (Moltz or Gateway?)
-- When? (Idle, streaming, scrolling?)
+**Enable Performance Mode:**
+1. Settings → Advanced → Performance Mode ON
+2. Restart Moltz
 
-**Common Causes:**
-
-#### During Streaming
-- **Expected:** 10-20% CPU during AI response
-- **If higher:** Check Gateway logs for issues
-
-#### During Idle
-- **Expected:** < 5% CPU
-- **If higher:** Check for:
-  - Runaway background tasks
-  - Memory leaks
-  - Restart app
+This disables animations and reduces resource usage.
 
 ---
 
-## Installation Issues
+### Scrolling is janky
+
+**This was fixed in v1.0.** Update to latest version.
+
+Still janky after updating? [Report it](https://github.com/AlixHQ/moltz/issues) with:
+- Your OS and version
+- Number of messages in the conversation
+- Video of the jank (screen recording)
+
+---
+
+## Installation Problems
 
 ### macOS: "Moltz is damaged and can't be opened"
 
-**Cause:** Gatekeeper blocking unsigned app.
+This is Gatekeeper being paranoid about new apps.
 
-**Solution:**
+**Fix:**
 ```bash
-# Remove quarantine flag
+# Remove the quarantine flag
 xattr -cr /Applications/Moltz.app
-
-# Or right-click → Open → Open anyway
 ```
 
-**Future:** Moltz will be properly signed.
+Then open Moltz normally.
 
 ---
 
-### macOS: "Moltz wants to access your keychain"
+### macOS: Keychain prompts on every launch
 
-**Cause:** Moltz stores encryption key in macOS Keychain.
+**Fix:**
+1. Open Keychain Access app
+2. Search for "Moltz"
+3. Double-click the Moltz entry
+4. Click "Access Control" tab
+5. Select "Allow all applications to access this item"
 
-**Solution:**
-- Click "Always Allow" to avoid repeated prompts
-- Or click "Allow" each time (less convenient)
+Never see that prompt again.
 
 ---
 
 ### Windows: "Windows protected your PC"
 
-**Cause:** SmartScreen blocking unsigned app.
+We're a new publisher without expensive code signing certificates. The app is safe (open-source = auditable).
 
-**Solution:**
+**Fix:**
 1. Click "More info"
 2. Click "Run anyway"
-
-**Future:** Moltz will be properly signed.
+3. Continue with installation
 
 ---
 
-### Linux: Missing Dependencies
+### Linux: Missing dependencies
 
-**Symptom:** App fails to launch, errors about missing libraries.
-
-**Solution (Debian/Ubuntu):**
+**Debian/Ubuntu:**
 ```bash
-sudo apt install libwebkit2gtk-4.0-37 libgtk-3-0
+sudo apt install libwebkit2gtk-4.0-37 libgtk-3-0 libayatana-appindicator3-1
 ```
 
-**Solution (Fedora):**
+**Fedora:**
 ```bash
 sudo dnf install webkit2gtk3 gtk3
 ```
 
----
-
-### Auto-Update Fails
-
-**Symptom:** "Update failed" notification.
-
-**Causes:**
-1. No internet connection
-2. Update server down
-3. Disk full
-4. Insufficient permissions
-
-**Solution:**
-1. Check internet connection
-2. Free up disk space (need 500 MB)
-3. Download and install manually from [GitHub Releases](https://github.com/AlixHQ/moltz/releases)
+Then reinstall Moltz.
 
 ---
 
-## Data & Storage Issues
+## Data Problems
 
-### Lost Conversations After Update
+### Lost conversations after update
 
-**Cause:** Database migration failed.
+**Fix: Restore from automatic backup**
 
-**Solution:**
-
-#### 1. Check Backup
-
-Moltz creates automatic backups before updates:
-
-**Backup Location:**
-- macOS: `~/Library/Application Support/com.moltz.client/backups/`
-- Windows: `%APPDATA%\com.moltz.client\backups\`
-- Linux: `~/.config/com.moltz.client/backups/`
-
-#### 2. Restore from Backup
+Moltz creates backups before updates:
 
 ```bash
 # macOS
-cd ~/Library/Application\ Support/com.moltz.client/
-cp backups/latest.json conversations.json
-
-# Restart Moltz
-```
-
-#### 3. Manual Recovery
-
-If no backup:
-1. Open Developer Console (Cmd+Shift+I)
-2. Application → IndexedDB → moltz-db → conversations
-3. Export to JSON
-4. Import via Settings → Import Data
-
----
-
-### Cannot Decrypt Messages
-
-**Symptom:** Messages show as encrypted gibberish.
-
-**Causes:**
-1. Lost encryption key
-2. Corrupted keychain
-3. Reinstalled OS without backup
-
-**Solution:**
-
-**If you have system backup:**
-1. Restore from Time Machine / Windows Backup
-2. Keychain should be restored
-
-**If no backup:**
-- **Messages are unrecoverable** (by design, for security)
-- Start fresh, export conversations as plain text in future
-
----
-
-### Database Corrupted
-
-**Symptom:** App crashes on launch, "Database error" message.
-
-**Solution:**
-
-#### 1. Clear Database (Nuclear Option)
-
-**Warning:** This deletes all conversations!
-
-```bash
-# macOS
-rm -rf ~/Library/Application\ Support/com.moltz.client/IndexedDB/
+ls ~/Library/Application\ Support/com.moltz.client/backups/
 
 # Windows
-rmdir /s "%APPDATA%\com.moltz.client\IndexedDB"
+dir %APPDATA%\com.moltz.client\backups
 
 # Linux
-rm -rf ~/.config/com.moltz.client/IndexedDB/
+ls ~/.config/com.moltz.client/backups/
 ```
 
-#### 2. Rebuild from Export
-
-If you have exports:
-1. Clear database (above)
-2. Restart Moltz
-3. Settings → Import Data → Select export file
+Find the most recent backup, then:
+1. Settings → Import Data
+2. Select the backup file
+3. Choose "Merge" (keeps both old and new)
 
 ---
 
-### Running Out of Disk Space
+### Messages show as encrypted gibberish
 
-**Check Moltz disk usage:**
+You lost your encryption key. **Messages are unrecoverable by design.**
 
-**macOS:**
+**Prevention for next time:**
+- Use Time Machine / Windows Backup (backs up keychain too)
+- Or: Export conversations regularly (Settings → Export Data)
+
+Exported conversations are unencrypted, so you can always read them.
+
+---
+
+### Database corrupted / App won't start
+
+**Nuclear option: Reset everything**
+
+⚠️ **This deletes all conversations**. Export first if possible.
+
 ```bash
-du -sh ~/Library/Application\ Support/com.moltz.client/
+# macOS
+rm -rf ~/Library/Application\ Support/com.moltz.client/
+
+# Windows
+rmdir /s "%APPDATA%\com.moltz.client"
+
+# Linux
+rm -rf ~/.config/com.moltz.client/
 ```
 
-**Expected:**
-- 1,000 messages: ~10 MB
-- 10,000 messages: ~100 MB
-- 100,000 messages: ~1 GB
-
-**Solution:**
-- Delete old conversations
-- Export + clear history
-- Increase disk space
+Restart Moltz. Fresh start.
 
 ---
 
-## Platform-Specific Issues
+## Platform-Specific Problems
 
-### macOS
+### macOS: App freezes randomly
 
-#### Can't Open App After Update
+**Known issue on macOS Ventura+.** We're working on a fix.
 
-**Solution:**
+**Temporary workaround:**
+1. Force quit Moltz
+2. Reopen
+3. Enable Performance Mode (Settings → Advanced)
+
+---
+
+### Windows: WebView2 error
+
+**Fix: Install WebView2 Runtime**
+
+[Download here](https://go.microsoft.com/fwlink/p/?LinkId=2124703) (official Microsoft link)
+
+Install, restart Moltz.
+
+---
+
+### Linux: Tray icon not showing
+
+**If using Wayland:** System tray doesn't work by default.
+
+**Fix for GNOME:**
 ```bash
-# Re-sign the app
-codesign --force --deep --sign - /Applications/Moltz.app
+# Install extension
+sudo apt install gnome-shell-extension-appindicator
+
+# Enable it
+gnome-extensions enable appindicatorsupport@ubuntu.com
 ```
 
-#### Keychain Prompts on Every Launch
+Restart Moltz.
 
-**Solution:**
-1. Open Keychain Access
-2. Find "Moltz encryption key"
-3. Double-click → Access Control
-4. Add Moltz to "Always allow"
-
-#### App Freezes on macOS Ventura+
-
-**Known Issue:** Interaction with macOS WindowServer.
-
-**Workaround:**
-1. Disable window animations: Settings → Reduce Motion
-2. Update to latest Moltz (fix pending)
+**Using KDE?** Should work out of the box.
 
 ---
 
-### Windows
+## Getting More Help
 
-#### App Won't Launch After Install
+### Before Opening an Issue
 
-**Check:**
-1. Installed .NET Framework? (required)
-2. WebView2 installed? (required)
+Collect this info:
 
-**Solution:**
 ```bash
-# Download and install WebView2 Runtime
-https://developer.microsoft.com/microsoft-edge/webview2/
+# Your versions
+clawdbot --version
+# In Moltz: Settings → About → Version
+
+# Gateway status
+clawdbot status
+
+# Gateway config
+clawdbot config show
+
+# Moltz logs
+# In Moltz: Settings → Advanced → View Logs
+# Copy the last 50 lines
 ```
 
-#### Firewall Blocks Connection
+### Open an Issue
 
-**Solution:**
-1. Windows Defender Firewall → Allow an app
-2. Click "Change settings"
-3. Click "Allow another app"
-4. Browse to Moltz.exe
-5. Check both Private and Public networks
+[Create issue](https://github.com/AlixHQ/moltz/issues/new) with:
 
----
+1. **What you tried** (step-by-step)
+2. **What happened** (copy exact error message)
+3. **What you expected**
+4. **Your setup** (OS, versions from above)
+5. **Logs** (last 50 lines)
 
-### Linux
-
-#### App Not Listed in Application Menu
-
-**Solution:**
-```bash
-# Copy .desktop file
-sudo cp /opt/Moltz/moltz.desktop /usr/share/applications/
-
-# Update desktop database
-sudo update-desktop-database
-```
-
-#### Tray Icon Not Showing
-
-**Cause:** Desktop environment doesn't support tray icons (Wayland).
-
-**Workaround:**
-- Install GNOME Shell extension for system tray
-- Or use window mode (disable "Close to tray")
-
----
-
-## Getting Help
-
-### Before Reporting an Issue
-
-**Collect this information:**
-
-1. **Version:**
-   - Settings → About → Version
-
-2. **OS:**
-   - macOS version (e.g., macOS 13.5)
-   - Windows version (e.g., Windows 11 22H2)
-   - Linux distro + version (e.g., Ubuntu 22.04)
-
-3. **Gateway Version:**
-   ```bash
-   clawdbot version
-   ```
-
-4. **Error Logs:**
-   - Settings → Advanced → View Logs
-   - Copy relevant errors
-
-5. **Steps to Reproduce:**
-   - What did you do?
-   - What happened?
-   - What did you expect?
-
----
-
-### Reporting Issues
-
-**GitHub Issues:**
-https://github.com/AlixHQ/moltz/issues
-
-**Template:**
-```
-### Bug Description
-Briefly describe the issue.
-
-### Steps to Reproduce
-1. 
-2. 
-3. 
-
-### Expected Behavior
-What should happen.
-
-### Actual Behavior
-What actually happened.
-
-### Environment
-- OS: macOS 13.5
-- Moltz Version: 1.0.0
-- Gateway Version: 2025.1.28
-
-### Logs
-Paste relevant logs here.
-```
-
----
-
-### Community Support
-
-- **Discussions:** https://github.com/AlixHQ/moltz/discussions
-- **Discord:** (coming soon)
-- **Email:** support@alix.com (critical issues only)
-
----
-
-## Quick Fixes
-
-### Messages won't send
-
-**Try this (in order):**
-1. Check connection status (icon in top-right)
-2. Click **Reconnect** if disconnected
-3. Restart Moltz
-4. Check Gateway is running: `clawdbot status`
-5. Regenerate token: `clawdbot token regenerate`
-
----
-
-### App won't open after update
-
-**macOS:**
-```bash
-xattr -cr /Applications/Moltz.app
-```
-
-**Windows:** Right-click → Run as Administrator once
-
-**Linux:** Reinstall the package
-
----
-
-### Keyboard shortcuts not working
-
-**Check:**
-1. Are they enabled in Settings → Keyboard Shortcuts?
-2. Conflict with system shortcuts? (try different keys)
-3. macOS: Did you grant Accessibility permission?
-   - System Preferences → Security & Privacy → Accessibility
-   - Add Moltz to the list
-
----
-
-### "Out of memory" error
-
-**Immediate fix:**
-1. Quit Moltz
-2. Delete old conversations you don't need
-3. Restart Moltz
-
-**Long-term fix:**
-- Export and archive old conversations monthly
-- Keep active conversations under 500
-- Close other apps if RAM is limited
+We'll help!
 
 ---
 
 ## FAQ
 
-### How do I reset Moltz to defaults?
+### Can I use Moltz without Gateway?
 
-**Warning:** Deletes all data!
+No. Gateway handles API keys and AI routing. It's required.
+
+### Does Moltz work offline?
+
+You can read old conversations offline. Can't send new messages (needs Gateway, which needs internet to reach AI providers).
+
+### Where is my data stored?
+
+Locally on your computer, encrypted:
+- macOS: `~/Library/Application Support/com.moltz.client/`
+- Windows: `%APPDATA%\com.moltz.client\`
+- Linux: `~/.config/com.moltz.client/`
+
+### Can I move my data to another computer?
+
+Yes:
+1. Old computer: Settings → Export Data
+2. Copy the JSON file to new computer
+3. New computer: Settings → Import Data
+
+### How do I uninstall completely?
 
 **macOS:**
 ```bash
+rm -rf /Applications/Moltz.app
 rm -rf ~/Library/Application\ Support/com.moltz.client/
-rm -rf ~/Library/Preferences/com.moltz.client.plist
+rm ~/Library/Preferences/com.moltz.client.plist
 ```
 
 **Windows:**
-```bash
-rmdir /s "%APPDATA%\com.moltz.client"
-```
+1. Control Panel → Uninstall Moltz
+2. Delete `%APPDATA%\com.moltz.client\`
 
 **Linux:**
 ```bash
+sudo apt remove moltz  # or equivalent
 rm -rf ~/.config/com.moltz.client/
 ```
 
 ---
 
-### Can I move my data to another machine?
-
-**Yes:**
-
-1. **Export on old machine:**
-   - Settings → Export All Data
-   - Save JSON file
-
-2. **Import on new machine:**
-   - Install Moltz
-   - Settings → Import Data
-   - Select JSON file
-
-**Note:** Encryption keys don't transfer. Exported data is unencrypted.
+**Still stuck?** [Ask in Discussions](https://github.com/AlixHQ/moltz/discussions) or [open an issue](https://github.com/AlixHQ/moltz/issues).
 
 ---
 
-### Why is app size so large?
-
-**Moltz bundle sizes:**
-- macOS: ~10 MB (.dmg), ~20 MB installed
-- Windows: ~15 MB (.msi), ~30 MB installed
-- Linux: ~12 MB (AppImage)
-
-**Includes:** Tauri runtime + Rust backend + React + dependencies.
-
-**Compared to Electron apps (100-150 MB), Moltz is tiny.**
-
----
-
-## Related Documentation
-
-- **[User Guide](./User-Guide.md)** — How to use Moltz
-- **[Configuration](./Configuration.md)** — Settings reference
-- **[Performance](./Performance.md)** — Optimization tips
-
----
-
-**Last updated:** January 2025
-
+**Last updated:** January 2026
