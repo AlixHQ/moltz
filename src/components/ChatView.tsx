@@ -68,13 +68,20 @@ export function ChatView() {
   }, [currentConversation, isNearBottom]);
 
   // Track scroll position
-  const handleScroll = () => {
+  // PERF: Throttled scroll handler to prevent excessive re-renders
+  const lastScrollTime = useRef(0);
+  const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
+    
+    const now = Date.now();
+    if (now - lastScrollTime.current < 100) return; // 10 FPS max
+    lastScrollTime.current = now;
+
     const { scrollTop, scrollHeight, clientHeight } =
       scrollContainerRef.current;
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
     setIsNearBottom(distanceFromBottom < 100);
-  };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
