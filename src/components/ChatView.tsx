@@ -639,8 +639,8 @@ function EmptyConversation() {
           <button
             key={action.label}
             onClick={() => handleSuggestion(action.prompt)}
-            className="px-4 py-3 text-sm bg-muted/50 hover:bg-primary/10 rounded-xl text-muted-foreground hover:text-primary transition-all hover:scale-105 border border-border/50 hover:border-primary/30 cursor-pointer shadow-sm hover:shadow-md animate-in fade-in slide-in-from-bottom-2 duration-300"
-            style={{ animationDelay: `${400 + i * 50}ms` }}
+            className="px-4 py-3 text-sm bg-muted/50 hover:bg-primary/10 rounded-xl text-muted-foreground hover:text-primary transition-all duration-200 hover:scale-105 active:scale-95 border border-border/50 hover:border-primary/30 cursor-pointer shadow-sm hover:shadow-md animate-in fade-in slide-in-from-bottom-2 duration-300"
+            style={{ animationDelay: `${400 + i * 40}ms` }}
             aria-label={`Start with: ${action.label}`}
           >
             {action.label}

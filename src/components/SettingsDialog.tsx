@@ -12,6 +12,7 @@ import { Switch } from "./ui/switch";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toast";
 import { useFocusTrap } from "../hooks/useFocusTrap";
+import { translateError } from "../lib/errors";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -500,10 +501,27 @@ export function SettingsDialog({
                   </button>
                 )}
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {error && (() => {
+                const friendlyError = translateError(error);
+                return (
+                  <div className="px-3 py-2 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <p className="text-sm font-semibold text-destructive mb-0.5">
+                      {friendlyError.title}
+                    </p>
+                    <p className="text-xs text-destructive/80">
+                      {friendlyError.message}
+                    </p>
+                    {friendlyError.suggestion && (
+                      <p className="text-xs text-destructive/70 mt-1">
+                        💡 {friendlyError.suggestion}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
               {protocolNotice && (
                 <p className="text-sm text-green-600 dark:text-green-400">
-                  {protocolNotice}
+                  ✓ {protocolNotice}
                 </p>
               )}
             </div>
@@ -618,7 +636,7 @@ export function SettingsDialog({
                   id="system-prompt-hint"
                   className="text-xs text-muted-foreground mb-2"
                 >
-                  Custom instructions for the AI (applied to new conversations)
+                  Give the AI custom instructions—applied to all new conversations
                 </p>
                 <textarea
                   id="system-prompt"

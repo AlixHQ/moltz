@@ -1,10 +1,31 @@
 //! Gateway discovery module
 //!
-//! Discovers Clawdbot Gateway instances through multiple methods:
-//! - Local port scanning (common Gateway ports)
-//! - Environment variables
-//! - Configuration files
-//! - Tailscale network
+//! Automatically discovers Clawdbot Gateway instances on the network.
+//!
+//! # Discovery Methods
+//!
+//! The module uses multiple strategies to find Gateway servers:
+//!
+//! 1. **Environment Variables**: Checks `CLAWDBOT_GATEWAY_URL`, `MOLT_GATEWAY_URL`, `GATEWAY_URL`
+//! 2. **Local Port Scanning**: Tests common ports (18789, 8789, 3000, 8080) on localhost
+//! 3. **Configuration Files**: Reads .env, .env.local, and JSON config files
+//! 4. **Tailscale Network**: Scans Tailscale peers for Gateway instances
+//!
+//! # Usage
+//!
+//! Call `discover_gateways()` to get a list of all discovered Gateways.
+//! Results include reachability status and response time for each.
+//!
+//! # Example
+//!
+//! ```rust,no_run
+//! let gateways = discover_gateways().await?;
+//! for gateway in gateways {
+//!     if gateway.reachable {
+//!         println!("Found: {} ({}ms)", gateway.url, gateway.response_time_ms.unwrap());
+//!     }
+//! }
+//! ```
 
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -25,6 +46,23 @@ pub struct DiscoveredGateway {
 }
 
 /// Discover Gateways using all available methods
+///
+/// Attempts to find Gateway servers through multiple discovery strategies:
+/// - Environment variables
+/// - Local port scanning (localhost)
+/// - Configuration files (.env, config.json)
+/// - Tailscale network peers
+///
+/// # Returns
+/// * `Ok(Vec<DiscoveredGateway>)` - List of discovered Gateways with reachability info
+/// * `Err(String)` - Error message (currently always returns Ok)
+///
+/// # Behavior
+/// - Runs discovery methods concurrently for speed
+/// - Tests each discovered URL for actual reachability
+/// - Removes duplicates (same URL from multiple sources)
+/// - Returns only reachable Gateways from local scan
+/// - Sorts by reachability and response time
 #[tauri::command]
 pub async fn discover_gateways() -> Result<Vec<DiscoveredGateway>, String> {
     let mut gateways = Vec::new();

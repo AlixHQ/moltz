@@ -127,13 +127,16 @@ All loading states are informative:
 1. ✅ **No conversations**: Welcoming empty state with "Start Chatting" CTA
 2. ✅ **No models available**: Warning banner with actionable guidance
 3. ✅ **Connection lost during send**: Saves message for retry, shows friendly error
-4. ✅ **File too large**: Specific size shown, clear limit stated
-5. ✅ **Unsupported file type**: Lists supported types in error
-6. ✅ **File read permission error**: Suggests checking permissions
-7. ✅ **Search with no results**: Shows query term, suggests different keywords
-8. ✅ **Offline mode**: Multiple banners guide user to reconnect or browse saved
-9. ✅ **Context length exceeded**: Suggests starting new conversation
-10. ✅ **API key invalid**: Direct link to Settings
+4. ✅ **Offline edit/regenerate attempt**: Prevents action with clear explanation
+5. ✅ **File too large**: Specific size shown, clear limit stated
+6. ✅ **Unsupported file type**: Lists supported types in error
+7. ✅ **File read permission error**: Suggests checking permissions
+8. ✅ **Search with no results**: Shows query term, suggests different keywords
+9. ✅ **Offline mode**: Multiple banners guide user to reconnect or browse saved
+10. ✅ **Context length exceeded**: Suggests starting new conversation
+11. ✅ **API key invalid**: Direct link to Settings
+12. ✅ **Connection test failures**: Friendly errors in Settings dialog
+13. ✅ **Empty conversation**: "Ready to chat?" with quick starters
 
 ---
 
@@ -182,11 +185,12 @@ All improvements maintain existing functionality:
 
 ## 📝 Files Modified
 
-1. `src/components/ChatView.tsx` - User-friendly error display, offline checks
-2. `src/lib/errors.ts` - Expanded error translation patterns (8 → 25)
-3. `src/components/ChatInput.tsx` - Better file error messages
-4. `src/components/WelcomeView.tsx` - No models warning, better offline state
-5. `src/components/ErrorBoundary.tsx` - Less scary catastrophic errors
+1. **`src/components/ChatView.tsx`** - User-friendly error display, offline checks for send/edit/regenerate
+2. **`src/lib/errors.ts`** - Expanded error translation patterns (8 → 25 patterns)
+3. **`src/components/ChatInput.tsx`** - Better file error messages with specific guidance
+4. **`src/components/WelcomeView.tsx`** - No models warning, better offline messaging
+5. **`src/components/ErrorBoundary.tsx`** - Less scary catastrophic errors with reassurance
+6. **`src/components/SettingsDialog.tsx`** - User-friendly connection error display
 
 ---
 
