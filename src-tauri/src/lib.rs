@@ -98,5 +98,8 @@ pub fn run() {
             updater::dismiss_update,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .unwrap_or_else(|e| {
+            eprintln!("Fatal error while running Tauri application: {}", e);
+            std::process::exit(1);
+        });
 }

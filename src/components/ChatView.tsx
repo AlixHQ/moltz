@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useStore } from "../stores/store";
 import { ChatInput, PreparedAttachment } from "./ChatInput";
@@ -62,13 +62,13 @@ export function ChatView() {
   }, [currentConversation]);
 
   // PERF: Virtual scrolling for conversations with many messages (>50)
-  const shouldVirtualize = currentConversation && currentConversation.messages.length > 50;
+  const shouldVirtualize = currentConversation ? currentConversation.messages.length > 50 : false;
   
   const virtualizer = useVirtualizer({
     count: currentConversation?.messages.length || 0,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: useCallback(() => 200, []), // Estimated height of each message
-    enabled: shouldVirtualize,
+    enabled: shouldVirtualize || undefined, // Convert false to undefined for type safety
     overscan: 5, // Render 5 extra items above/below viewport
   });
 
@@ -371,7 +371,40 @@ export function ChatView() {
             </div>
           ) : !hasMessages ? (
             <EmptyConversation />
+          ) : shouldVirtualize ? (
+            // PERF: Virtual scrolling for long conversations (>50 messages)
+            <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const message = currentConversation!.messages[virtualRow.index];
+                return (
+                  <div
+                    key={message.id}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                  >
+                    <div className="pb-6">
+                      <MessageBubble
+                        message={message}
+                        onEdit={handleEditMessage}
+                        onRegenerate={handleRegenerate}
+                        isLastAssistantMessage={
+                          message.id === lastAssistantMessageId
+                        }
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
+            // Standard rendering for shorter conversations
             <div className="space-y-6">
               {currentConversation.messages.map((message, index) => (
                 <div
@@ -507,10 +540,12 @@ export function ChatView() {
 
 function EmptyConversation() {
   const suggestions = [
-    { label: "Write code", prompt: "Help me write a function that " },
-    { label: "Explain concept", prompt: "Explain to me how " },
-    { label: "Brainstorm ideas", prompt: "Help me brainstorm ideas for " },
-    { label: "Debug error", prompt: "I'm getting this error: " },
+    { label: "✨ Write code", prompt: "Help me write a function that " },
+    { label: "💡 Explain something", prompt: "Explain how " },
+    { label: "🎨 Brainstorm ideas", prompt: "Help me brainstorm ideas for " },
+    { label: "🔍 Debug an error", prompt: "I'm getting this error: " },
+    { label: "📝 Write content", prompt: "Help me write " },
+    { label: "🚀 Plan a project", prompt: "Help me plan out " },
   ];
 
   const handleSuggestion = (prompt: string) => {
@@ -532,26 +567,25 @@ function EmptyConversation() {
         className="text-xl font-semibold mb-2 animate-in fade-in slide-in-from-bottom-2 duration-500"
         style={{ animationDelay: "200ms" }}
       >
-        Start your conversation
+        Let's get started
       </h2>
       <p
         className="text-muted-foreground max-w-md text-sm sm:text-base leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-500"
         style={{ animationDelay: "300ms" }}
       >
-        Type a message below to begin chatting. I can help with coding, writing,
-        analysis, and much more.
+        What can I help you with today? Choose a starter below or type your own message.
       </p>
 
       {/* Quick action suggestions — clickable to fill input */}
       <div
-        className="flex flex-wrap gap-2 mt-8 justify-center max-w-lg animate-in fade-in slide-in-from-bottom-2 duration-500"
+        className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-8 max-w-2xl w-full animate-in fade-in slide-in-from-bottom-2 duration-500"
         style={{ animationDelay: "400ms" }}
       >
         {suggestions.map((action, i) => (
           <button
             key={action.label}
             onClick={() => handleSuggestion(action.prompt)}
-            className="px-3 py-1.5 text-sm bg-muted/50 hover:bg-primary/8 rounded-full text-muted-foreground hover:text-primary transition-colors border border-transparent hover:border-primary/20 cursor-pointer"
+            className="px-4 py-3 text-sm bg-muted/50 hover:bg-primary/10 rounded-xl text-muted-foreground hover:text-primary transition-all hover:scale-105 border border-border/50 hover:border-primary/30 cursor-pointer shadow-sm hover:shadow-md animate-in fade-in slide-in-from-bottom-2 duration-300"
             style={{ animationDelay: `${400 + i * 50}ms` }}
             aria-label={`Start with: ${action.label}`}
           >

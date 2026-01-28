@@ -118,6 +118,15 @@ export function ImageRenderer({
       <div
         className={cn("relative inline-block group cursor-pointer", className)}
         onClick={() => setIsExpanded(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(true);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={`Expand image: ${alt}`}
       >
         {/* Loading state */}
         {isLoading && !hasError && (
@@ -171,12 +180,20 @@ export function ImageRenderer({
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 animate-in fade-in duration-200"
           onClick={() => setIsExpanded(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setIsExpanded(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image lightbox"
         >
           {/* Close button */}
           <button
             onClick={() => setIsExpanded(false)}
-            className="absolute top-4 right-4 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            aria-label="Close image"
+            className="absolute top-4 right-4 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-label="Close image (Escape)"
           >
             <X className="w-6 h-6" />
           </button>
@@ -184,8 +201,8 @@ export function ImageRenderer({
           {/* Open in new tab button */}
           <button
             onClick={openInNewTab}
-            className="absolute top-4 right-16 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            aria-label="Open in new tab"
+            className="absolute top-4 right-16 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            aria-label="Open image in new tab"
           >
             <ExternalLink className="w-6 h-6" />
           </button>

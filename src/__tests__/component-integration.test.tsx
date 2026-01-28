@@ -311,12 +311,10 @@ describe('SettingsDialog Integration', () => {
     const { SettingsDialog } = await import('../components/SettingsDialog');
     const user = userEvent.setup();
     
-    const store = useStore.getState();
-    const originalUrl = store.settings.gatewayUrl;
-    
     render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
     
-    const urlInput = screen.getByDisplayValue(originalUrl);
+    // Use placeholder text to uniquely identify the Gateway URL input
+    const urlInput = screen.getByPlaceholderText('ws://localhost:18789');
     await user.clear(urlInput);
     await user.type(urlInput, 'ws://new-url:9999');
     

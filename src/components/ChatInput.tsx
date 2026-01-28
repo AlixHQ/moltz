@@ -213,7 +213,7 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
           const mimeType = getMimeType(filename);
 
           if (!mimeType) {
-            errors.push(`Unsupported file type: ${filename}`);
+            errors.push(`Can't attach ${filename} — unsupported file type`);
             continue;
           }
 
@@ -222,7 +222,8 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
 
           // Check file size
           if (fileData.byteLength > MAX_FILE_SIZE) {
-            errors.push(`File too large (max 10MB): ${filename}`);
+            const sizeMB = (fileData.byteLength / (1024 * 1024)).toFixed(1);
+            errors.push(`${filename} is too large (${sizeMB}MB, max 10MB)`);
             continue;
           }
 
@@ -246,12 +247,12 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
         } catch (err) {
           console.error(`Failed to read file ${path}:`, err);
           const filename = path.split(/[/\\]/).pop() || path;
-          errors.push(`Failed to read: ${filename}`);
+          errors.push(`Couldn't read ${filename}`);
         }
       }
 
       if (errors.length > 0) {
-        setFileError(errors.join("; "));
+        setFileError(errors.join(" • "));
         // Auto-dismiss after 5 seconds
         if (errorTimerRef.current !== undefined) {
           clearTimeout(errorTimerRef.current);

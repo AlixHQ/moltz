@@ -754,7 +754,7 @@ pub async fn connect(
     let _ = app.emit("gateway:state", ConnectionState::Connecting);
 
     // Perform actual connection
-    match connect_internal(&app, &state.inner, &url, &token).await {
+    match connect_internal(&app, state.inner.clone(), &url, &token).await {
         Ok(result) => {
             // Only store credentials AFTER successful connection
             *state.inner.stored_credentials.lock().await = Some(StoredCredentials {
@@ -801,10 +801,11 @@ pub async fn connect(
 /// Internal connection logic
 async fn connect_internal(
     app: &AppHandle,
-    state: &GatewayStateInner,
+    state_arc: Arc<GatewayStateInner>,
     url: &str,
     token: &str,
 ) -> Result<ConnectResult, GatewayError> {
+    let state = &*state_arc; // Deref for compatibility with existing code
     let (ws_stream, used_url, protocol_switched) = try_connect_with_fallback(url).await?;
 
     let (mut write, mut read) = ws_stream.split();
@@ -904,10 +905,10 @@ async fn connect_internal(
     start_health_monitor(app.clone(), tx.clone(), health_metrics.clone()).await;
 
     // Start streaming timeout monitor
-    start_stream_timeout_monitor(app.clone(), active_runs.clone(), state.shutdown.clone()).await;
+    start_stream_timeout_monitor(app.clone(), active_runs.clone(), state_arc.clone()).await;
 
     // CRITICAL-1: Start cleanup task for expired pending requests
-    start_pending_requests_cleanup(pending_requests.clone(), state.shutdown.clone()).await;
+    start_pending_requests_cleanup(pending_requests.clone(), state_arc.clone()).await;
 
     Ok(ConnectResult {
         success: true,
@@ -930,36 +931,44 @@ async fn handle_validated_frame(
             match event.as_str() {
                 "connect.challenge" => {
                     // Send connect request
+                    let connect_params = ConnectParams {
+                        min_protocol: PROTOCOL_VERSION,
+                        max_protocol: PROTOCOL_VERSION,
+                        client: ClientInfo {
+                            id: "control-ui".to_string(), // Must be a recognized client type
+                            version: env!("CARGO_PKG_VERSION").to_string(),
+                            platform: get_platform(),
+                            mode: "operator".to_string(),
+                        },
+                        role: "operator".to_string(),
+                        scopes: vec![
+                            "operator.read".to_string(),
+                            "operator.write".to_string(),
+                        ],
+                        caps: vec![],
+                        commands: vec![],
+                        permissions: serde_json::json!({}),
+                        auth: AuthInfo {
+                            token: token.to_string(),
+                        },
+                        locale: "en-US".to_string(),
+                        user_agent: format!("moltzer/{}", env!("CARGO_PKG_VERSION")),
+                    };
+                    
+                    // Safely serialize connect params
+                    let params_value = match serde_json::to_value(connect_params) {
+                        Ok(v) => v,
+                        Err(e) => {
+                            log_protocol_error("Failed to serialize connect params", &e.to_string());
+                            return;
+                        }
+                    };
+                    
                     let connect_req = GatewayRequest {
                         msg_type: "req".to_string(),
                         id: uuid::Uuid::new_v4().to_string(),
                         method: "connect".to_string(),
-                        params: Some(
-                            serde_json::to_value(ConnectParams {
-                                min_protocol: PROTOCOL_VERSION,
-                                max_protocol: PROTOCOL_VERSION,
-                                client: ClientInfo {
-                                    id: "control-ui".to_string(), // Must be a recognized client type
-                                    version: env!("CARGO_PKG_VERSION").to_string(),
-                                    platform: get_platform(),
-                                    mode: "operator".to_string(),
-                                },
-                                role: "operator".to_string(),
-                                scopes: vec![
-                                    "operator.read".to_string(),
-                                    "operator.write".to_string(),
-                                ],
-                                caps: vec![],
-                                commands: vec![],
-                                permissions: serde_json::json!({}),
-                                auth: AuthInfo {
-                                    token: token.to_string(),
-                                },
-                                locale: "en-US".to_string(),
-                                user_agent: format!("moltzer/{}", env!("CARGO_PKG_VERSION")),
-                            })
-                            .unwrap(),
-                        ),
+                        params: Some(params_value),
                     };
 
                     if let Ok(json) = serde_json::to_string(&connect_req) {
@@ -1102,7 +1111,7 @@ async fn start_health_monitor(
 async fn start_stream_timeout_monitor(
     app: AppHandle,
     active_runs: Arc<Mutex<HashMap<String, Instant>>>,
-    shutdown: Arc<AtomicBool>,
+    state: Arc<GatewayStateInner>,
 ) {
     tokio::spawn(async move {
         let check_interval = Duration::from_secs(5);
@@ -1112,7 +1121,7 @@ async fn start_stream_timeout_monitor(
             tokio::time::sleep(check_interval).await;
 
             // CRITICAL-8: Exit task on shutdown to prevent leak
-            if shutdown.load(Ordering::SeqCst) {
+            if state.shutdown.load(Ordering::SeqCst) {
                 break;
             }
 
@@ -1142,7 +1151,7 @@ async fn start_stream_timeout_monitor(
 /// CRITICAL-1: Cleanup task for expired pending requests
 async fn start_pending_requests_cleanup(
     pending_requests: Arc<Mutex<HashMap<String, PendingRequest>>>,
-    shutdown: Arc<AtomicBool>,
+    state: Arc<GatewayStateInner>,
 ) {
     tokio::spawn(async move {
         let cleanup_interval = Duration::from_secs(30);
@@ -1151,7 +1160,7 @@ async fn start_pending_requests_cleanup(
             tokio::time::sleep(cleanup_interval).await;
             
             // CRITICAL-8: Exit task on shutdown to prevent leak
-            if shutdown.load(Ordering::SeqCst) {
+            if state.shutdown.load(Ordering::SeqCst) {
                 break;
             }
             
@@ -1227,7 +1236,7 @@ async fn start_reconnection_loop(app: AppHandle, state: Arc<GatewayStateInner>) 
             // Attempt reconnection
             let credentials = state.stored_credentials.lock().await.clone();
             if let Some(creds) = credentials {
-                match connect_internal(&app, &state, &creds.url, &creds.token).await {
+                match connect_internal(&app, state.clone(), &creds.url, &creds.token).await {
                     Ok(_) => {
                         // Success!
                         state.reconnect_attempt.store(0, Ordering::SeqCst);
