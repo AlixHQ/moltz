@@ -943,7 +943,7 @@ async fn handle_validated_frame(
                                     id: "clawdbot-control-ui".to_string(), // Must match gateway schema
                                     version: env!("CARGO_PKG_VERSION").to_string(),
                                     platform: get_platform(),
-                                    mode: "operator".to_string(),
+                                    mode: "cli".to_string(), // Must be "webchat" or "cli"
                                 },
                                 role: "operator".to_string(),
                                 scopes: vec![
@@ -1576,7 +1576,7 @@ mod tests {
                 id: "clawdbot-control-ui".to_string(),
                 version: "0.1.0".to_string(),
                 platform: "windows".to_string(),
-                mode: "operator".to_string(),
+                mode: "cli".to_string(),
             },
             role: "operator".to_string(),
             scopes: vec!["operator.read".to_string()],
