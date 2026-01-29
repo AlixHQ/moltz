@@ -79,7 +79,7 @@ describe("Keychain", () => {
       await getGatewayToken();
 
       expect(invoke).toHaveBeenCalledWith("keychain_get", {
-        service: "com.Moltz.client",
+        service: "com.moltz.client",
         key: "gateway_token",
       });
     });
