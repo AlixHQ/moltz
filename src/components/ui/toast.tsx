@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "../../lib/utils";
 
 export interface Toast {
@@ -171,30 +171,48 @@ function ToastItem({
 export function useToast() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = (
-    message: string,
-    type?: Toast["type"],
-    duration?: number,
-  ) => {
-    const id = crypto.randomUUID();
-    setToasts((prev) => [...prev, { id, message, type, duration }]);
-  };
+  const addToast = useCallback(
+    (message: string, type?: Toast["type"], duration?: number) => {
+      const id = crypto.randomUUID();
+      setToasts((prev) => [...prev, { id, message, type, duration }]);
+    },
+    [],
+  );
 
-  const dismissToast = (id: string) => {
+  const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  }, []);
+
+  const showInfo = useCallback(
+    (message: string, duration?: number) => addToast(message, "info", duration),
+    [addToast],
+  );
+
+  const showSuccess = useCallback(
+    (message: string, duration?: number) =>
+      addToast(message, "success", duration),
+    [addToast],
+  );
+
+  const showWarning = useCallback(
+    (message: string, duration?: number) =>
+      addToast(message, "warning", duration),
+    [addToast],
+  );
+
+  const showError = useCallback(
+    (message: string, duration?: number) =>
+      addToast(message, "error", duration),
+    [addToast],
+  );
 
   return {
     toasts,
     addToast,
     dismissToast,
-    showInfo: (message: string, duration?: number) =>
-      addToast(message, "info", duration),
-    showSuccess: (message: string, duration?: number) =>
-      addToast(message, "success", duration),
-    showWarning: (message: string, duration?: number) =>
-      addToast(message, "warning", duration),
-    showError: (message: string, duration?: number) =>
-      addToast(message, "error", duration),
+    showInfo,
+    showSuccess,
+    showWarning,
+    showError,
   };
 }
