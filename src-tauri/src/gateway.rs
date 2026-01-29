@@ -23,7 +23,9 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, State};
 use tokio::sync::{mpsc, oneshot, Mutex, RwLock};
-use tokio_tungstenite::{connect_async_tls_with_config, tungstenite::Message as WsMessage, Connector};
+use tokio_tungstenite::{
+    connect_async_tls_with_config, tungstenite::Message as WsMessage, Connector,
+};
 
 // ============================================================================
 // State Management
@@ -258,35 +260,44 @@ fn get_platform() -> String {
 /// Test TCP connection using socket2 with explicit IPv4 (bypasses potential IPv6 issues on macOS)
 async fn test_tcp_connection_ipv4(host: &str, port: u16) -> Result<std::net::SocketAddr, String> {
     let addr_str = format!("{}:{}", host, port);
-    log_protocol_error("TCP Test", &format!("Testing IPv4-only connection to {}", addr_str));
-    
+    log_protocol_error(
+        "TCP Test",
+        &format!("Testing IPv4-only connection to {}", addr_str),
+    );
+
     let host = host.to_string();
     let result = tokio::task::spawn_blocking(move || {
-        use socket2::{Socket, Domain, Type, Protocol};
+        use socket2::{Domain, Protocol, Socket, Type};
         use std::net::{SocketAddr, ToSocketAddrs};
         use std::time::Duration;
-        
+
         // Resolve hostname - filter to IPv4 only
         let addrs: Vec<SocketAddr> = format!("{}:{}", host, port)
             .to_socket_addrs()
             .map_err(|e| format!("DNS failed: {}", e))?
             .filter(|a| a.is_ipv4())
             .collect();
-        
+
         if addrs.is_empty() {
             return Err("No IPv4 addresses found".to_string());
         }
-        
-        log_protocol_error("TCP Test", &format!("Resolved to {} IPv4 addrs: {:?}", addrs.len(), addrs));
-        
+
+        log_protocol_error(
+            "TCP Test",
+            &format!("Resolved to {} IPv4 addrs: {:?}", addrs.len(), addrs),
+        );
+
         // Create IPv4-only socket
         let socket = Socket::new(Domain::IPV4, Type::STREAM, Some(Protocol::TCP))
             .map_err(|e| format!("Socket creation failed: {}", e))?;
-        
+
         // Try first IPv4 address
         let addr = addrs[0];
-        log_protocol_error("TCP Test", &format!("Connecting to {} (IPv4 only)...", addr));
-        
+        log_protocol_error(
+            "TCP Test",
+            &format!("Connecting to {} (IPv4 only)...", addr),
+        );
+
         let start = std::time::Instant::now();
         match socket.connect_timeout(&addr.into(), Duration::from_secs(10)) {
             Ok(()) => {
@@ -294,32 +305,45 @@ async fn test_tcp_connection_ipv4(host: &str, port: u16) -> Result<std::net::Soc
                 Ok(addr)
             }
             Err(e) => {
-                log_protocol_error("TCP Test", &format!("FAILED after {:?}: {}", start.elapsed(), e));
+                log_protocol_error(
+                    "TCP Test",
+                    &format!("FAILED after {:?}: {}", start.elapsed(), e),
+                );
                 Err(format!("Connect failed: {}", e))
             }
         }
-    }).await.map_err(|e| format!("Task error: {}", e))?;
-    
+    })
+    .await
+    .map_err(|e| format!("Task error: {}", e))?;
+
     result
 }
 
 /// Resolve hostname using system DNS - IPv4 only (avoids IPv6 issues on macOS with Tailscale)
 async fn resolve_with_system_dns(host: &str, port: u16) -> Result<std::net::SocketAddr, String> {
     let addr_str = format!("{}:{}", host, port);
-    log_protocol_error("DNS", &format!("Resolving {} via system DNS (IPv4 only)", addr_str));
-    
+    log_protocol_error(
+        "DNS",
+        &format!("Resolving {} via system DNS (IPv4 only)", addr_str),
+    );
+
     let addr_str_clone = addr_str.clone();
     let result = tokio::task::spawn_blocking(move || {
         use std::net::ToSocketAddrs;
-        let addrs: Vec<_> = addr_str_clone.to_socket_addrs()
+        let addrs: Vec<_> = addr_str_clone
+            .to_socket_addrs()
             .map_err(|e| format!("DNS resolution failed: {}", e))?
-            .filter(|a| a.is_ipv4())  // IPv4 ONLY
+            .filter(|a| a.is_ipv4()) // IPv4 ONLY
             .collect();
-        
-        addrs.into_iter().next()
+
+        addrs
+            .into_iter()
+            .next()
             .ok_or_else(|| "No IPv4 addresses found".to_string())
-    }).await.map_err(|e| format!("Task error: {}", e))?;
-    
+    })
+    .await
+    .map_err(|e| format!("Task error: {}", e))?;
+
     match &result {
         Ok(addr) => log_protocol_error("DNS", &format!("Resolved to {} (IPv4)", addr)),
         Err(e) => log_protocol_error("DNS", &format!("Failed: {}", e)),
@@ -329,70 +353,84 @@ async fn resolve_with_system_dns(host: &str, port: u16) -> Result<std::net::Sock
 
 /// Create IPv4-only TCP connection and upgrade to WebSocket
 /// This bypasses tokio-tungstenite's connection logic which has issues on macOS with Tailscale
-async fn connect_with_manual_tcp(url_str: &str) -> Result<
+async fn connect_with_manual_tcp(
+    url_str: &str,
+) -> Result<
     tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
     GatewayError,
 > {
     log_protocol_error("Manual TCP", &format!("Connecting to {}", url_str));
-    
+
     let parsed_url = url::Url::parse(url_str).map_err(|e| GatewayError::Network {
         message: format!("Invalid URL: {}", e),
         retryable: false,
         retry_after: None,
     })?;
-    
+
     let host = parsed_url.host_str().ok_or_else(|| GatewayError::Network {
         message: "URL missing host".to_string(),
         retryable: false,
         retry_after: None,
     })?;
-    
-    let port = parsed_url.port().unwrap_or(if url_str.starts_with("wss://") { 443 } else { 80 });
+
+    let port = parsed_url
+        .port()
+        .unwrap_or(if url_str.starts_with("wss://") {
+            443
+        } else {
+            80
+        });
     let use_tls = url_str.starts_with("wss://");
-    
+
     // Step 1: Create IPv4-only TCP connection using socket2 (blocking operation)
     log_protocol_error("Manual TCP", &format!("Resolving {} (IPv4 only)...", host));
-    
+
     let host_clone = host.to_string();
     let tcp_stream = tokio::task::spawn_blocking(move || {
-        use socket2::{Socket, Domain, Type, Protocol};
+        use socket2::{Domain, Protocol, Socket, Type};
         use std::net::{SocketAddr, ToSocketAddrs};
-        
+
         // Resolve hostname - IPv4 only
         let addrs: Vec<SocketAddr> = format!("{}:{}", host_clone, port)
             .to_socket_addrs()
             .map_err(|e| format!("DNS resolution failed: {}", e))?
             .filter(|a| a.is_ipv4())
             .collect();
-        
+
         if addrs.is_empty() {
             return Err("No IPv4 addresses found".to_string());
         }
-        
-        log_protocol_error("Manual TCP", &format!("Resolved to {} IPv4 addr(s): {:?}", addrs.len(), addrs));
-        
+
+        log_protocol_error(
+            "Manual TCP",
+            &format!("Resolved to {} IPv4 addr(s): {:?}", addrs.len(), addrs),
+        );
+
         // Create IPv4-only socket
         let socket = Socket::new(Domain::IPV4, Type::STREAM, Some(Protocol::TCP))
             .map_err(|e| format!("Socket creation failed: {}", e))?;
-        
+
         // Set socket options
-        socket.set_nodelay(true)
+        socket
+            .set_nodelay(true)
             .map_err(|e| format!("Failed to set TCP_NODELAY: {}", e))?;
-        
+
         // Try first IPv4 address
         let addr = addrs[0];
         log_protocol_error("Manual TCP", &format!("Connecting to {} (IPv4)...", addr));
-        
-        socket.connect_timeout(&addr.into(), Duration::from_secs(10))
+
+        socket
+            .connect_timeout(&addr.into(), Duration::from_secs(10))
             .map_err(|e| format!("TCP connect failed: {}", e))?;
-        
+
         log_protocol_error("Manual TCP", "TCP connection established");
-        
+
         // Convert to std::net::TcpStream
         let std_stream: std::net::TcpStream = socket.into();
-        std_stream.set_nonblocking(true)
+        std_stream
+            .set_nonblocking(true)
             .map_err(|e| format!("Failed to set non-blocking: {}", e))?;
-        
+
         Ok(std_stream)
     })
     .await
@@ -406,65 +444,74 @@ async fn connect_with_manual_tcp(url_str: &str) -> Result<
         retryable: true,
         retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
     })?;
-    
+
     // Step 2: Convert to tokio TcpStream
-    let tokio_stream = tokio::net::TcpStream::from_std(tcp_stream)
-        .map_err(|e| GatewayError::Network {
+    let tokio_stream =
+        tokio::net::TcpStream::from_std(tcp_stream).map_err(|e| GatewayError::Network {
             message: format!("Failed to convert to tokio stream: {}", e),
             retryable: false,
             retry_after: None,
         })?;
-    
+
     log_protocol_error("Manual TCP", "Converted to tokio stream");
-    
+
     // Step 3: Upgrade to WebSocket
     if use_tls {
         log_protocol_error("Manual TCP", "Performing TLS handshake...");
-        
+
         // Perform TLS handshake using native-tls
-        let tls_connector = native_tls::TlsConnector::builder()
-            .build()
-            .map_err(|e| GatewayError::Network {
-                message: format!("TLS connector error: {}", e),
-                retryable: false,
-                retry_after: None,
-            })?;
-        
+        let tls_connector =
+            native_tls::TlsConnector::builder()
+                .build()
+                .map_err(|e| GatewayError::Network {
+                    message: format!("TLS connector error: {}", e),
+                    retryable: false,
+                    retry_after: None,
+                })?;
+
         let connector = tokio_native_tls::TlsConnector::from(tls_connector);
-        let tls_stream = connector.connect(host, tokio_stream).await
-            .map_err(|e| GatewayError::Network {
-                message: format!("TLS handshake failed: {}", e),
-                retryable: true,
-                retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
-            })?;
-        
-        log_protocol_error("Manual TCP", "TLS handshake complete, upgrading to WebSocket...");
-        
+        let tls_stream =
+            connector
+                .connect(host, tokio_stream)
+                .await
+                .map_err(|e| GatewayError::Network {
+                    message: format!("TLS handshake failed: {}", e),
+                    retryable: true,
+                    retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
+                })?;
+
+        log_protocol_error(
+            "Manual TCP",
+            "TLS handshake complete, upgrading to WebSocket...",
+        );
+
         // Wrap TLS stream in MaybeTlsStream and upgrade to WebSocket
         let maybe_tls_stream = tokio_tungstenite::MaybeTlsStream::NativeTls(tls_stream);
-        let ws_stream = tokio_tungstenite::client_async(url_str, maybe_tls_stream).await
+        let ws_stream = tokio_tungstenite::client_async(url_str, maybe_tls_stream)
+            .await
             .map_err(|e| GatewayError::Network {
                 message: format!("WebSocket upgrade failed: {}", e),
                 retryable: true,
                 retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
             })?
             .0;
-        
+
         log_protocol_error("Manual TCP", "WebSocket connection established (TLS)");
         Ok(ws_stream)
     } else {
         log_protocol_error("Manual TCP", "Upgrading to WebSocket (plain)...");
-        
+
         // Wrap plain TCP stream in MaybeTlsStream and upgrade to WebSocket
         let maybe_tls_stream = tokio_tungstenite::MaybeTlsStream::Plain(tokio_stream);
-        let ws_stream = tokio_tungstenite::client_async(url_str, maybe_tls_stream).await
+        let ws_stream = tokio_tungstenite::client_async(url_str, maybe_tls_stream)
+            .await
             .map_err(|e| GatewayError::Network {
                 message: format!("WebSocket upgrade failed: {}", e),
                 retryable: true,
                 retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
             })?
             .0;
-        
+
         log_protocol_error("Manual TCP", "WebSocket connection established (plain)");
         Ok(ws_stream)
     }
@@ -479,7 +526,10 @@ fn get_safe_alternate_url(url: &str) -> Option<String> {
     } else if url.starts_with("wss://") {
         // SECURITY: Downgrading from wss:// to ws:// is NOT allowed
         // This prevents MITM attacks where attacker blocks TLS to force plaintext
-        log_protocol_error("Security", "Refusing to downgrade from wss:// to ws:// (MITM protection)");
+        log_protocol_error(
+            "Security",
+            "Refusing to downgrade from wss:// to ws:// (MITM protection)",
+        );
         None
     } else {
         None
@@ -501,22 +551,23 @@ async fn try_connect_with_fallback(
     GatewayError,
 > {
     let timeout_duration = Duration::from_secs(30);
-    
+
     // Detect if this is a Tailscale or macOS connection that needs manual TCP handling
     #[cfg(target_os = "macos")]
     let needs_manual_tcp = true; // Always use manual TCP on macOS for reliability
     #[cfg(not(target_os = "macos"))]
     let needs_manual_tcp = url.contains(".ts.net"); // Only for Tailscale on other platforms
-    
+
     if needs_manual_tcp {
-        log_protocol_error("Connection Strategy", "Using manual TCP (macOS/Tailscale workaround)");
-        
+        log_protocol_error(
+            "Connection Strategy",
+            "Using manual TCP (macOS/Tailscale workaround)",
+        );
+
         // Try manual TCP connection with the original URL
-        let first_attempt = tokio::time::timeout(
-            timeout_duration,
-            connect_with_manual_tcp(url)
-        ).await;
-        
+        let first_attempt =
+            tokio::time::timeout(timeout_duration, connect_with_manual_tcp(url)).await;
+
         match first_attempt {
             Ok(Ok(stream)) => {
                 log_protocol_error("Manual TCP", "SUCCESS with original URL");
@@ -524,23 +575,30 @@ async fn try_connect_with_fallback(
             }
             Ok(Err(e)) => {
                 log_protocol_error("Manual TCP", &format!("Failed: {}", e));
-                
+
                 // SECURITY: Only try upgrade (ws:// → wss://), never downgrade
                 if let Some(alternate_url) = get_safe_alternate_url(url) {
-                    log_protocol_error("Manual TCP", &format!("Trying secure upgrade: {}", alternate_url));
-                    
+                    log_protocol_error(
+                        "Manual TCP",
+                        &format!("Trying secure upgrade: {}", alternate_url),
+                    );
+
                     let second_attempt = tokio::time::timeout(
                         timeout_duration,
-                        connect_with_manual_tcp(&alternate_url)
-                    ).await;
-                    
+                        connect_with_manual_tcp(&alternate_url),
+                    )
+                    .await;
+
                     match second_attempt {
                         Ok(Ok(stream)) => {
                             log_protocol_error("Manual TCP", "SUCCESS with upgraded protocol");
                             return Ok((stream, alternate_url, true));
                         }
                         Ok(Err(e2)) => {
-                            log_protocol_error("Manual TCP", &format!("Upgrade also failed: {}", e2));
+                            log_protocol_error(
+                                "Manual TCP",
+                                &format!("Upgrade also failed: {}", e2),
+                            );
                             return Err(GatewayError::Network {
                                 message: format!(
                                     "Unable to connect to Gateway at {}. Error: {}",
@@ -568,14 +626,15 @@ async fn try_connect_with_fallback(
             }
             Err(_) => {
                 log_protocol_error("Manual TCP", "Timeout on first attempt");
-                
+
                 // SECURITY: Only try upgrade on timeout, never downgrade
                 if let Some(alternate_url) = get_safe_alternate_url(url) {
                     let second_attempt = tokio::time::timeout(
                         timeout_duration,
-                        connect_with_manual_tcp(&alternate_url)
-                    ).await;
-                    
+                        connect_with_manual_tcp(&alternate_url),
+                    )
+                    .await;
+
                     match second_attempt {
                         Ok(Ok(stream)) => Ok((stream, alternate_url, true)),
                         _ => Err(GatewayError::Timeout {
@@ -594,22 +653,24 @@ async fn try_connect_with_fallback(
     } else {
         // Standard tokio-tungstenite connection for non-macOS, non-Tailscale
         log_protocol_error("Connection Strategy", "Using standard tokio-tungstenite");
-        
+
         // Use native-tls connector
-        let tls_connector = native_tls::TlsConnector::builder()
-            .build()
-            .map_err(|e| GatewayError::Network {
-                message: format!("TLS connector error: {}", e),
-                retryable: false,
-                retry_after: None,
-            })?;
+        let tls_connector =
+            native_tls::TlsConnector::builder()
+                .build()
+                .map_err(|e| GatewayError::Network {
+                    message: format!("TLS connector error: {}", e),
+                    retryable: false,
+                    retry_after: None,
+                })?;
         let connector = Connector::NativeTls(tls_connector);
 
         // First, try the URL as provided
         let first_attempt = tokio::time::timeout(
-            timeout_duration, 
-            connect_async_tls_with_config(url, None, false, Some(connector.clone()))
-        ).await;
+            timeout_duration,
+            connect_async_tls_with_config(url, None, false, Some(connector.clone())),
+        )
+        .await;
 
         match first_attempt {
             Ok(Ok((stream, _))) => Ok((stream, url.to_string(), false)),
@@ -618,21 +679,23 @@ async fn try_connect_with_fallback(
 
                 // SECURITY: Only try upgrade (ws:// → wss://), never downgrade
                 if let Some(alternate_url) = get_safe_alternate_url(url) {
-                    let second_attempt =
-                        tokio::time::timeout(
-                            timeout_duration, 
-                            connect_async_tls_with_config(&alternate_url, None, false, Some(connector.clone()))
-                        ).await;
+                    let second_attempt = tokio::time::timeout(
+                        timeout_duration,
+                        connect_async_tls_with_config(
+                            &alternate_url,
+                            None,
+                            false,
+                            Some(connector.clone()),
+                        ),
+                    )
+                    .await;
 
                     match second_attempt {
                         Ok(Ok((stream, _))) => Ok((stream, alternate_url, true)),
                         Ok(Err(e)) => {
                             log_protocol_error("Upgrade connection failed", &e.to_string());
                             Err(GatewayError::Network {
-                                message: format!(
-                                    "Unable to connect to Gateway at {}",
-                                    url
-                                ),
+                                message: format!("Unable to connect to Gateway at {}", url),
                                 retryable: true,
                                 retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
                             })
@@ -655,11 +718,11 @@ async fn try_connect_with_fallback(
                 // Timeout on first attempt
                 // SECURITY: Only try upgrade, never downgrade
                 if let Some(alternate_url) = get_safe_alternate_url(url) {
-                    let second_attempt =
-                        tokio::time::timeout(
-                            timeout_duration, 
-                            connect_async_tls_with_config(&alternate_url, None, false, Some(connector))
-                        ).await;
+                    let second_attempt = tokio::time::timeout(
+                        timeout_duration,
+                        connect_async_tls_with_config(&alternate_url, None, false, Some(connector)),
+                    )
+                    .await;
 
                     match second_attempt {
                         Ok(Ok((stream, _))) => Ok((stream, alternate_url, true)),
@@ -743,7 +806,7 @@ pub async fn connect(
 ) -> Result<ConnectResult, String> {
     // DEBUG: Log what URL we actually received from frontend
     log_protocol_error("CONNECT CALLED - URL received", &url);
-    
+
     // Reset shutdown flag
     state.inner.shutdown.store(false, Ordering::SeqCst);
     state.inner.reconnect_attempt.store(0, Ordering::SeqCst);
@@ -1131,13 +1194,13 @@ async fn start_pending_requests_cleanup(
 ) {
     tokio::spawn(async move {
         let cleanup_interval = Duration::from_secs(30);
-        
+
         loop {
             tokio::time::sleep(cleanup_interval).await;
-            
+
             let mut pending = pending_requests.lock().await;
             let now = Instant::now();
-            
+
             // Remove requests older than their timeout + 1 minute grace period
             pending.retain(|_, req| {
                 now.duration_since(req.created_at) < req.timeout + Duration::from_secs(60)
@@ -1370,13 +1433,13 @@ pub async fn send_message(
     // If reconnecting, queue the message
     if matches!(connection_state, ConnectionState::Reconnecting { .. }) {
         let mut queue = state.inner.message_queue.lock().await;
-        
+
         // CRITICAL-3: Enforce max queue size (drop oldest messages)
         const MAX_QUEUE_SIZE: usize = 100;
         while queue.len() >= MAX_QUEUE_SIZE {
             queue.pop_front();
         }
-        
+
         queue.push_back(QueuedMessage::new(request_id.clone(), json));
         return Ok(request_id);
     }

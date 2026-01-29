@@ -45,7 +45,6 @@ pub fn run() {
 
             #[cfg(desktop)]
             {
-
                 // Setup system tray
                 tray::setup_tray(app.handle())?;
 

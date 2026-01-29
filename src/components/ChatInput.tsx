@@ -1,4 +1,4 @@
-import { useState, useRef, KeyboardEvent, useEffect } from "react";
+import React, { useState, useRef, KeyboardEvent, useEffect } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readFile } from "@tauri-apps/plugin-fs";
 import { cn } from "../lib/utils";

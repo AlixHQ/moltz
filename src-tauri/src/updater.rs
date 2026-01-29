@@ -33,7 +33,7 @@ pub struct UpdaterState {
 #[tauri::command]
 pub async fn check_for_updates<R: Runtime>(app: AppHandle<R>) -> Result<UpdateInfo, String> {
     let state = app.state::<UpdaterState>();
-    
+
     // Prevent concurrent checks
     {
         let mut is_checking = state.is_checking.lock().await;
@@ -44,10 +44,10 @@ pub async fn check_for_updates<R: Runtime>(app: AppHandle<R>) -> Result<UpdateIn
     }
 
     let result = perform_update_check(&app).await;
-    
+
     // Release lock
     *state.is_checking.lock().await = false;
-    
+
     result
 }
 
@@ -55,9 +55,9 @@ pub async fn check_for_updates<R: Runtime>(app: AppHandle<R>) -> Result<UpdateIn
 #[tauri::command]
 pub async fn install_update<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {
     use tauri_plugin_updater::UpdaterExt;
-    
+
     let updater = app.updater_builder().build().map_err(|e| e.to_string())?;
-    
+
     if let Some(update) = updater.check().await.map_err(|e| e.to_string())? {
         // Download and install
         update
@@ -68,7 +68,7 @@ pub async fn install_update<R: Runtime>(app: AppHandle<R>) -> Result<(), String>
                     } else {
                         0.0
                     };
-                    
+
                     // Emit progress event to frontend
                     let _ = app.emit("update-download-progress", progress);
                 },
@@ -79,7 +79,7 @@ pub async fn install_update<R: Runtime>(app: AppHandle<R>) -> Result<(), String>
             )
             .await
             .map_err(|e| e.to_string())?;
-        
+
         Ok(())
     } else {
         Err("No update available".to_string())
@@ -88,7 +88,9 @@ pub async fn install_update<R: Runtime>(app: AppHandle<R>) -> Result<(), String>
 
 /// Get current update state
 #[tauri::command]
-pub async fn get_update_status<R: Runtime>(app: AppHandle<R>) -> Result<Option<UpdateInfo>, String> {
+pub async fn get_update_status<R: Runtime>(
+    app: AppHandle<R>,
+) -> Result<Option<UpdateInfo>, String> {
     let state = app.state::<UpdaterState>();
     let pending = state.pending_update.lock().await;
     Ok(pending.clone())
@@ -105,11 +107,11 @@ pub async fn dismiss_update<R: Runtime>(app: AppHandle<R>) -> Result<(), String>
 /// Internal function to perform the actual update check
 async fn perform_update_check<R: Runtime>(app: &AppHandle<R>) -> Result<UpdateInfo, String> {
     use tauri_plugin_updater::UpdaterExt;
-    
+
     let updater = app.updater_builder().build().map_err(|e| e.to_string())?;
-    
+
     let current_version = app.package_info().version.to_string();
-    
+
     match updater.check().await {
         Ok(Some(update)) => {
             let info = UpdateInfo {
@@ -119,21 +121,21 @@ async fn perform_update_check<R: Runtime>(app: &AppHandle<R>) -> Result<UpdateIn
                 body: update.body.clone(),
                 date: update.date.map(|d| d.to_string()),
             };
-            
+
             // Store pending update
             let state = app.state::<UpdaterState>();
             *state.pending_update.lock().await = Some(info.clone());
             *state.last_check.lock().await = Some(std::time::SystemTime::now());
-            
+
             // Emit event to frontend
             let _ = app.emit("update-available", &info);
-            
+
             Ok(info)
         }
         Ok(None) => {
             let state = app.state::<UpdaterState>();
             *state.last_check.lock().await = Some(std::time::SystemTime::now());
-            
+
             Ok(UpdateInfo {
                 available: false,
                 version: current_version.clone(),
@@ -152,20 +154,18 @@ async fn perform_update_check<R: Runtime>(app: &AppHandle<R>) -> Result<UpdateIn
 /// Setup periodic update checks (every 4-6 hours)
 pub fn setup_periodic_checks<R: Runtime>(app: &AppHandle<R>) {
     let app_handle = app.clone();
-    
+
     tauri::async_runtime::spawn(async move {
         // Random interval between 4-6 hours to avoid thundering herd
         let base_hours = 4;
         let random_extra_minutes = (rand::random::<u64>() % 120) as u64; // 0-120 minutes
-        let check_interval = Duration::from_secs(
-            (base_hours * 3600) + (random_extra_minutes * 60)
-        );
-        
+        let check_interval = Duration::from_secs((base_hours * 3600) + (random_extra_minutes * 60));
+
         let mut interval_timer = interval(check_interval);
-        
+
         loop {
             interval_timer.tick().await;
-            
+
             // Perform update check
             if let Ok(info) = perform_update_check(&app_handle).await {
                 if info.available {
@@ -179,7 +179,7 @@ pub fn setup_periodic_checks<R: Runtime>(app: &AppHandle<R>) {
 /// Listen for network reconnection events from gateway
 pub fn setup_network_listener<R: Runtime>(app: &AppHandle<R>) {
     let app_handle = app.clone();
-    
+
     // Listen to "gateway:reconnected" event emitted by the gateway module
     let _ = app.listen("gateway:reconnected", move |_event| {
         let app = app_handle.clone();
