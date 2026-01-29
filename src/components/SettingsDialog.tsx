@@ -316,7 +316,7 @@ export function SettingsDialog({
           <button
             onClick={onClose}
             aria-label="Close settings"
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-xl transition-all active:scale-[0.95]"
           >
             <svg
               className="w-5 h-5"
