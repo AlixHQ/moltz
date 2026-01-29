@@ -561,11 +561,11 @@ export function GatewaySetupStep({
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
           )}
         >
-          <h2 className="text-4xl font-bold mb-3">Connect to Gateway</h2>
+          <h2 className="text-4xl font-bold mb-3">Connect to Your Computer</h2>
           <p className="text-lg text-muted-foreground">
             {autoDetected
-              ? "Great! We found your Gateway."
-              : "Enter your Gateway URL to get started"}
+              ? "Perfect! We found it."
+              : "Where is Moltz running? Usually it's right here on this computer."}
           </p>
         </div>
 

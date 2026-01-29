@@ -6,7 +6,7 @@ import { ChatInput, PreparedAttachment } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { ConfirmDialog } from "./ui/confirm-dialog";
 import { MessageSkeleton } from "./ui/skeleton";
-import { translateError } from "../lib/errors";
+import { translateError, logError } from "../lib/errors";
 import {
   ArrowDown,
   AlertTriangle,

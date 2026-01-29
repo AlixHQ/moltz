@@ -12,7 +12,6 @@
  */
 
 import { create } from "zustand";
-import { shallow } from "zustand/shallow";
 import {
   persistConversation,
   deletePersistedConversation,
@@ -22,18 +21,6 @@ import {
   deletePersistedMessages,
 } from "../lib/persistence";
 import { getGatewayToken, setGatewayToken } from "../lib/keychain";
-
-/**
- * PERF: Shallow equality helper for Zustand selectors
- * Use this to prevent unnecessary re-renders when selecting multiple values
- * 
- * Example:
- * const { connected, settings } = useStore(
- *   (state) => ({ connected: state.connected, settings: state.settings }),
- *   shallow
- * );
- */
-export { shallow };
 
 /**
  * Token usage statistics for a message
