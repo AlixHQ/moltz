@@ -5,7 +5,8 @@ import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
 import { Window } from "@tauri-apps/api/window";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { UpdateNotification } from "./components/UpdateNotification";
-import { useStore, type ModelInfo, shallow } from "./stores/store";
+import { useStore, type ModelInfo } from "./stores/store";
+import { useShallow } from "zustand/react/shallow";
 import { cn } from "./lib/utils";
 import { ToastContainer, useToast } from "./components/ui/toast";
 import { Spinner } from "./components/ui/spinner";
@@ -87,7 +88,7 @@ export default function App() {
     retryQueuedMessages,
     getQueuedMessagesCount,
   } = useStore(
-    (state) => ({
+    useShallow((state) => ({
       currentConversation: state.currentConversation,
       connected: state.connected,
       setConnected: state.setConnected,
@@ -96,8 +97,7 @@ export default function App() {
       settings: state.settings,
       retryQueuedMessages: state.retryQueuedMessages,
       getQueuedMessagesCount: state.getQueuedMessagesCount,
-    }),
-    shallow
+    }))
   );
 
   // Refs for tracking state across async operations

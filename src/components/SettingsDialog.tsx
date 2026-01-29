@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useStore, ModelInfo, shallow } from "../stores/store";
+import { useStore, ModelInfo } from "../stores/store";
+import { useShallow } from "zustand/react/shallow";
 import { invoke } from "@tauri-apps/api/core";
 import { cn } from "../lib/utils";
 import {
@@ -53,18 +54,6 @@ const FALLBACK_MODELS: ModelInfo[] = [
   },
 ];
 
-// PERF: Define selector outside component to maintain stable reference and prevent infinite loops
-const settingsSelector = (state: any) => ({
-  settings: state.settings,
-  updateSettings: state.updateSettings,
-  connected: state.connected,
-  setConnected: state.setConnected,
-  availableModels: state.availableModels,
-  setAvailableModels: state.setAvailableModels,
-  modelsLoading: state.modelsLoading,
-  setModelsLoading: state.setModelsLoading,
-});
-
 export function SettingsDialog({
   open,
   onClose,
@@ -80,7 +69,18 @@ export function SettingsDialog({
     setAvailableModels,
     modelsLoading,
     setModelsLoading,
-  } = useStore(settingsSelector, shallow);
+  } = useStore(
+    useShallow((state) => ({
+      settings: state.settings,
+      updateSettings: state.updateSettings,
+      connected: state.connected,
+      setConnected: state.setConnected,
+      availableModels: state.availableModels,
+      setAvailableModels: state.setAvailableModels,
+      modelsLoading: state.modelsLoading,
+      setModelsLoading: state.setModelsLoading,
+    }))
+  );
   const { showSuccess, showError: showToastError } = useToast();
   const [formData, setFormData] = useState(settings);
   const [connectionStatus, setConnectionStatus] = useState<
