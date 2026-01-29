@@ -80,7 +80,6 @@ export function Sidebar({
       connected: state.connected,
     })),
   );
-  const [searchQuery, setSearchQuery] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
@@ -124,19 +123,8 @@ export function Sidebar({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [createConversation]);
 
-  // Memoize filtered conversations to avoid re-scanning on every render
-  const filteredConversations = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    if (!query) return conversations;
-
-    return conversations.filter((c) => {
-      // Check title
-      if (c.title.toLowerCase().includes(query)) return true;
-
-      // Check message content
-      return c.messages.some((m) => m.content.toLowerCase().includes(query));
-    });
-  }, [conversations, searchQuery]);
+  // All conversations (filtering moved to search dialog)
+  const filteredConversations = conversations;
 
   const pinnedConversations = useMemo(
     () => filteredConversations.filter((c) => c.isPinned),
@@ -200,52 +188,27 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* New chat button */}
-      <div className="px-3 pb-3">
+      {/* New chat + search row */}
+      <div className="px-3 pb-3 flex gap-2">
         <Button
           onClick={handleNewChat}
           variant="primary"
           size="md"
-          className="w-full justify-start"
+          className="flex-1 justify-center"
           leftIcon={<Plus className="w-4 h-4" />}
           aria-label="Create new conversation"
         >
           New Chat
         </Button>
-      </div>
-
-      {/* Search button */}
-      <div className="px-3 pb-2">
         <Button
           onClick={() => setSearchDialogOpen(true)}
           variant="outline"
-          size="sm"
-          className="w-full justify-start text-muted-foreground hover:text-foreground"
-          leftIcon={<Search className="w-4 h-4" />}
+          size="md"
+          className="px-3"
           aria-label="Search messages"
         >
-          Search messages...
+          <Search className="w-4 h-4" />
         </Button>
-      </div>
-
-      {/* Quick filter */}
-      <div
-        className="px-3 pb-2"
-        role="search"
-        aria-label="Filter conversations"
-      >
-        <label htmlFor="conversation-filter" className="sr-only">
-          Filter conversations by title or content
-        </label>
-        <input
-          id="conversation-filter"
-          type="text"
-          placeholder="Filter conversations..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-1.5 text-sm rounded-lg border border-border bg-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors placeholder:text-muted-foreground/60"
-          aria-label="Filter conversations"
-        />
       </div>
 
       {/* Conversation list */}
@@ -284,32 +247,24 @@ export function Sidebar({
           </>
         )}
 
-        {!conversationsLoading &&
-          filteredConversations.length === 0 &&
-          (searchQuery ? (
-            <EmptyState
-              icon={<Search className="w-8 h-8" strokeWidth={1.5} />}
-              title="No matches"
-              description={`No conversations match "${searchQuery}"`}
-            />
-          ) : (
-            <EmptyState
-              icon={<MessageSquare className="w-8 h-8" strokeWidth={1.5} />}
-              title="No conversations yet"
-              description="Start a new chat to begin"
-              action={
-                <Button
-                  onClick={handleNewChat}
-                  variant="primary"
-                  size="sm"
-                  leftIcon={<Plus className="w-4 h-4" />}
-                  aria-label="Create your first conversation"
-                >
-                  New Chat
-                </Button>
-              }
-            />
-          ))}
+        {!conversationsLoading && filteredConversations.length === 0 && (
+          <EmptyState
+            icon={<MessageSquare className="w-8 h-8" strokeWidth={1.5} />}
+            title="No conversations yet"
+            description="Start a new chat to begin"
+            action={
+              <Button
+                onClick={handleNewChat}
+                variant="primary"
+                size="sm"
+                leftIcon={<Plus className="w-4 h-4" />}
+                aria-label="Create your first conversation"
+              >
+                New Chat
+              </Button>
+            }
+          />
+        )}
       </ScrollShadow>
 
       {/* Footer */}
