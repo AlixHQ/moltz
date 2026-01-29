@@ -74,6 +74,15 @@ export function translateError(error: string | Error): UserFriendlyError {
     };
   }
 
+  // Gateway protocol/schema errors
+  if (lowerError.includes("invalid connect params") || lowerError.includes("client/id")) {
+    return {
+      title: "Protocol mismatch",
+      message: "The gateway rejected the connection handshake.",
+      suggestion: "Try updating both Moltz and Clawdbot to the latest version. If using an older gateway, check if 'allowInsecureAuth' is enabled in gateway config.",
+    };
+  }
+
   // Authentication errors
   if (
     lowerError.includes("unauthorized") ||

@@ -492,10 +492,12 @@ export default function App() {
           console.error("Failed to retry queued messages:", err);
         }
       }),
-      listen("gateway:disconnected", () => {
+      listen<string>("gateway:disconnected", (event) => {
         if (!eventListenerMounted) return;
         setConnected(false);
-        setConnectionError("Connection to Gateway lost");
+        // Capture the actual disconnect reason from the gateway
+        const reason = event.payload || "Connection to Gateway lost";
+        setConnectionError(reason);
         clearTimers();
 
         // No toast spam - the header bar shows the status
