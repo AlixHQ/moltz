@@ -567,10 +567,15 @@ function AppContent() {
           setConnectionError(null);
           setErrorDismissed(false); // Reset so user can see new errors
 
+          // CRITICAL: Get fresh settings from store, not stale closure values!
+          // The event listener captures `settings` at setup time, but we need
+          // the current values which may have been updated during onboarding.
+          const currentSettings = useStore.getState().settings;
+
           try {
             const result = await invoke<ConnectResult>("connect", {
-              url: settings.gatewayUrl,
-              token: settings.gatewayToken,
+              url: currentSettings.gatewayUrl,
+              token: currentSettings.gatewayToken,
             });
 
             if (!eventListenerMounted) return;
