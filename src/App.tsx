@@ -816,10 +816,16 @@ function AppContent() {
     }
   }, [showOnboarding]);
 
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false);
+  const handleOnboardingComplete = async () => {
     // Clear progress
     localStorage.removeItem("moltz-onboarding-progress");
+    
+    // CRITICAL: Reload settings from keychain BEFORE transitioning
+    // This ensures the token saved during onboarding is loaded into state
+    await useStore.getState().loadSettings();
+    
+    // Now transition to main app
+    setShowOnboarding(false);
     // Trigger a connection attempt with new settings
     setIsConnecting(true);
   };
