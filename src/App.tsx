@@ -216,7 +216,14 @@ function AppContent() {
     };
 
     validateOnboarding();
-  }, [showError, showOnboarding]);
+    // NOTE: showOnboarding intentionally REMOVED from dependencies.
+    // This should only run on mount. When transitioning from onboarding
+    // to main app, we don't want to reload settings because:
+    // 1. Settings are already correct in Zustand state (set by updateSettings)
+    // 2. Calling loadSettings would race with keychain save and potentially
+    //    overwrite the token with an empty value before save completes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showError]);
 
   // Apply theme on mount and when settings change
   useEffect(() => {
