@@ -79,8 +79,8 @@ export function GatewayExplainerStep({
           {[
             {
               icon: "🔐",
-              title: "Your Private Bridge",
-              desc: "Gateway runs on your machine, so your data never leaves your control. It's like having a personal assistant who works in your office, not in the cloud.",
+              title: "Everything Stays Private",
+              desc: "Moltz runs on your computer, not in the cloud. Your emails, calendar, and files never leave your machine. It's like having an assistant who works at your desk, not at someone else's office.",
               gradient: "from-green-500/10 to-emerald-500/10",
               border: "border-green-500/20",
               iconBg: "bg-green-500/20",
@@ -88,8 +88,8 @@ export function GatewayExplainerStep({
             },
             {
               icon: "🔌",
-              title: "Connects Everything",
-              desc: "Gateway lets Moltz talk to your calendar, email, files, and more—all while keeping your credentials secure on your computer.",
+              title: "Talks to Your Apps",
+              desc: "Moltz connects to your calendar, email, files, and more—right on your computer. Your passwords and login info stay on your machine.",
               gradient: "from-purple-500/10 to-pink-500/10",
               border: "border-purple-500/20",
               iconBg: "bg-purple-500/20",
@@ -97,8 +97,8 @@ export function GatewayExplainerStep({
             },
             {
               icon: "⚡",
-              title: "Fast & Local",
-              desc: "Most Gateways run at localhost:18789. If you have one running already, we'll auto-detect it!",
+              title: "Super Fast",
+              desc: "Because everything runs locally on your computer, responses are instant. No waiting for the cloud!",
               gradient: "from-orange-500/10 to-red-500/10",
               border: "border-orange-500/20",
               iconBg: "bg-orange-500/20",

@@ -50,6 +50,7 @@ export function ChatView() {
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [isSending, setIsSending] = useState(false);
@@ -150,6 +151,19 @@ export function ChatView() {
         cancelAnimationFrame(scrollRafRef.current);
       }
     };
+  }, []);
+
+  // Global keyboard shortcut: Cmd/Ctrl+/ to focus input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "/") {
+        e.preventDefault();
+        chatInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const scrollToBottom = () => {
@@ -575,6 +589,7 @@ export function ChatView() {
             onSend={handleSendMessage}
             disabled={!connected || isSending}
             isSending={isSending}
+            inputRef={chatInputRef}
           />
         </div>
       </div>
