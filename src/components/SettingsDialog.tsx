@@ -11,6 +11,7 @@ import {
 import { Switch } from "./ui/switch";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toast";
+import { useFocusTrap } from "../lib/useFocusTrap";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -89,6 +90,7 @@ export function SettingsDialog({
   const [protocolNotice, setProtocolNotice] = useState<string | null>(null);
   const [showToken, setShowToken] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
+  const dialogRef = useFocusTrap(open);
 
   // Only sync form data when dialog opens, not when settings reference changes
   // This prevents reverting edits when the store updates during typing
@@ -290,10 +292,17 @@ export function SettingsDialog({
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onClose();
+        }}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close settings"
       />
 
       {/* Dialog */}
       <div
+        ref={dialogRef as React.RefObject<HTMLDivElement>}
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-dialog-title"
