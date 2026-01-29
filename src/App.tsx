@@ -816,17 +816,19 @@ function AppContent() {
     }
   }, [showOnboarding]);
 
-  const handleOnboardingComplete = async () => {
+  const handleOnboardingComplete = () => {
     // Clear progress
     localStorage.removeItem("moltz-onboarding-progress");
     
-    // CRITICAL: Reload settings from keychain BEFORE transitioning
-    // This ensures the token saved during onboarding is loaded into state
-    await useStore.getState().loadSettings();
+    // NOTE: Don't call loadSettings() here! The GatewaySetupStep already
+    // called updateSettings() which set the token in Zustand state AND
+    // started the async keychain save. Calling loadSettings() would read
+    // from keychain which might not have the new token yet (race condition).
+    // The Zustand state already has the correct token.
     
-    // Now transition to main app
+    // Transition to main app
     setShowOnboarding(false);
-    // Trigger a connection attempt with new settings
+    // Trigger a connection attempt with existing settings in state
     setIsConnecting(true);
   };
 
