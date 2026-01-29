@@ -138,6 +138,9 @@ describe("Store", () => {
       // Append content
       store.appendToCurrentMessage("Hello");
       store.appendToCurrentMessage(" world");
+      
+      // PERF: Flush the streaming buffer to ensure content is applied
+      store.flushStreamingBuffer();
 
       const updated = useStore
         .getState()

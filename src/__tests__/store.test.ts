@@ -95,6 +95,9 @@ describe("Store", () => {
 
       useStore.getState().appendToCurrentMessage("Hello");
       useStore.getState().appendToCurrentMessage(" world");
+      
+      // PERF: Flush the streaming buffer to ensure content is applied
+      useStore.getState().flushStreamingBuffer();
 
       const updatedConv = useStore.getState().conversations[0];
       expect(updatedConv.messages[0].content).toBe("Hello world");

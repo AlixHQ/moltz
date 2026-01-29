@@ -35,6 +35,7 @@ import {
   Trash2,
   MessageSquare,
   Download,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -463,8 +464,25 @@ function ConversationItem({
 }: ConversationItemProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showStreamingWarning, setShowStreamingWarning] = useState(false);
+
+  // Check if this conversation has an active stream
+  const isStreaming = useStore(
+    (state) => 
+      state.currentStreamingMessageId !== null && 
+      state.currentConversationId === conversation.id
+  );
 
   const handleDelete = () => {
+    // Prevent deletion while streaming
+    if (isStreaming) {
+      setShowStreamingWarning(true);
+      setShowDeleteConfirm(false);
+      setShowMenu(false);
+      // Auto-dismiss warning after 3 seconds
+      setTimeout(() => setShowStreamingWarning(false), 3000);
+      return;
+    }
     onDelete();
     setShowDeleteConfirm(false);
     setShowMenu(false);
@@ -632,6 +650,19 @@ function ConversationItem({
         confirmText="Delete"
         confirmVariant="destructive"
       />
+
+      {/* Streaming warning tooltip */}
+      {showStreamingWarning && (
+        <div 
+          className="absolute left-0 top-full mt-1 z-50 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-700 dark:text-amber-300 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200 whitespace-nowrap"
+          role="alert"
+        >
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>Stop generating first</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

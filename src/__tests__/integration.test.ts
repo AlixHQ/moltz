@@ -112,6 +112,9 @@ describe("Integration Tests", () => {
       store.appendToCurrentMessage("Hello");
       store.appendToCurrentMessage(" ");
       store.appendToCurrentMessage("world");
+      
+      // PERF: Flush the streaming buffer to ensure content is applied
+      store.flushStreamingBuffer();
 
       // Get fresh state after mutations
       const currentState = useStore.getState();

@@ -27,9 +27,8 @@ describe("MessageBubble", () => {
       render(<MessageBubble message={message} />);
 
       expect(screen.getByText("You")).toBeInTheDocument();
-      await waitFor(() => {
-        expect(screen.getByText("Hello, Moltz!")).toBeInTheDocument();
-      });
+      // Use findByText with extended timeout for markdown rendering
+      expect(await screen.findByText("Hello, Moltz!", {}, { timeout: 5000 })).toBeInTheDocument();
     });
 
     it("should render assistant message", async () => {

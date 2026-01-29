@@ -85,6 +85,9 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
+// Maximum message length (100KB - accommodates most use cases while preventing abuse)
+const MAX_MESSAGE_LENGTH = 100000;
+
 interface ChatInputProps {
   onSend: (content: string, attachments: PreparedAttachment[]) => void;
   disabled?: boolean;
@@ -102,6 +105,7 @@ export function ChatInput({
   const [attachments, setAttachments] = useState<PreparedAttachment[]>([]);
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [messageTooLong, setMessageTooLong] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const internalRef = useRef<HTMLTextAreaElement>(null);
   const textareaRef = externalRef || internalRef;
@@ -141,6 +145,11 @@ export function ChatInput({
   const handleSend = () => {
     if (disabled) return;
     if (!message.trim() && attachments.length === 0) return;
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      setMessageTooLong(true);
+      return;
+    }
+    setMessageTooLong(false);
     onSend(message, attachments);
     setMessage("");
     setAttachments([]);
@@ -272,7 +281,10 @@ export function ChatInput({
   };
 
   const canSend =
-    (message.trim() || attachments.length > 0) && !disabled && !isLoadingFiles;
+    (message.trim() || attachments.length > 0) && 
+    !disabled && 
+    !isLoadingFiles && 
+    message.length <= MAX_MESSAGE_LENGTH;
 
   return (
     <div className="p-4">
@@ -301,6 +313,21 @@ export function ChatInput({
           >
             <X className="w-3.5 h-3.5" />
           </button>
+        </div>
+      )}
+
+      {/* Message too long warning */}
+      {(messageTooLong || message.length > MAX_MESSAGE_LENGTH) && (
+        <div
+          className="flex items-center gap-2 mb-3 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-sm text-amber-700 dark:text-amber-300 animate-in fade-in slide-in-from-bottom-2 duration-200"
+          role="alert"
+          aria-live="polite"
+        >
+          <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+          <span className="flex-1">
+            Message is too long ({message.length.toLocaleString()} / {MAX_MESSAGE_LENGTH.toLocaleString()} characters). 
+            Please shorten it to send.
+          </span>
         </div>
       )}
 

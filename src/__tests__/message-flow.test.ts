@@ -142,6 +142,9 @@ describe("Message Flow", () => {
       store.appendToCurrentMessage(", ");
       store.appendToCurrentMessage("world");
       store.appendToCurrentMessage("!");
+      
+      // PERF: Flush the streaming buffer to ensure content is applied
+      store.flushStreamingBuffer();
 
       const updatedConv = useStore
         .getState()
