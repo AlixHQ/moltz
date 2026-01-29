@@ -449,6 +449,51 @@ ${code}
         </pre>
       </div>
 
+      {/* Execution Result */}
+      {executionResult && (
+        <div
+          className={cn(
+            "border border-t-0 border-zinc-700 overflow-hidden",
+            !showPreview && !canPreview && "rounded-b-lg"
+          )}
+        >
+          <div
+            className={cn(
+              "px-4 py-3 text-sm font-mono",
+              executionResult.success
+                ? "bg-zinc-950 text-zinc-300"
+                : "bg-red-950/50 text-red-300"
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium flex items-center gap-1.5">
+                {executionResult.success ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-green-400" />
+                    <span className="text-green-400">Output</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="w-3.5 h-3.5 text-red-400" />
+                    <span className="text-red-400">Error</span>
+                  </>
+                )}
+              </span>
+              <button
+                onClick={() => setExecutionResult(null)}
+                className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                aria-label="Clear output"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <pre className="whitespace-pre-wrap text-xs leading-relaxed">
+              {executionResult.success ? executionResult.output : executionResult.error}
+            </pre>
+          </div>
+        </div>
+      )}
+
       {/* Live Preview */}
       {showPreview && canPreview && (
         <div className="border border-t-0 border-zinc-700 rounded-b-lg overflow-hidden bg-white">
