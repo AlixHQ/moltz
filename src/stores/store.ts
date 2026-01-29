@@ -793,7 +793,9 @@ export const useStore = create<Store>()((set, get) => ({
       // Load token from OS keychain (secure)
       try {
         const token = await getGatewayToken();
-        const tokenStatus = token ? `loaded (${token.length} chars)` : "empty/not found";
+        const tokenStatus = token
+          ? `loaded (${token.length} chars)`
+          : "empty/not found";
         console.log(`[settings] Gateway token from keychain: ${tokenStatus}`);
         settings = { ...settings, gatewayToken: token };
       } catch (err) {

@@ -98,7 +98,10 @@ export function translateError(error: string | Error): UserFriendlyError {
     };
   }
 
-  if (lowerError.includes("token mismatch") || lowerError.includes("token_mismatch")) {
+  if (
+    lowerError.includes("token mismatch") ||
+    lowerError.includes("token_mismatch")
+  ) {
     return {
       title: "Invalid token",
       message: "The gateway token doesn't match.",

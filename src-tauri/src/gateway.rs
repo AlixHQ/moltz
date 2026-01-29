@@ -1013,7 +1013,10 @@ async fn handle_validated_frame(
                                     mode: "cli".to_string(), // Must be "webchat", "cli", "ui", "backend", "probe", or "test"
                                 },
                                 role: "operator".to_string(),
-                                scopes: vec!["operator.read".to_string(), "operator.write".to_string()],
+                                scopes: vec![
+                                    "operator.read".to_string(),
+                                    "operator.write".to_string(),
+                                ],
                                 caps: vec![], // Optional, skipped if empty
                                 auth: AuthInfo {
                                     token: token.to_string(),

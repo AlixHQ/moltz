@@ -353,9 +353,13 @@ function AppContent() {
 
       try {
         // Debug: Log what we're sending to the gateway
-        const tokenStatus = settings.gatewayToken ? `present (${settings.gatewayToken.length} chars)` : "EMPTY";
-        console.log(`[connect] Attempting connection to ${settings.gatewayUrl}, token: ${tokenStatus}`);
-        
+        const tokenStatus = settings.gatewayToken
+          ? `present (${settings.gatewayToken.length} chars)`
+          : "EMPTY";
+        console.log(
+          `[connect] Attempting connection to ${settings.gatewayUrl}, token: ${tokenStatus}`,
+        );
+
         const result = await invoke<ConnectResult>("connect", {
           url: settings.gatewayUrl,
           token: settings.gatewayToken,
@@ -479,7 +483,13 @@ function AppContent() {
       connectionCancelledRef.current = true;
       clearTimers();
     };
-  }, [settings.gatewayUrl, settings.gatewayToken, showSuccess, showOnboarding, isLoadingData]);
+  }, [
+    settings.gatewayUrl,
+    settings.gatewayToken,
+    showSuccess,
+    showOnboarding,
+    isLoadingData,
+  ]);
 
   // Listen for Gateway events
   useEffect(() => {
