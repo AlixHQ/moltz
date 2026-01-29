@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, KeyboardEvent, memo } from "react";
+import { useState, useRef, useEffect, KeyboardEvent, memo, lazy, Suspense } from "react";
 import { Message, Attachment } from "../stores/store";
 import { cn } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -14,7 +14,14 @@ import {
   FileText,
 } from "lucide-react";
 import { ImageRenderer } from "./ImageRenderer";
-import { MarkdownRenderer } from "./MarkdownRenderer";
+import { Spinner } from "./ui/spinner";
+
+// PERF: Lazy load MarkdownRenderer to defer the 340 kB markdown chunk
+const MarkdownRenderer = lazy(() =>
+  import("./MarkdownRenderer").then((module) => ({
+    default: module.MarkdownRenderer,
+  }))
+);
 
 interface MessageBubbleProps {
   message: Message;
@@ -260,11 +267,20 @@ export const MessageBubble = memo(function MessageBubble({
           ) : message.isStreaming && !message.content ? (
             <TypingIndicator />
           ) : (
-            <MarkdownRenderer
-              content={message.content}
-              copiedCode={copiedCode}
-              onCopyCode={copyToClipboard}
-            />
+            <Suspense
+              fallback={
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                  <Spinner size="sm" />
+                  Loading...
+                </div>
+              }
+            >
+              <MarkdownRenderer
+                content={message.content}
+                copiedCode={copiedCode}
+                onCopyCode={copyToClipboard}
+              />
+            </Suspense>
           )}
 
           {/* Streaming cursor - P1: smooth blink */}

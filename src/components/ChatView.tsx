@@ -5,6 +5,7 @@ import { ChatInput, PreparedAttachment } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { ConfirmDialog } from "./ui/confirm-dialog";
 import { MessageSkeleton } from "./ui/skeleton";
+import { translateError } from "../lib/errors";
 import {
   ArrowDown,
   AlertTriangle,
@@ -191,8 +192,8 @@ export function ChatView() {
         });
       } catch (err: unknown) {
         console.error("Failed to send edited message:", err);
-        const errorMsg = String(err).replace("Error: ", "");
-        setError(errorMsg);
+        const friendly = translateError(err instanceof Error ? err : String(err));
+        setError(`${friendly.title}: ${friendly.message}${friendly.suggestion ? '\n' + friendly.suggestion : ''}`);
         setTimeout(() => setError(null), 15000);
       } finally {
         setIsSending(false);
