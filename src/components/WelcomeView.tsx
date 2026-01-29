@@ -1,7 +1,7 @@
 ﻿import { useStore } from "../stores/store";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "../lib/utils";
-import { Plus, AlertTriangle, MessageSquare } from "lucide-react";
+import { Plus, MessageSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { formatDistanceToNow } from "date-fns";
 
@@ -109,19 +109,17 @@ export function WelcomeView() {
           </p>
         </div>
 
-        {/* Connection status banner */}
+        {/* Connection status notice */}
         {!connected && (
-          <div className="mb-8 px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400">
-              <AlertTriangle className="w-5 h-5" strokeWidth={2} />
-              <span className="font-medium">Not Connected Yet</span>
+          <div className="mb-8 px-4 py-3 bg-muted/40 border border-border/50 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+              </svg>
+              <span className="text-sm">Waiting for Gateway connection</span>
             </div>
-            <p className="text-sm text-amber-600/80 dark:text-amber-400/80 mt-1 text-center">
-              You can browse saved chats, but you'll need to connect before you
-              can chat with Moltz.
-            </p>
-            <p className="text-xs text-amber-600/60 dark:text-amber-400/60 mt-2 text-center">
-              Open Settings (⌘,) to set up your connection.
+            <p className="text-xs text-muted-foreground/70 mt-2 text-center">
+              Open Settings <kbd className="px-1.5 py-0.5 text-[10px] bg-muted rounded font-mono">⌘,</kbd> to connect
             </p>
           </div>
         )}
