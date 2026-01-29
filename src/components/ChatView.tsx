@@ -26,6 +26,9 @@ export function ChatView() {
     settings,
     completeCurrentMessage,
     currentStreamingMessageId,
+    markMessageSent,
+    markMessageFailed,
+    markMessageQueued,
   } = useStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -60,37 +63,87 @@ export function ChatView() {
     }
   }, [currentConversation]);
 
-  // Auto-scroll to bottom on new messages (only if already near bottom)
+  // P1: Auto-scroll to bottom on new messages (only if already near bottom)
+  // Separate effect for streaming vs. new messages for optimal UX
+  const prevMessagesLengthRef = useRef(0);
+  
   useEffect(() => {
-    if (isNearBottom) {
+    if (!currentConversation) return;
+    
+    const messagesLength = currentConversation.messages.length;
+    const isNewMessage = messagesLength > prevMessagesLengthRef.current;
+    prevMessagesLengthRef.current = messagesLength;
+    
+    if (isNearBottom && isNewMessage) {
+      // Smooth scroll for new messages
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [currentConversation, isNearBottom]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentConversation?.messages.length, isNearBottom]);
+  
+  // P1: Instant scroll during streaming for responsiveness
+  useEffect(() => {
+    if (!currentConversation || !currentStreamingMessageId) return;
+    
+    const streamingMessage = currentConversation.messages.find(
+      m => m.id === currentStreamingMessageId
+    );
+    
+    if (streamingMessage && isNearBottom) {
+      // Use instant scroll during streaming for zero jank
+      // RAF ensures it happens after DOM update
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          const { scrollHeight, clientHeight } = scrollContainerRef.current;
+          scrollContainerRef.current.scrollTop = scrollHeight - clientHeight;
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentConversation?.messages, currentStreamingMessageId, isNearBottom]);
 
   // Track scroll position
-  // PERF: Throttled scroll handler to prevent excessive re-renders
-  const lastScrollTime = useRef(0);
+  // P1: Use RAF for buttery smooth 60fps scroll tracking
+  const scrollRafRef = useRef<number | null>(null);
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
     
-    const now = Date.now();
-    if (now - lastScrollTime.current < 100) return; // 10 FPS max
-    lastScrollTime.current = now;
+    // Cancel pending RAF to debounce
+    if (scrollRafRef.current !== null) {
+      cancelAnimationFrame(scrollRafRef.current);
+    }
 
-    const { scrollTop, scrollHeight, clientHeight } =
-      scrollContainerRef.current;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    setIsNearBottom(distanceFromBottom < 100);
+    scrollRafRef.current = requestAnimationFrame(() => {
+      if (!scrollContainerRef.current) return;
+      
+      const { scrollTop, scrollHeight, clientHeight } =
+        scrollContainerRef.current;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      setIsNearBottom(distanceFromBottom < 100);
+      
+      scrollRafRef.current = null;
+    });
+  }, []);
+
+  // Cleanup RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollRafRef.current !== null) {
+        cancelAnimationFrame(scrollRafRef.current);
+      }
+    };
   }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // P1: Instant stop with immediate visual feedback
   const handleStopGenerating = () => {
     if (currentStreamingMessageId) {
-      completeCurrentMessage();
+      // Instant state update for zero-jank UX
       setIsSending(false);
+      completeCurrentMessage();
     }
   };
 
@@ -262,20 +315,29 @@ export function ChatView() {
     setLastFailedMessage(null);
     setIsSending(true);
 
-    try {
-      // Add user message with pending state (optimistic update)
-      const userMessage = addMessage(currentConversation.id, {
-        role: "user",
-        content,
-        isPending: true, // Mark as pending until Gateway confirms
-        attachments: attachments.map((a) => ({
-          id: a.id,
-          filename: a.filename,
-          mimeType: a.mimeType,
-          data: a.previewUrl ? a.data : undefined, // Only store base64 for images (for preview)
-        })),
-      });
+    // Add user message with pending state (optimistic update)
+    const userMessage = addMessage(currentConversation.id, {
+      role: "user",
+      content,
+      isPending: true, // Mark as pending until Gateway confirms
+      attachments: attachments.map((a) => ({
+        id: a.id,
+        filename: a.filename,
+        mimeType: a.mimeType,
+        data: a.previewUrl ? a.data : undefined, // Only store base64 for images (for preview)
+      })),
+    });
 
+    // If not connected, queue the message immediately
+    if (!connected) {
+      markMessageQueued(currentConversation.id, userMessage.id);
+      setIsSending(false);
+      setError("Not connected - message will be sent when reconnected");
+      setTimeout(() => setError(null), 5000);
+      return;
+    }
+
+    try {
       // Add placeholder for assistant response
       addMessage(currentConversation.id, {
         role: "assistant",
@@ -300,17 +362,26 @@ export function ChatView() {
       });
 
       // Mark user message as sent (no longer pending)
-      useStore
-        .getState()
-        .markMessageSent(currentConversation.id, userMessage.id);
+      markMessageSent(currentConversation.id, userMessage.id);
     } catch (err: unknown) {
       console.error("Failed to send message:", err);
       const errorMsg = String(err).replace("Error: ", "");
-      setError(errorMsg);
-      setLastFailedMessage({ content, attachments });
+      
+      // Check if it's a connection error - queue for retry
+      if (errorMsg.toLowerCase().includes("connection") || 
+          errorMsg.toLowerCase().includes("network") ||
+          errorMsg.toLowerCase().includes("disconnected")) {
+        markMessageQueued(currentConversation.id, userMessage.id);
+        setError("Connection lost - message will be retried when reconnected");
+      } else {
+        // Hard error - mark as failed
+        markMessageFailed(currentConversation.id, userMessage.id, errorMsg);
+        setError(errorMsg);
+        setLastFailedMessage({ content, attachments });
+      }
 
-      // Auto-dismiss error after 15 seconds
-      setTimeout(() => setError(null), 15000);
+      // Auto-dismiss error after 10 seconds
+      setTimeout(() => setError(null), 10000);
     } finally {
       setIsSending(false);
     }
@@ -382,14 +453,14 @@ export function ChatView() {
         </div>
       </div>
 
-      {/* Stop generating button */}
+      {/* Stop generating button - P1: instant feedback */}
       {currentStreamingMessageId && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <Button
             onClick={handleStopGenerating}
             variant="destructive"
             size="sm"
-            className="shadow-lg hover:shadow-xl hover:scale-105"
+            className="shadow-lg hover:shadow-xl transition-all duration-150 active:scale-95 active:shadow-md"
             leftIcon={<StopCircle className="w-4 h-4" />}
             aria-label="Stop generating response"
           >

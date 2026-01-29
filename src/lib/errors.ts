@@ -26,7 +26,7 @@ export function translateError(error: string | Error): UserFriendlyError {
     return {
       title: "Can't reach Gateway",
       message: "The Gateway isn't responding.",
-      suggestion: "Make sure the Gateway is running and the URL is correct.",
+      suggestion: "Is the Gateway running? Try: clawdbot gateway status",
     };
   }
 
@@ -82,8 +82,8 @@ export function translateError(error: string | Error): UserFriendlyError {
   ) {
     return {
       title: "Authentication failed",
-      message: "The Gateway didn't accept your credentials.",
-      suggestion: "Check your Gateway token in Settings.",
+      message: "The Gateway didn't accept your token.",
+      suggestion: "Update your Gateway token in Settings (auto-opening...)",
     };
   }
 

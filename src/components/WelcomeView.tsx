@@ -78,14 +78,17 @@ export function WelcomeView() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 animate-in fade-in duration-500">
       <div className="max-w-3xl w-full text-center">
+        {/* Semantic heading for screen readers */}
+        <h1 className="sr-only">Moltz AI Assistant - Welcome</h1>
+        
         {/* Logo */}
         <div className="mb-8 animate-in zoom-in-50 duration-500">
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 shadow-xl shadow-orange-500/20 mb-6 transform hover:scale-105 transition-transform">
-            <span className="text-5xl drop-shadow-lg">🦞</span>
+            <span className="text-5xl drop-shadow-lg" role="img" aria-label="Moltz lobster mascot">🦞</span>
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent mb-3">
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent mb-3" aria-hidden="true">
             Moltz
-          </h1>
+          </h2>
           <p className="text-lg text-muted-foreground">
             Your AI that actually{" "}
             <span className="font-medium text-foreground">does things</span>
@@ -123,6 +126,7 @@ export function WelcomeView() {
 
         {/* Suggestions */}
         <div className="mb-8">
+          <h3 className="sr-only">Suggested actions</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Try asking me to...
           </p>

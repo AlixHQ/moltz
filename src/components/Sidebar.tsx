@@ -46,9 +46,17 @@ interface SidebarProps {
   onToggle: () => void;
   onRerunSetup?: () => void;
   hasUpdateAvailable?: boolean;
+  forceShowSettings?: boolean;
+  onSettingsClosed?: () => void;
 }
 
-export function Sidebar({ onToggle: _onToggle, onRerunSetup, hasUpdateAvailable }: SidebarProps) {
+export function Sidebar({ 
+  onToggle: _onToggle, 
+  onRerunSetup, 
+  hasUpdateAvailable,
+  forceShowSettings,
+  onSettingsClosed,
+}: SidebarProps) {
   const {
     conversations,
     conversationsLoading,
@@ -65,6 +73,19 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup, hasUpdateAvailable 
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [conversationToExport, setConversationToExport] =
     useState<Conversation | null>(null);
+
+  // Force open settings from parent (e.g., auth error)
+  useEffect(() => {
+    if (forceShowSettings) {
+      setSettingsOpen(true);
+    }
+  }, [forceShowSettings]);
+
+  // Handle settings close
+  const handleSettingsClose = () => {
+    setSettingsOpen(false);
+    onSettingsClosed?.();
+  };
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -197,7 +218,7 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup, hasUpdateAvailable 
       </div>
 
       {/* Quick filter */}
-      <div className="px-3 pb-2">
+      <div className="px-3 pb-2" role="search" aria-label="Filter conversations">
         <label htmlFor="conversation-filter" className="sr-only">
           Filter conversations by title or content
         </label>
@@ -302,7 +323,7 @@ export function Sidebar({ onToggle: _onToggle, onRerunSetup, hasUpdateAvailable 
       <Suspense fallback={null}>
         <SettingsDialog
           open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
+          onClose={handleSettingsClose}
           onRerunSetup={onRerunSetup}
         />
       </Suspense>
