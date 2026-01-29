@@ -72,17 +72,17 @@ export function SuccessStep({ onNext, onSkip }: SuccessStepProps) {
           key={particle.id}
           className="absolute w-2 h-2 rounded-full pointer-events-none"
           initial={{
-            x: `${particle.x}vw`,
-            y: particle.y,
+            left: `${particle.x}%`,
+            top: -10,
             rotate: 0,
             opacity: 1,
             scale: particle.scale,
           }}
           animate={{
-            y: "110vh",
+            top: "110%",
             rotate: particle.rotation * 3,
             opacity: [1, 1, 0.8, 0],
-            x: `${particle.x + (Math.random() - 0.5) * 20}vw`,
+            left: `${particle.x + (Math.random() - 0.5) * 20}%`,
           }}
           transition={{
             duration: 2.5 + Math.random() * 1,
