@@ -81,6 +81,21 @@ export async function loadPersistedData(): Promise<{
           `Could not decrypt conversation title ${dbConv.id}, using as-is`,
         );
       }
+      
+      // Sanity check: if title looks like encoded data (base64, session key, etc.), use default
+      // Signs of corrupted/encoded title: very long, contains +/, no spaces in long string
+      const looksCorrupted = (t: string) => {
+        if (!t || t.length < 3) return true;
+        if (t.length > 50 && !t.includes(' ')) return true;  // Long string with no spaces
+        if (/^[A-Za-z0-9+/=]{20,}$/.test(t)) return true;   // Looks like base64
+        if (/^[a-f0-9-]{32,}$/.test(t)) return true;        // Looks like UUID/hash
+        return false;
+      };
+      
+      if (looksCorrupted(title)) {
+        console.warn(`Conversation ${dbConv.id} has corrupted title, using default`);
+        title = "Conversation";
+      }
 
       conversations.push({
         id: dbConv.id,
