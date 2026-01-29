@@ -17,7 +17,9 @@ export async function getGatewayToken(): Promise<string> {
       key: "gateway_token",
     });
     return token;
-  } catch {
+  } catch (err) {
+    // Log the actual error for debugging
+    console.warn("[keychain] Failed to get gateway token:", err);
     // Token not found or error - return empty string
     return "";
   }

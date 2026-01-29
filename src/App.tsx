@@ -273,6 +273,14 @@ function AppContent() {
       return;
     }
 
+    // CRITICAL: Don't attempt connection while settings are still loading
+    // This prevents a race condition where connect is called before
+    // the gateway token has been loaded from the keychain
+    if (isLoadingData) {
+      console.log("[connect] Waiting for settings to load...");
+      return;
+    }
+
     // Don't attempt connection if no Gateway URL is configured
     // BUT don't re-trigger onboarding if it was just completed (check localStorage)
     if (!settings.gatewayUrl || settings.gatewayUrl.trim() === "") {
@@ -344,6 +352,10 @@ function AppContent() {
       }
 
       try {
+        // Debug: Log what we're sending to the gateway
+        const tokenStatus = settings.gatewayToken ? `present (${settings.gatewayToken.length} chars)` : "EMPTY";
+        console.log(`[connect] Attempting connection to ${settings.gatewayUrl}, token: ${tokenStatus}`);
+        
         const result = await invoke<ConnectResult>("connect", {
           url: settings.gatewayUrl,
           token: settings.gatewayToken,
@@ -467,7 +479,7 @@ function AppContent() {
       connectionCancelledRef.current = true;
       clearTimers();
     };
-  }, [settings.gatewayUrl, settings.gatewayToken, showSuccess, showOnboarding]);
+  }, [settings.gatewayUrl, settings.gatewayToken, showSuccess, showOnboarding, isLoadingData]);
 
   // Listen for Gateway events
   useEffect(() => {
