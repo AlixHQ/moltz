@@ -827,8 +827,8 @@ async fn connect_internal(
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             let ws_msg = match msg {
-                OutgoingMessage::Raw(text) => WsMessage::Text(text),
-                OutgoingMessage::Ping => WsMessage::Ping(vec![]),
+                OutgoingMessage::Raw(text) => WsMessage::Text(text.into()),
+                OutgoingMessage::Ping => WsMessage::Ping(vec![].into()),
             };
             if let Err(e) = write.send(ws_msg).await {
                 log_protocol_error("Failed to send message", &e.to_string());
