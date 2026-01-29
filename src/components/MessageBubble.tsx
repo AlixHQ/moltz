@@ -345,20 +345,26 @@ export const MessageBubble = memo(function MessageBubble({
               )}
 
               {/* Main message content */}
-              <Suspense
-                fallback={
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-                    <Spinner size="sm" />
-                    Loading...
-                  </div>
-                }
-              >
-                <MarkdownRenderer
-                  content={message.content}
-                  copiedCode={copiedCode}
-                  onCopyCode={copyToClipboard}
-                />
-              </Suspense>
+              {!message.content && !isUser ? (
+                <div className="text-muted-foreground text-sm italic">
+                  ⚠️ Empty response
+                </div>
+              ) : (
+                <Suspense
+                  fallback={
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                      <Spinner size="sm" />
+                      Loading...
+                    </div>
+                  }
+                >
+                  <MarkdownRenderer
+                    content={message.content}
+                    copiedCode={copiedCode}
+                    onCopyCode={copyToClipboard}
+                  />
+                </Suspense>
+              )}
             </>
           )}
 
