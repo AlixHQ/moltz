@@ -171,9 +171,9 @@ export function GatewayExplainerStep({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-muted focus:ring-offset-2 focus:ring-offset-background rounded px-3 py-1"
-              aria-label="Skip Gateway setup"
+              aria-label="Skip setup"
             >
-              Skip for now
+              Skip setup
             </motion.button>
             <motion.button
               ref={primaryButtonRef}
@@ -182,9 +182,9 @@ export function GatewayExplainerStep({
               whileTap={{ scale: 0.98, y: 0 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               className="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-background"
-              aria-label="Continue to Gateway connection"
+              aria-label="Continue to connection setup"
             >
-              Connect to Gateway →
+              Got it, let's connect →
             </motion.button>
           </div>
         </motion.div>
