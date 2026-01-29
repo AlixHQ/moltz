@@ -957,7 +957,7 @@ async fn handle_validated_frame(
                                     token: token.to_string(),
                                 },
                                 locale: "en-US".to_string(),
-                                user_agent: format!("moltzer/{}", env!("CARGO_PKG_VERSION")),
+                                user_agent: format!("moltz/{}", env!("CARGO_PKG_VERSION")),
                             })
                             .unwrap(),
                         ),
@@ -1587,7 +1587,7 @@ mod tests {
                 token: "test-token".to_string(),
             },
             locale: "en-US".to_string(),
-            user_agent: "moltzer/0.1.0".to_string(),
+            user_agent: "moltz/0.1.0".to_string(),
         };
 
         let json = serde_json::to_string(&params).unwrap();

@@ -24,7 +24,7 @@ pub mod ids {
 /// Build and setup the system tray
 pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
     // Create tray menu
-    let show_hide = MenuItem::with_id(app, ids::SHOW_HIDE, "Show Moltzer", true, None::<&str>)?;
+    let show_hide = MenuItem::with_id(app, ids::SHOW_HIDE, "Show Moltz", true, None::<&str>)?;
     let new_conv = MenuItem::with_id(
         app,
         ids::NEW_CONVERSATION,
@@ -39,7 +39,7 @@ pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
         true,
         Some("CmdOrCtrl+Shift+Space"),
     )?;
-    let quit = MenuItem::with_id(app, ids::QUIT, "Quit Moltzer", true, Some("CmdOrCtrl+Q"))?;
+    let quit = MenuItem::with_id(app, ids::QUIT, "Quit Moltz", true, Some("CmdOrCtrl+Q"))?;
 
     let menu = Menu::with_items(app, &[&show_hide, &new_conv, &quick_ask, &quit])?;
 
@@ -50,7 +50,7 @@ pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
     let _tray = TrayIconBuilder::new()
         .icon(icon)
         .menu(&menu)
-        .tooltip("Moltzer - Your AI Assistant")
+        .tooltip("Moltz - Your AI Assistant")
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| {
             handle_tray_menu_event(app, event.id.as_ref());

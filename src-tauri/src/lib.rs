@@ -1,4 +1,4 @@
-//! Moltzer Client - Native Desktop Client for Clawdbot
+//! Moltz Client - Native Desktop Client for Clawdbot
 //!
 //! Rust backend providing:
 //! - WebSocket communication with Clawdbot Gateway
@@ -36,11 +36,15 @@ pub fn run() {
             app.manage(gateway::GatewayState::default());
             app.manage(updater::UpdaterState::default());
 
-            // Build and set native menu bar
-            #[cfg(desktop)]
+            // Build and set native menu bar (macOS only - Windows uses custom titlebar)
+            #[cfg(target_os = "macos")]
             {
                 let menu = menu::build_menu(app.handle())?;
                 app.set_menu(menu)?;
+            }
+
+            #[cfg(desktop)]
+            {
 
                 // Setup system tray
                 tray::setup_tray(app.handle())?;

@@ -1,7 +1,7 @@
 //! Native menu bar implementation
 //!
 //! Provides proper Mac-style menus with standard shortcuts:
-//! - Moltzer menu: About, Preferences, Quit
+//! - Moltz menu: About, Preferences, Quit
 //! - File: New Conversation, Close
 //! - Edit: Cut, Copy, Paste, Select All
 //! - View: Toggle Sidebar, Zoom
@@ -31,17 +31,17 @@ pub mod ids {
 /// Build the application menu
 pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
     let about_metadata = AboutMetadataBuilder::new()
-        .name(Some("Moltzer"))
+        .name(Some("Moltz"))
         .version(Some(env!("CARGO_PKG_VERSION")))
-        .copyright(Some("© 2026 Moltzer"))
+        .copyright(Some("© 2026 Moltz"))
         .comments(Some("Your private AI assistant"))
         .build();
 
-    // App menu (macOS only shows this as "Moltzer")
-    let app_menu = SubmenuBuilder::new(app, "Moltzer")
+    // App menu (macOS only shows this as "Moltz")
+    let app_menu = SubmenuBuilder::new(app, "Moltz")
         .item(&PredefinedMenuItem::about(
             app,
-            Some("About Moltzer"),
+            Some("About Moltz"),
             Some(about_metadata),
         )?)
         .separator()
@@ -53,11 +53,11 @@ pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
         .separator()
         .item(&PredefinedMenuItem::services(app, Some("Services"))?)
         .separator()
-        .item(&PredefinedMenuItem::hide(app, Some("Hide Moltzer"))?)
+        .item(&PredefinedMenuItem::hide(app, Some("Hide Moltz"))?)
         .item(&PredefinedMenuItem::hide_others(app, Some("Hide Others"))?)
         .item(&PredefinedMenuItem::show_all(app, Some("Show All"))?)
         .separator()
-        .item(&PredefinedMenuItem::quit(app, Some("Quit Moltzer"))?)
+        .item(&PredefinedMenuItem::quit(app, Some("Quit Moltz"))?)
         .build()?;
 
     // File menu
@@ -133,7 +133,7 @@ pub fn build_menu(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
 
     // Help menu
     let help_menu = SubmenuBuilder::with_id(app, tauri::menu::HELP_SUBMENU_ID, "Help")
-        .item(&MenuItemBuilder::new("Moltzer Documentation").build(app)?)
+        .item(&MenuItemBuilder::new("Moltz Documentation").build(app)?)
         .item(&MenuItemBuilder::new("Clawdbot Gateway Setup").build(app)?)
         .separator()
         .item(&MenuItemBuilder::new("Report Issue...").build(app)?)

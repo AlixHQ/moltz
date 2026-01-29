@@ -60,7 +60,39 @@ function checkOnboardingNeeded(): boolean {
   return true;
 }
 
+// Check if running in Tauri (desktop app) vs browser
+const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
+
 export default function App() {
+  // Block browser access - only allow Tauri client
+  if (!isTauri) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-pink-50 flex items-center justify-center p-8">
+        <div className="max-w-md text-center space-y-6">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 shadow-xl shadow-orange-500/30">
+            <span className="text-5xl">🦞</span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Moltz Desktop App Required</h1>
+          <p className="text-gray-600 text-lg">
+            Moltz is a desktop application that runs locally on your computer for maximum privacy and speed.
+          </p>
+          <p className="text-gray-500">
+            Please download and install the Moltz app to get started.
+          </p>
+          <a 
+            href="https://moltz.app/download" 
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+          >
+            Download Moltz
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isConnecting, setIsConnecting] = useState(true);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);

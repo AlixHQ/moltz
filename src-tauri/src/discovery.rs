@@ -129,7 +129,7 @@ async fn check_config_files() -> Option<String> {
         ".env.local",
         ".env",
         "clawdbot.config.json",
-        "moltzer.config.json",
+        "moltz.config.json",
     ];
 
     // Try current directory first

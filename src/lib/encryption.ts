@@ -115,8 +115,9 @@ export async function decrypt(ciphertext: string): Promise<string> {
   const combined = base64ToArrayBuffer(ciphertext);
 
   // Extract IV (first 12 bytes) and ciphertext
-  const iv = combined.slice(0, 12);
-  const data = combined.slice(12);
+  // Use Uint8Array for Node.js compatibility (SubtleCrypto is strict about types)
+  const iv = new Uint8Array(combined.slice(0, 12));
+  const data = new Uint8Array(combined.slice(12));
 
   // Decrypt
   const decrypted = await crypto.subtle.decrypt(

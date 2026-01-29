@@ -1,4 +1,4 @@
-//! Auto-updater module for Moltzer
+//! Auto-updater module for Moltz
 //!
 //! Provides:
 //! - Check for updates on startup

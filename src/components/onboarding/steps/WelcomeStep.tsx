@@ -27,7 +27,7 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
 
   return (
     <div 
-      className="flex-1 flex flex-col items-center justify-center p-8"
+      className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto"
       role="main"
       aria-labelledby="welcome-heading"
     >
@@ -98,9 +98,9 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
           aria-label="Moltz features"
         >
           {[
-            { icon: "📧", label: "Check your email", gradient: "from-orange-500/10 to-red-500/10", border: "border-orange-500/20" },
-            { icon: "📅", label: "Manage your calendar", gradient: "from-red-500/10 to-pink-500/10", border: "border-red-500/20" },
-            { icon: "💬", label: "Send messages", gradient: "from-pink-500/10 to-purple-500/10", border: "border-pink-500/20" }
+            { icon: "📅", label: "Reschedule my 3pm and notify them", gradient: "from-orange-500/10 to-red-500/10", border: "border-orange-500/20" },
+            { icon: "📧", label: "What did John email me about?", gradient: "from-red-500/10 to-pink-500/10", border: "border-red-500/20" },
+            { icon: "📁", label: "Find that contract from last week", gradient: "from-pink-500/10 to-purple-500/10", border: "border-pink-500/20" }
           ].map((feature, index) => (
             <motion.div
               key={feature.label}
