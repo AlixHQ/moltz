@@ -11,6 +11,7 @@ import { ToastContainer, useToast } from "./components/ui/toast";
 import { Spinner } from "./components/ui/spinner";
 import { loadPersistedData } from "./lib/persistence";
 import { translateError, getErrorTitle } from "./lib/errors";
+import { checkStorageHealth } from "./lib/storage-monitor";
 
 // Lazy load main app components for better initial load time
 // These will be preloaded during onboarding
@@ -142,6 +143,12 @@ export default function App() {
           
           warning += " Your other data is safe.";
           showError(warning);
+        }
+
+        // Check storage health and warn if running low
+        const storageWarning = await checkStorageHealth();
+        if (storageWarning) {
+          showError(storageWarning);
         }
       } catch (err) {
         console.error("Failed to load persisted data:", err);
