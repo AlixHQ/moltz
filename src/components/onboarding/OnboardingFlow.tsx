@@ -140,9 +140,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     transitionTo("welcome");
   }, [transitionTo]);
 
-  const handleBackToNoGateway = useCallback(() => {
-    transitionTo("no-gateway");
-  }, [transitionTo]);
+  // Note: handleBackToNoGateway removed - detection step is now skipped
 
   const handleSetupSuccess = useCallback(() => {
     transitionTo("success");
@@ -198,9 +196,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         onGatewayUrlChange={setGatewayUrl}
         onGatewayTokenChange={setGatewayToken}
         onSuccess={handleSetupSuccess}
-        onBack={handleBackToNoGateway}
+        onBack={handleBackToWelcome}
         onSkip={handleSkip}
-        skipAutoDetect={true} // Already tried in DetectionStep
+        skipAutoDetect={true} // Detection skipped - go directly to setup from welcome
       />
     ),
     success: <SuccessStep onNext={handleSuccessNext} onSkip={handleComplete} />,
@@ -210,20 +208,17 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     complete: <></>, // Should never render
   };
 
-  // Progress indicator (only count main steps, not detection/no-gateway)
+  // Progress indicator (main steps only - detection is skipped)
   const stepOrder: OnboardingStep[] = [
     "welcome",
-    "detection",
     "setup",
     "success",
     "tour",
   ];
-  let currentStepIndex = stepOrder.indexOf(currentStep);
-  // Treat no-gateway as same progress as detection
-  if (currentStep === "no-gateway") {
-    currentStepIndex = stepOrder.indexOf("detection");
-  }
-  const progress = ((currentStepIndex + 1) / stepOrder.length) * 100;
+  const currentStepIndex = stepOrder.indexOf(currentStep);
+  // For steps not in order (detection, no-gateway, explainer), show setup progress
+  const effectiveIndex = currentStepIndex >= 0 ? currentStepIndex : 1;
+  const progress = ((effectiveIndex + 1) / stepOrder.length) * 100;
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col">

@@ -322,7 +322,7 @@ export function GatewaySetupStep({
 
         // Save progress
         localStorage.setItem(
-          "Moltz-onboarding-progress",
+          "moltz-onboarding-progress",
           JSON.stringify({
             step: "setup-complete",
             gatewayUrl: actualUrl,
@@ -417,6 +417,11 @@ export function GatewaySetupStep({
   }, [connectionState, gatewayUrl]);
 
   const handleTestConnection = async () => {
+    // Prevent double-click - if already testing, ignore
+    if (connectionState === "testing" || connectionState === "verifying") {
+      return;
+    }
+
     // Reset cancelled state for new test
     isCancelledRef.current = false;
 
@@ -477,7 +482,7 @@ export function GatewaySetupStep({
       });
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(
-          () => reject(new Error("Connection timed out after 8 seconds")),
+          () => reject(new Error(`Connection timed out after ${Math.round(CONNECT_TIMEOUT_MS / 1000)} seconds`)),
           CONNECT_TIMEOUT_MS,
         );
       });
@@ -528,7 +533,7 @@ export function GatewaySetupStep({
 
       // Save progress
       localStorage.setItem(
-        "Moltz-onboarding-progress",
+        "moltz-onboarding-progress",
         JSON.stringify({
           step: "setup-complete",
           gatewayUrl: actualUrl,

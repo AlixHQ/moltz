@@ -519,9 +519,11 @@ function ConversationItem({
         >
           {/* Show better title: if "New Chat" but has messages, derive from first message */}
           {conversation.title === "New Chat" && conversation.messages.length > 0
-            ? conversation.messages.find(m => m.role === "user")?.content.slice(0, 30) + 
-              (conversation.messages.find(m => m.role === "user")?.content.length > 30 ? "..." : "") ||
-              "Chat with Clawd"
+            ? (() => {
+                const firstUserMsg = conversation.messages.find(m => m.role === "user")?.content;
+                if (!firstUserMsg) return "Chat with Clawd";
+                return firstUserMsg.slice(0, 30) + (firstUserMsg.length > 30 ? "..." : "");
+              })()
             : conversation.title}
         </p>
         <p className="text-xs text-muted-foreground/60">
