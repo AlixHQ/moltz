@@ -482,8 +482,8 @@ export function SettingsDialog({
                     onClick={handleTestConnection}
                     disabled={connectionStatus === "connecting"}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                      "border border-border hover:bg-muted",
+                      "px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-[0.98]",
+                      "border border-border hover:bg-muted hover:border-primary/30",
                       connectionStatus === "connecting" &&
                         "opacity-50 cursor-not-allowed",
                     )}
@@ -510,7 +510,7 @@ export function SettingsDialog({
                       onClose();
                       onRerunSetup();
                     }}
-                    className="px-3 py-2 rounded-lg text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 border border-blue-500/20 transition-colors"
+                    className="px-3 py-2 rounded-xl text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 border border-blue-500/20 transition-all active:scale-[0.98]"
                     title="Run the setup wizard again"
                   >
                     Re-run Setup
@@ -674,6 +674,7 @@ export function SettingsDialog({
                     type="button"
                     role="radio"
                     aria-checked={formData.theme === theme}
+                    aria-label={`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme`}
                     onClick={() => {
                       setFormData({ ...formData, theme });
                       // Apply theme immediately
@@ -689,10 +690,10 @@ export function SettingsDialog({
                       }
                     }}
                     className={cn(
-                      "flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                      "flex-1 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-[0.98]",
                       formData.theme === theme
-                        ? "bg-primary text-primary-foreground"
-                        : "border border-border hover:bg-muted",
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "border border-border hover:bg-muted hover:border-primary/30",
                     )}
                   >
                     {theme.charAt(0).toUpperCase() + theme.slice(1)}
@@ -707,13 +708,13 @@ export function SettingsDialog({
         <div className="flex justify-end gap-3 px-4 sm:px-6 py-4 border-t border-border bg-muted/30 flex-shrink-0">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium border border-border hover:bg-muted transition-colors"
+            className="px-4 py-2 rounded-xl text-sm font-medium border border-border hover:bg-muted hover:border-primary/30 transition-all active:scale-[0.98]"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="px-4 py-2 rounded-xl text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
           >
             Save Changes
           </button>
