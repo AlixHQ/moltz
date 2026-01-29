@@ -16,7 +16,7 @@ describe("MessageBubble", () => {
   });
 
   describe("rendering", () => {
-    it("should render user message", () => {
+    it("should render user message", async () => {
       const message: Message = {
         id: "1",
         role: "user",
@@ -27,10 +27,12 @@ describe("MessageBubble", () => {
       render(<MessageBubble message={message} />);
 
       expect(screen.getByText("You")).toBeInTheDocument();
-      expect(screen.getByText("Hello, Moltz!")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Hello, Moltz!")).toBeInTheDocument();
+      });
     });
 
-    it("should render assistant message", () => {
+    it("should render assistant message", async () => {
       const message: Message = {
         id: "2",
         role: "assistant",
@@ -41,9 +43,11 @@ describe("MessageBubble", () => {
       render(<MessageBubble message={message} />);
 
       expect(screen.getByText("Moltz")).toBeInTheDocument();
-      expect(
-        screen.getByText(/Hello! How can I help you?/),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Hello! How can I help you?/),
+        ).toBeInTheDocument();
+      });
     });
 
     it("should show correct avatar for user", () => {

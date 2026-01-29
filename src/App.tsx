@@ -5,7 +5,7 @@ import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
 import { Window } from "@tauri-apps/api/window";
 import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { UpdateNotification } from "./components/UpdateNotification";
-import { useStore, type ModelInfo } from "./stores/store";
+import { useStore, type ModelInfo, shallow } from "./stores/store";
 import { cn } from "./lib/utils";
 import { ToastContainer, useToast } from "./components/ui/toast";
 import { Spinner } from "./components/ui/spinner";
@@ -76,6 +76,7 @@ export default function App() {
   const [errorDismissed, setErrorDismissed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const { toasts, dismissToast, showError, showSuccess } = useToast();
+  // PERF: Use selective subscriptions with shallow equality to prevent unnecessary re-renders
   const {
     currentConversation,
     connected,
@@ -85,7 +86,19 @@ export default function App() {
     settings,
     retryQueuedMessages,
     getQueuedMessagesCount,
-  } = useStore();
+  } = useStore(
+    (state) => ({
+      currentConversation: state.currentConversation,
+      connected: state.connected,
+      setConnected: state.setConnected,
+      appendToCurrentMessage: state.appendToCurrentMessage,
+      completeCurrentMessage: state.completeCurrentMessage,
+      settings: state.settings,
+      retryQueuedMessages: state.retryQueuedMessages,
+      getQueuedMessagesCount: state.getQueuedMessagesCount,
+    }),
+    shallow
+  );
 
   // Refs for tracking state across async operations
   const isMountedRef = useRef(true);

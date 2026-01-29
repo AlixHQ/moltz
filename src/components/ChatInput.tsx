@@ -241,8 +241,8 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
 
       if (errors.length > 0) {
         setFileError(errors.join("; "));
-        // Auto-dismiss after 5 seconds
-        setTimeout(() => setFileError(null), 5000);
+        // Auto-dismiss after 8 seconds for file errors
+        setTimeout(() => setFileError(null), 8000);
       }
 
       if (newAttachments.length > 0) {
@@ -250,7 +250,9 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
       }
     } catch (err) {
       console.error("Failed to open file dialog:", err);
-      setFileError("Failed to open file picker");
+      const friendly = translateError(err instanceof Error ? err : String(err));
+      setFileError(`${friendly.title}: ${friendly.message}${friendly.suggestion ? ' ' + friendly.suggestion : ''}`);
+      setTimeout(() => setFileError(null), 8000);
     } finally {
       setIsLoadingFiles(false);
     }
@@ -273,7 +275,16 @@ export function ChatInput({ onSend, disabled, isSending }: ChatInputProps) {
           aria-live="polite"
         >
           <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-          <span className="flex-1">{fileError}</span>
+          <span className="flex-1 whitespace-pre-line">{fileError}</span>
+          <button
+            onClick={handleAttach}
+            className="p-1 hover:bg-destructive/10 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/50 flex items-center gap-1 text-xs"
+            aria-label="Try attaching files again"
+            disabled={disabled || isLoadingFiles}
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span className="sr-only">Retry</span>
+          </button>
           <button
             onClick={() => setFileError(null)}
             className="p-0.5 hover:bg-destructive/10 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/50"
