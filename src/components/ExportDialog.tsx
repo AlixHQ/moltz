@@ -176,7 +176,7 @@ export function ExportDialog({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 animate-in fade-in duration-200"
+        className="fixed inset-0 bg-black/50 z-50 animate-overlay-enter"
         onClick={onClose}
         onKeyDown={(e) => {
           if (e.key === "Escape" && !isExporting) onClose();
@@ -194,7 +194,7 @@ export function ExportDialog({
           aria-modal="true"
           aria-labelledby="export-dialog-title"
           aria-describedby="export-dialog-description"
-          className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in-95 duration-200"
+          className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-md animate-dialog-enter"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

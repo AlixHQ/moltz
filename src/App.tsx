@@ -783,7 +783,9 @@ function AppContent() {
       }),
       listen("menu:toggle_sidebar", () => {
         if (!eventListenerMounted) return;
-        setSidebarOpen((prev) => !prev);
+        // Toggle sidebar - get current state fresh from settings
+        const currentSettings = useStore.getState().settings;
+        useStore.getState().updateSettings({ sidebarCollapsed: !currentSettings.sidebarCollapsed });
       }),
       listen("menu:search", () => {
         if (!eventListenerMounted) return;

@@ -39,6 +39,8 @@ interface MessageBubbleProps {
   onEdit?: (messageId: string, newContent: string) => void;
   onRegenerate?: (messageId: string) => void;
   isLastAssistantMessage?: boolean;
+  /** Compact mode - tighter spacing for power users */
+  compact?: boolean;
 }
 
 export const MessageBubble = memo(function MessageBubble({
@@ -46,6 +48,7 @@ export const MessageBubble = memo(function MessageBubble({
   onEdit,
   onRegenerate,
   isLastAssistantMessage,
+  compact = false,
 }: MessageBubbleProps) {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [showTimestamp, setShowTimestamp] = useState(false);
@@ -121,7 +124,8 @@ export const MessageBubble = memo(function MessageBubble({
   return (
     <div
       className={cn(
-        "group flex gap-3 animate-message-in",
+        "group flex animate-message-in",
+        compact ? "gap-2" : "gap-3",
         isUser && "flex-row-reverse",
       )}
       onMouseEnter={() => setShowTimestamp(true)}
@@ -129,19 +133,20 @@ export const MessageBubble = memo(function MessageBubble({
       role="article"
       aria-label={`Message from ${isUser ? "You" : "Moltz"} sent ${formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}`}
     >
-      {/* Avatar */}
+      {/* Avatar - smaller in compact mode */}
       <div
         className={cn(
-          "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm font-medium shadow-sm",
+          "flex-shrink-0 rounded-xl flex items-center justify-center text-white font-medium shadow-sm",
+          compact ? "w-6 h-6 text-xs" : "w-9 h-9 text-sm",
           isUser
             ? "bg-gradient-to-br from-blue-500 to-blue-600"
             : "bg-gradient-to-br from-orange-500 to-red-500",
         )}
       >
         {isUser ? (
-          <User className="w-5 h-5" strokeWidth={2} />
+          <User className={compact ? "w-3.5 h-3.5" : "w-5 h-5"} strokeWidth={2} />
         ) : (
-          <span className="text-lg">🦞</span>
+          <span className={compact ? "text-sm" : "text-lg"}>🦞</span>
         )}
       </div>
 
@@ -149,9 +154,9 @@ export const MessageBubble = memo(function MessageBubble({
       <div
         className={cn("flex-1 min-w-0", isUser && "flex flex-col items-end")}
       >
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium">
+        {/* Header - smaller in compact mode */}
+        <div className={cn("flex items-center gap-2", compact ? "mb-0.5" : "mb-1")}>
+          <span className={cn("font-medium", compact ? "text-xs" : "text-sm")}>
             {isUser ? "You" : "Moltz"}
           </span>
           {message.isPending && !message.sendStatus && (
@@ -210,11 +215,19 @@ export const MessageBubble = memo(function MessageBubble({
             isUser ? "text-right" : "",
             isUser &&
               !isEditing &&
-              "bg-gradient-to-br from-primary/10 to-primary/[0.06] shadow-sm shadow-primary/10 rounded-2xl rounded-tr-sm px-4 py-3",
+              cn(
+                "bg-gradient-to-br from-primary/10 to-primary/[0.06] shadow-sm shadow-primary/10 rounded-2xl rounded-tr-sm",
+                compact ? "px-3 py-2" : "px-4 py-3"
+              ),
             // Streaming state: subtle border pulse
             message.isStreaming &&
               !isUser &&
-              "border border-primary/30 rounded-2xl px-4 py-3 animate-streaming-pulse",
+              cn(
+                "border border-primary/30 rounded-2xl animate-streaming-pulse",
+                compact ? "px-3 py-2" : "px-4 py-3"
+              ),
+            // Compact mode text size
+            compact && "text-sm",
           )}
         >
           {isEditing ? (

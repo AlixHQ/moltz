@@ -132,7 +132,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-overlay-enter"
         onClick={onClose}
         onKeyDown={(e) => {
           if (e.key === "Escape") onClose();
@@ -148,7 +148,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="search-dialog-title"
-        className="relative bg-background rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-200 border border-border/50"
+        className="relative bg-background rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden animate-spring-bounce border border-border/50"
       >
         <h2 id="search-dialog-title" className="sr-only">
           Search messages

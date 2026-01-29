@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 
+import { cn } from "../lib/utils";
+
 export function ChatView() {
   // PERF: Use selective subscriptions with shallow equality to prevent unnecessary re-renders
   const {
@@ -50,6 +52,8 @@ export function ChatView() {
       markMessageQueued: state.markMessageQueued,
     })),
   );
+
+  const compactMode = settings.compactMode;
   
   // Derive currentConversation from id + conversations (getter doesn't trigger re-renders with useShallow)
   const currentConversation = currentConversationId 
@@ -506,9 +510,12 @@ export function ChatView() {
         className="flex-1 overflow-y-auto"
         onScroll={handleScroll}
       >
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className={cn(
+          "mx-auto px-4",
+          compactMode ? "max-w-5xl py-3" : "max-w-3xl py-6"
+        )}>
           {messagesLoading ? (
-            <div className="space-y-6">
+            <div className={compactMode ? "space-y-2" : "space-y-6"}>
               {Array.from({ length: 3 }).map((_, i) => (
                 <MessageSkeleton key={i} isUser={i % 2 === 0} />
               ))}
@@ -516,7 +523,7 @@ export function ChatView() {
           ) : !hasMessages ? (
             <EmptyConversation />
           ) : (
-            <div className="space-y-6">
+            <div className={compactMode ? "space-y-2" : "space-y-6"}>
               {currentConversation.messages.map((message, index) => (
                 <div
                   key={message.id}
@@ -533,6 +540,7 @@ export function ChatView() {
                     isLastAssistantMessage={
                       message.id === lastAssistantMessageId
                     }
+                    compact={compactMode}
                   />
                 </div>
               ))}
