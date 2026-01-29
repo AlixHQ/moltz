@@ -30,6 +30,12 @@ const WelcomeView = lazy(() =>
     default: module.WelcomeView,
   })),
 );
+const CommandPalette = lazy(() =>
+  import("./components/CommandPalette").then((module) => ({
+    default: module.CommandPalette,
+  })),
+);
+import { ModelSelector } from "./components/ModelSelector";
 
 // Check if running on macOS (for traffic light padding)
 const isMacOS =
@@ -109,7 +115,6 @@ function BrowserDownloadPrompt() {
 
 // Main app component with all hooks (only renders in Tauri)
 function AppContent() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isConnecting, setIsConnecting] = useState(true);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
@@ -126,6 +131,8 @@ function AppContent() {
   const [hasUpdateDismissed, setHasUpdateDismissed] = useState(false);
   const [errorDismissed, setErrorDismissed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showSearchDialog, setShowSearchDialog] = useState(false);
   const { toasts, dismissToast, showError, showSuccess } = useToast();
   // PERF: Use selective subscriptions with shallow equality to prevent unnecessary re-renders
   const {
@@ -136,6 +143,7 @@ function AppContent() {
     appendToCurrentMessage,
     completeCurrentMessage,
     settings,
+    updateSettings,
     retryQueuedMessages,
     getQueuedMessagesCount,
   } = useStore(
@@ -147,10 +155,17 @@ function AppContent() {
       appendToCurrentMessage: state.appendToCurrentMessage,
       completeCurrentMessage: state.completeCurrentMessage,
       settings: state.settings,
+      updateSettings: state.updateSettings,
       retryQueuedMessages: state.retryQueuedMessages,
       getQueuedMessagesCount: state.getQueuedMessagesCount,
     })),
   );
+
+  // Derive sidebar state from settings (persisted)
+  const sidebarOpen = !settings.sidebarCollapsed;
+  const setSidebarOpen = (open: boolean) => {
+    updateSettings({ sidebarCollapsed: !open });
+  };
   
   // Derive currentConversation from id + conversations
   const currentConversation = currentConversationId 
@@ -276,23 +291,28 @@ function AppContent() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [settings.theme]);
 
-  // Keyboard shortcut for sidebar toggle
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + K to open command palette
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setShowCommandPalette(true);
+      }
       // Cmd/Ctrl + \ to toggle sidebar
       if ((e.metaKey || e.ctrlKey) && e.key === "\\") {
         e.preventDefault();
-        setSidebarOpen((prev) => !prev);
+        setSidebarOpen(!sidebarOpen);
       }
-      // Escape to close sidebar on mobile
-      if (e.key === "Escape" && sidebarOpen) {
+      // Escape to close sidebar on mobile (if command palette not open)
+      if (e.key === "Escape" && sidebarOpen && !showCommandPalette) {
         setSidebarOpen(false);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sidebarOpen]);
+  }, [sidebarOpen, showCommandPalette, setSidebarOpen]);
 
   // Connect to Gateway on mount (skip during onboarding or if no URL configured)
   useEffect(() => {
@@ -1058,8 +1078,22 @@ function AppContent() {
               </h1>
             </div>
 
-            {/* Connection status */}
-            <div className="flex items-center gap-2" data-tauri-drag-region>
+            {/* Model selector and connection status */}
+            <div className="flex items-center gap-3" data-tauri-drag-region>
+              {/* Model selector - only show when connected and has a conversation */}
+              {connected && currentConversation && (
+                <ModelSelector compact={settings.compactMode} />
+              )}
+
+              {/* Command palette hint */}
+              <button
+                onClick={() => setShowCommandPalette(true)}
+                className="hidden sm:flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
+                title="Open command palette"
+              >
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd>
+              </button>
+
               {isConnecting ? (
                 <div
                   className="flex items-center gap-2 text-muted-foreground text-sm animate-in fade-in duration-200"
@@ -1298,6 +1332,16 @@ function AppContent() {
           </main>
         </div>
       </div>
+
+      {/* Command Palette */}
+      <Suspense fallback={null}>
+        <CommandPalette
+          open={showCommandPalette}
+          onClose={() => setShowCommandPalette(false)}
+          onOpenSettings={() => setShowSettings(true)}
+          onOpenSearch={() => setShowSearchDialog(true)}
+        />
+      </Suspense>
     </>
   );
 }

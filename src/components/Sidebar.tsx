@@ -480,12 +480,13 @@ function ConversationItem({
       role="button"
       tabIndex={0}
       className={cn(
-        "group relative flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors w-full text-left",
+        "group relative flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer w-full text-left",
         "animate-in fade-in slide-in-from-left-2 duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+        "transition-all duration-150 ease-out",
         isSelected
-          ? "bg-primary/8 border-l-2 border-primary shadow-sm"
-          : "border-l-2 border-transparent hover:bg-muted/60",
+          ? "bg-primary/10 border-l-[3px] border-primary shadow-sm shadow-primary/5"
+          : "border-l-[3px] border-transparent hover:bg-muted/70 hover:border-l-primary/30 active:bg-muted active:scale-[0.99]",
       )}
       style={style}
       onClick={onSelect}

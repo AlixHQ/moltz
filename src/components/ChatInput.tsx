@@ -411,10 +411,10 @@ export function ChatInput({
           onClick={handleSend}
           disabled={!canSend}
           className={cn(
-            "p-3 rounded-xl m-1 transition-all duration-200 flex-shrink-0",
+            "p-3 rounded-xl m-1 flex-shrink-0 btn-interactive",
             canSend
-              ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
-              : "text-muted-foreground cursor-not-allowed",
+              ? "bg-primary text-primary-foreground shadow-sm hover:shadow-lg hover:shadow-primary/25"
+              : "text-muted-foreground cursor-not-allowed opacity-50",
           )}
           title="Send message (Enter)"
           aria-label={isSending ? "Sending message..." : "Send message"}
@@ -427,8 +427,8 @@ export function ChatInput({
           ) : (
             <Send
               className={cn(
-                "w-5 h-5 transition-transform duration-200",
-                canSend && "translate-x-0.5",
+                "w-5 h-5 transition-transform duration-150",
+                canSend && "group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
               )}
             />
           )}

@@ -53,6 +53,11 @@ struct GatewayStateInner {
     reconnect_attempt: AtomicU32,
     /// Active run IDs for streaming timeout tracking
     active_runs: Mutex<HashMap<String, Instant>>,
+    /// CRITICAL: Connection mutex to prevent race conditions
+    /// Only one connection attempt can be in progress at a time
+    connection_mutex: Mutex<()>,
+    /// Unique ID for current connection session (to detect stale handlers)
+    connection_session_id: Mutex<u64>,
 }
 
 impl Default for GatewayStateInner {
@@ -68,6 +73,8 @@ impl Default for GatewayStateInner {
             shutdown: AtomicBool::new(false),
             reconnect_attempt: AtomicU32::new(0),
             active_runs: Mutex::new(HashMap::new()),
+            connection_mutex: Mutex::new(()),
+            connection_session_id: Mutex::new(0),
         }
     }
 }
@@ -813,9 +820,38 @@ pub async fn connect(
     };
     log_protocol_error("CONNECT CALLED", &format!("Token status: {}", token_status));
 
+    // CRITICAL FIX: Acquire connection mutex to prevent race conditions
+    // This ensures only one connection attempt runs at a time
+    let _conn_guard = state.inner.connection_mutex.lock().await;
+    log_protocol_error("CONNECT", "Acquired connection mutex");
+
+    // Check if already connected - early exit to prevent duplicate connections
+    {
+        let current_state = state.inner.connection_state.read().await;
+        if current_state.is_connected() {
+            log_protocol_error("CONNECT", "Already connected, returning early");
+            return Ok(ConnectResult {
+                success: true,
+                used_url: url,
+                protocol_switched: false,
+            });
+        }
+    }
+
+    // Increment session ID to invalidate any stale handlers from previous connections
+    let new_session_id = {
+        let mut session_id = state.inner.connection_session_id.lock().await;
+        *session_id = session_id.wrapping_add(1);
+        *session_id
+    };
+    log_protocol_error("CONNECT", &format!("New session ID: {}", new_session_id));
+
     // Reset shutdown flag
     state.inner.shutdown.store(false, Ordering::SeqCst);
     state.inner.reconnect_attempt.store(0, Ordering::SeqCst);
+
+    // Clear old sender to ensure clean state
+    *state.inner.sender.lock().await = None;
 
     // Clear old credentials - will only store after successful connection
     *state.inner.stored_credentials.lock().await = None;
@@ -825,7 +861,7 @@ pub async fn connect(
     let _ = app.emit("gateway:state", ConnectionState::Connecting);
 
     // Perform actual connection
-    match connect_internal(&app, &state.inner, &url, &token).await {
+    match connect_internal(&app, &state.inner, &url, &token, new_session_id).await {
         Ok(result) => {
             // Only store credentials AFTER successful connection
             *state.inner.stored_credentials.lock().await = Some(StoredCredentials {
@@ -875,6 +911,7 @@ async fn connect_internal(
     state: &GatewayStateInner,
     url: &str,
     token: &str,
+    session_id: u64,
 ) -> Result<ConnectResult, GatewayError> {
     let (ws_stream, used_url, protocol_switched) = try_connect_with_fallback(url).await?;
 
@@ -909,6 +946,9 @@ async fn connect_internal(
     let app_clone = app.clone();
     let tx_clone = tx.clone();
     let token_clone = token.to_string();
+    let handler_session_id = session_id; // Capture session ID for stale detection
+    let state_session_ref = state.connection_session_id.lock().await;
+    drop(state_session_ref); // Just to verify we can access it
 
     // Create shared state for handler
     let pending_requests: Arc<Mutex<HashMap<String, PendingRequest>>> =
@@ -919,8 +959,10 @@ async fn connect_internal(
     let active_runs: Arc<Mutex<HashMap<String, Instant>>> = Arc::new(Mutex::new(HashMap::new()));
     let runs_clone = active_runs.clone();
 
-    // Spawn message handler
+    // Spawn message handler with session ID validation
     tokio::spawn(async move {
+        log_protocol_error("MSG_HANDLER", &format!("Started for session {}", handler_session_id));
+        
         while let Some(msg) = read.next().await {
             match msg {
                 Ok(WsMessage::Text(text)) => {
@@ -954,18 +996,19 @@ async fn connect_internal(
                     let reason = frame
                         .map(|f| f.reason.to_string())
                         .unwrap_or_else(|| "Unknown".to_string());
-                    log_protocol_error("WebSocket closed", &reason);
+                    log_protocol_error("WebSocket closed", &format!("session={} reason={}", handler_session_id, reason));
                     let _ = app_clone.emit("gateway:disconnected", reason);
                     break;
                 }
                 Err(e) => {
-                    log_protocol_error("WebSocket error", &e.to_string());
+                    log_protocol_error("WebSocket error", &format!("session={} err={}", handler_session_id, e));
                     let _ = app_clone.emit("gateway:error", e.to_string());
                     break;
                 }
                 _ => {}
             }
         }
+        log_protocol_error("MSG_HANDLER", &format!("Exited for session {}", handler_session_id));
     });
 
     // Start ping/pong health monitor
@@ -1300,7 +1343,13 @@ async fn start_reconnection_loop(app: AppHandle, state: Arc<GatewayStateInner>) 
             // Attempt reconnection
             let credentials = state.stored_credentials.lock().await.clone();
             if let Some(creds) = credentials {
-                match connect_internal(&app, &state, &creds.url, &creds.token).await {
+                // Get current session ID (incrementing it for the new attempt)
+                let new_session_id = {
+                    let mut session_id = state.connection_session_id.lock().await;
+                    *session_id = session_id.wrapping_add(1);
+                    *session_id
+                };
+                match connect_internal(&app, &state, &creds.url, &creds.token, new_session_id).await {
                     Ok(_) => {
                         // Success!
                         state.reconnect_attempt.store(0, Ordering::SeqCst);

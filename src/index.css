@@ -166,9 +166,117 @@ code {
 
 /* Animation utilities */
 
+/* P1: Smooth theme transitions for native feel */
+html {
+  transition: background-color 250ms ease-in-out, color 150ms ease-in-out;
+}
+
+/* Global color transitions for theme switching */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Exclude elements that shouldn't transition */
+*:where([class*="animate-"], [class*="transition-"]) {
+  transition: all;
+}
+
 /* Reverse spin animation - for spinners with counter-clockwise arrows */
 .animate-spin-reverse {
   animation: spin 1s linear infinite reverse;
+}
+
+/* Native-feel spring animations */
+@keyframes spring-bounce {
+  0% { transform: scale(0.95) translateY(4px); opacity: 0; }
+  60% { transform: scale(1.02) translateY(-1px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes spring-scale {
+  0% { transform: scale(0.9); opacity: 0; }
+  60% { transform: scale(1.03); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes dialog-enter {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.95) translateY(8px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+@keyframes dialog-exit {
+  0% { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(0.95) translateY(8px); 
+  }
+}
+
+@keyframes overlay-enter {
+  0% { opacity: 0; backdrop-filter: blur(0px); }
+  100% { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+@keyframes subtle-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes success-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+@keyframes copy-success {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+
+.animate-spring-bounce {
+  animation: spring-bounce 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-spring-scale {
+  animation: spring-scale 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-dialog-enter {
+  animation: dialog-enter 200ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.animate-dialog-exit {
+  animation: dialog-exit 150ms ease-in forwards;
+}
+
+.animate-overlay-enter {
+  animation: overlay-enter 200ms ease-out;
+}
+
+.animate-subtle-shake {
+  animation: subtle-shake 400ms ease-in-out;
+}
+
+.animate-success-pulse {
+  animation: success-pulse 600ms ease-out;
+}
+
+.animate-copy-success {
+  animation: copy-success 300ms ease-out;
 }
 
 @keyframes bounce {
@@ -220,15 +328,46 @@ code {
   }
 }
 
+/* P1: More alive typing indicator with wave effect */
 @keyframes typing-bounce {
   0%,
   80%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
   }
   40% {
-    transform: translateY(-8px);
+    transform: translateY(-6px) scale(1.1);
+    opacity: 1;
   }
+}
+
+/* Alternative wave typing animation */
+@keyframes typing-wave {
+  0%, 100% {
+    transform: translateY(0) scale(0.85);
+    background-color: hsl(var(--primary) / 0.4);
+  }
+  50% {
+    transform: translateY(-5px) scale(1);
+    background-color: hsl(var(--primary) / 0.8);
+  }
+}
+
+/* Breathing animation for thinking state */
+@keyframes thinking-breathe {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-thinking-breathe {
+  animation: thinking-breathe 2s ease-in-out infinite;
 }
 
 @keyframes streaming-pulse {
@@ -311,7 +450,7 @@ code {
   animation: message-fade-in 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Button hover lift (P1: -2px lift) */
+/* Button hover lift (P1: -2px lift with shadow) */
 .hover-lift {
   transition:
     transform 150ms ease-out,
@@ -320,6 +459,60 @@ code {
 
 .hover-lift:hover:not(:disabled) {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+}
+
+/* Active press scale for native feel */
+.active-press:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 100ms ease-out;
+}
+
+/* Combined hover lift + active press for buttons */
+.btn-interactive {
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    background-color 120ms ease-out;
+}
+
+.btn-interactive:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-interactive:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Ripple effect base (used with JS) */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle glow on focus for inputs */
+.focus-glow:focus {
+  box-shadow: 
+    0 0 0 2px hsl(var(--background)),
+    0 0 0 4px hsl(var(--primary) / 0.3),
+    0 0 20px hsl(var(--primary) / 0.15);
+}
+
+/* Hover highlight for list items */
+.hover-highlight {
+  transition: background-color 100ms ease-out, transform 100ms ease-out;
+}
+
+.hover-highlight:hover {
+  background-color: hsl(var(--muted) / 0.6);
+}
+
+/* Selected state with left border */
+.selected-item {
+  border-left: 2px solid hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.08);
 }
 
 /* Tailwind CSS animate-in utilities */

@@ -13,7 +13,10 @@ import rehypeSanitize from "rehype-sanitize";
 import { ReactNode, isValidElement, memo, useMemo } from "react";
 import { cn } from "../lib/utils";
 import { ImageRenderer } from "./ImageRenderer";
-import { Copy, Check } from "lucide-react";
+import { CodeBlock } from "./CodeBlock";
+
+// Import highlight.js theme for syntax highlighting (GitHub Dark theme)
+import "highlight.js/styles/github-dark.css";
 
 // PERF: Memoize plugins to prevent re-creation on every render
 const remarkPlugins = [remarkGfm];
@@ -82,39 +85,30 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
 
           if (!inline && match) {
             return (
-              <div className="relative group/code my-4 -mx-4 sm:mx-0">
-                <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 dark:bg-zinc-800 rounded-t-lg border border-b-0 border-zinc-700">
-                  <span className="text-xs text-zinc-400 font-mono">
-                    {match[1]}
-                  </span>
-                  <button
-                    onClick={() => onCopyCode(code)}
-                    className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-2 py-1"
-                    aria-label={
-                      copiedCode === code
-                        ? "Code copied"
-                        : "Copy code to clipboard"
-                    }
-                  >
-                    {copiedCode === code ? (
-                      <>
-                        <Check className="w-3.5 h-3.5" strokeWidth={2} />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" strokeWidth={2} />
-                        Copy
-                      </>
-                    )}
-                  </button>
-                </div>
-                <pre className="!mt-0 !rounded-t-none !bg-zinc-900 dark:!bg-zinc-800 !border !border-t-0 !border-zinc-700 overflow-x-auto">
-                  <code className={cn(className, "text-sm")} {...props}>
-                    {children}
-                  </code>
-                </pre>
-              </div>
+              <CodeBlock
+                code={code}
+                language={match[1]}
+                className={cn(className, "text-sm")}
+                copiedCode={copiedCode}
+                onCopyCode={onCopyCode}
+              >
+                {children}
+              </CodeBlock>
+            );
+          }
+
+          // Inline code without language - check if it looks like a code block
+          if (!inline && code.includes("\n")) {
+            return (
+              <CodeBlock
+                code={code}
+                language="text"
+                className="text-sm"
+                copiedCode={copiedCode}
+                onCopyCode={onCopyCode}
+              >
+                {children}
+              </CodeBlock>
             );
           }
 

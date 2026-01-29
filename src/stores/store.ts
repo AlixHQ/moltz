@@ -121,6 +121,10 @@ export interface Settings {
   theme: "light" | "dark" | "system";
   /** Default system prompt for new conversations */
   defaultSystemPrompt: string;
+  /** Compact mode for power users - tighter spacing, smaller fonts */
+  compactMode: boolean;
+  /** Sidebar collapsed state */
+  sidebarCollapsed: boolean;
 }
 
 /**
@@ -175,6 +179,8 @@ interface Store {
   deleteMessage: (conversationId: string, messageId: string) => void;
   deleteMessagesAfter: (conversationId: string, messageId: string) => void;
   appendToCurrentMessage: (content: string) => void;
+  /** PERF: Flush any buffered streaming content immediately */
+  flushStreamingBuffer: () => void;
   completeCurrentMessage: (usage?: TokenUsage) => void;
   currentStreamingMessageId: string | null;
 
@@ -208,6 +214,64 @@ if (typeof window !== "undefined") {
     }
   });
 }
+
+/**
+ * PERF: Streaming buffer for batched DOM updates
+ * Accumulates tokens and flushes every 50ms for 60fps smooth streaming
+ * This prevents re-rendering on every single character
+ */
+class StreamingBuffer {
+  private buffer: string = "";
+  private flushCallback: ((content: string) => void) | null = null;
+  private rafId: number | null = null;
+  private lastFlushTime: number = 0;
+  private readonly FLUSH_INTERVAL_MS = 50; // ~20fps state updates, but smooth visually
+
+  setCallback(callback: (content: string) => void) {
+    this.flushCallback = callback;
+  }
+
+  append(content: string) {
+    this.buffer += content;
+    this.scheduleFlush();
+  }
+
+  private scheduleFlush() {
+    if (this.rafId !== null) return; // Already scheduled
+
+    this.rafId = requestAnimationFrame(() => {
+      this.rafId = null;
+      const now = performance.now();
+      
+      // Throttle to FLUSH_INTERVAL_MS
+      if (now - this.lastFlushTime >= this.FLUSH_INTERVAL_MS && this.buffer) {
+        this.flush();
+      } else if (this.buffer) {
+        // Reschedule if we still have content but too soon
+        this.scheduleFlush();
+      }
+    });
+  }
+
+  flush() {
+    if (!this.buffer || !this.flushCallback) return;
+    
+    const content = this.buffer;
+    this.buffer = "";
+    this.lastFlushTime = performance.now();
+    this.flushCallback(content);
+  }
+
+  clear() {
+    this.buffer = "";
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+  }
+}
+
+const streamingBuffer = new StreamingBuffer();
 
 /**
  * Persistence queue - serializes write operations per conversation
@@ -655,40 +719,53 @@ export const useStore = create<Store>()((set, get) => ({
     const { currentConversationId, currentStreamingMessageId } = get();
     if (!currentConversationId || !currentStreamingMessageId) return;
 
-    set((state) => ({
-      conversations: state.conversations.map((c) =>
-        c.id === currentConversationId
-          ? {
-              ...c,
-              messages: c.messages.map((m) =>
-                m.id === currentStreamingMessageId
-                  ? { ...m, content: m.content + content }
-                  : m,
-              ),
-            }
-          : c,
-      ),
-    }));
+    // PERF: Use streaming buffer to batch updates for smooth 60fps rendering
+    // Instead of updating state on every token, we buffer and flush periodically
+    streamingBuffer.setCallback((bufferedContent) => {
+      const { currentConversationId: convId, currentStreamingMessageId: msgId } = get();
+      if (!convId || !msgId) return;
 
-    // Debounced persistence for streaming (every 1s)
-    const conversation = get().conversations.find(
-      (c) => c.id === currentConversationId,
-    );
-    const message = conversation?.messages.find(
-      (m) => m.id === currentStreamingMessageId,
-    );
-    if (message) {
-      debouncedPersist(() => {
-        persistMessage(currentConversationId, message).catch((err) => {
-          console.error("Failed to persist streaming update:", err);
-        });
-      }, 1000);
-    }
+      set((state) => ({
+        conversations: state.conversations.map((c) =>
+          c.id === convId
+            ? {
+                ...c,
+                messages: c.messages.map((m) =>
+                  m.id === msgId
+                    ? { ...m, content: m.content + bufferedContent }
+                    : m,
+                ),
+              }
+            : c,
+        ),
+      }));
+
+      // Debounced persistence for streaming (every 1s)
+      const conversation = get().conversations.find((c) => c.id === convId);
+      const message = conversation?.messages.find((m) => m.id === msgId);
+      if (message) {
+        debouncedPersist(() => {
+          persistMessage(convId, message).catch((err) => {
+            console.error("Failed to persist streaming update:", err);
+          });
+        }, 1000);
+      }
+    });
+
+    streamingBuffer.append(content);
+  },
+
+  flushStreamingBuffer: () => {
+    streamingBuffer.flush();
   },
 
   completeCurrentMessage: (usage?: TokenUsage) => {
     const { currentConversationId, currentStreamingMessageId } = get();
     if (!currentConversationId || !currentStreamingMessageId) return;
+
+    // PERF: Flush any remaining buffered content before completing
+    streamingBuffer.flush();
+    streamingBuffer.clear();
 
     set((state) => ({
       conversations: state.conversations.map((c) =>
@@ -732,6 +809,8 @@ export const useStore = create<Store>()((set, get) => ({
     thinkingDefault: false,
     theme: "system",
     defaultSystemPrompt: "", // Empty by default
+    compactMode: false, // Power user mode - tighter UI
+    sidebarCollapsed: false, // Sidebar state
   },
 
   updateSettings: async (updates) => {

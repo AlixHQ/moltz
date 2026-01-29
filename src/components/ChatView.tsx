@@ -108,6 +108,10 @@ export function ChatView() {
   }, [currentConversation?.messages.length, isNearBottom]);
 
   // P1: Instant scroll during streaming for responsiveness
+  // PERF: Throttle scroll updates during streaming to 60fps max
+  const lastScrollTimeRef = useRef(0);
+  const scrollRafIdRef = useRef<number | null>(null);
+  
   useEffect(() => {
     if (!currentConversation || !currentStreamingMessageId) return;
 
@@ -116,17 +120,41 @@ export function ChatView() {
     );
 
     if (streamingMessage && isNearBottom) {
-      // Use instant scroll during streaming for zero jank
-      // RAF ensures it happens after DOM update
-      requestAnimationFrame(() => {
-        if (scrollContainerRef.current) {
-          const { scrollHeight, clientHeight } = scrollContainerRef.current;
-          scrollContainerRef.current.scrollTop = scrollHeight - clientHeight;
+      // PERF: Throttle to 60fps (16.67ms) to prevent excessive layout thrashing
+      const now = performance.now();
+      if (now - lastScrollTimeRef.current < 16) {
+        // Schedule a scroll at the next frame if not already scheduled
+        if (scrollRafIdRef.current === null) {
+          scrollRafIdRef.current = requestAnimationFrame(() => {
+            scrollRafIdRef.current = null;
+            if (scrollContainerRef.current) {
+              const { scrollHeight, clientHeight } = scrollContainerRef.current;
+              scrollContainerRef.current.scrollTop = scrollHeight - clientHeight;
+              lastScrollTimeRef.current = performance.now();
+            }
+          });
         }
-      });
+        return;
+      }
+      
+      lastScrollTimeRef.current = now;
+      // Use instant scroll during streaming for zero jank
+      if (scrollContainerRef.current) {
+        const { scrollHeight, clientHeight } = scrollContainerRef.current;
+        scrollContainerRef.current.scrollTop = scrollHeight - clientHeight;
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentConversation?.messages, currentStreamingMessageId, isNearBottom]);
+  
+  // Cleanup scroll RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollRafIdRef.current !== null) {
+        cancelAnimationFrame(scrollRafIdRef.current);
+      }
+    };
+  }, []);
 
   // Track scroll position
   // P1: Use RAF for buttery smooth 60fps scroll tracking

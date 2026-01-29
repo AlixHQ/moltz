@@ -70,6 +70,8 @@ export const MessageBubble = memo(function MessageBubble({
     setEditContent(message.content);
   }, [message.content]);
 
+  const [messageCopied, setMessageCopied] = useState(false);
+
   const copyToClipboard = async (code: string) => {
     await navigator.clipboard.writeText(code);
     setCopiedCode(code);
@@ -78,6 +80,8 @@ export const MessageBubble = memo(function MessageBubble({
 
   const copyMessage = async () => {
     await navigator.clipboard.writeText(message.content);
+    setMessageCopied(true);
+    setTimeout(() => setMessageCopied(false), 2000);
   };
 
   const handleStartEdit = () => {
@@ -381,11 +385,22 @@ export const MessageBubble = memo(function MessageBubble({
           >
             <button
               onClick={copyMessage}
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-              title="Copy message"
-              aria-label="Copy message to clipboard"
+              className={cn(
+                "p-1.5 rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                messageCopied 
+                  ? "text-green-600 dark:text-green-400 bg-green-500/10 animate-copy-success" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95"
+              )}
+              title={messageCopied ? "Copied!" : "Copy message"}
+              aria-label={messageCopied ? "Message copied to clipboard" : "Copy message to clipboard"}
             >
-              <Copy className="w-4 h-4" strokeWidth={2} />
+              {messageCopied ? (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <Copy className="w-4 h-4" strokeWidth={2} />
+              )}
             </button>
             {/* Edit button for user messages */}
             {isUser && onEdit && (
@@ -449,20 +464,20 @@ export const MessageBubble = memo(function MessageBubble({
 
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-2 py-2 px-1 animate-in fade-in duration-200">
-      <div className="flex items-center gap-1">
+    <div className="flex items-center gap-3 py-3 px-2 animate-spring-bounce">
+      <div className="flex items-center gap-1.5">
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="w-1.5 h-1.5 rounded-full bg-primary/60 typing-dot"
+            className="w-2 h-2 rounded-full bg-primary/70 typing-dot shadow-sm shadow-primary/30"
             style={{
-              animationDelay: `${i * 0.2}s`,
+              animationDelay: `${i * 0.15}s`,
             }}
             aria-hidden="true"
           />
         ))}
       </div>
-      <span className="text-sm text-muted-foreground animate-pulse">
+      <span className="text-sm text-muted-foreground animate-thinking-breathe font-medium">
         Thinking...
       </span>
     </div>
