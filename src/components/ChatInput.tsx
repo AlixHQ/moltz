@@ -111,7 +111,7 @@ export function ChatInput({
     if (!disabled) {
       textareaRef.current?.focus();
     }
-  }, [disabled]);
+  }, [disabled, textareaRef]);
 
   // Listen for quick input messages
   useEffect(() => {
