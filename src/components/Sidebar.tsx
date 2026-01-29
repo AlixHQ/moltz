@@ -5,6 +5,7 @@
   Suspense,
   useRef,
   useMemo,
+  memo,
 } from "react";
 import { useStore, Conversation } from "../stores/store";
 import { ConfirmDialog } from "./ui/confirm-dialog";
@@ -442,7 +443,7 @@ interface ConversationItemProps {
   style?: React.CSSProperties;
 }
 
-function ConversationItem({
+const ConversationItem = memo(function ConversationItem({
   conversation,
   isSelected,
   onSelect,
@@ -610,4 +611,4 @@ function ConversationItem({
       />
     </button>
   );
-}
+});
