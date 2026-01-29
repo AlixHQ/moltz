@@ -643,7 +643,7 @@ export function GatewaySetupStep({
           >
             <div>
               <label htmlFor="gateway-url-input" className="block text-sm font-medium mb-2">
-                Gateway URL
+                Where's the connection running?
               </label>
               <input
                 id="gateway-url-input"
@@ -651,9 +651,9 @@ export function GatewaySetupStep({
                 value={gatewayUrl}
                 onChange={(e) => onGatewayUrlChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="ws://localhost:18789"
+                placeholder="localhost:18789 (this computer)"
                 autoFocus
-                aria-label="Gateway URL"
+                aria-label="Connection address"
                 aria-required="true"
                 aria-invalid={connectionState === "error"}
                 aria-describedby={connectionState === "error" ? "gateway-error-message" : undefined}
@@ -664,6 +664,15 @@ export function GatewaySetupStep({
                     : "border-border focus:ring-primary/50",
                 )}
               />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                💡 Most people use: <button
+                  onClick={() => onGatewayUrlChange("ws://localhost:18789")}
+                  className="text-primary hover:underline font-medium"
+                  type="button"
+                >
+                  localhost:18789
+                </button>
+              </p>
             </div>
 
             <div>
