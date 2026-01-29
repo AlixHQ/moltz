@@ -1112,24 +1112,7 @@ function AppContent() {
                     </span>
                   )}
                 </div>
-              ) : (
-                <div
-                  className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm animate-in fade-in duration-200"
-                  title="Connected to Gateway"
-                  data-tauri-drag-region
-                >
-                  <span
-                    className="w-2 h-2 bg-green-500 rounded-full"
-                    data-tauri-drag-region
-                  />
-                  <span
-                    className="hidden sm:inline select-none"
-                    data-tauri-drag-region
-                  >
-                    Connected
-                  </span>
-                </div>
-              )}
+              ) : null /* Connected state shown in sidebar */}
             </div>
           </header>
 
