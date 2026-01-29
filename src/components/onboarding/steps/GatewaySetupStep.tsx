@@ -35,6 +35,7 @@ type ConnectionState =
   | "idle"
   | "detecting"
   | "testing"
+  | "verifying"
   | "success"
   | "error"
   | "cancelled";
@@ -488,10 +489,10 @@ export function GatewaySetupStep({
         return;
       }
 
-      // Success!
-      setConnectionState("success");
-
-      // If protocol was switched, update the URL and show notice
+      // Initial connection worked! Now verify everything before declaring success.
+      setConnectionState("verifying");
+      
+      // If protocol was switched, update the URL
       const actualUrl = result.used_url;
       if (result.protocol_switched) {
         onGatewayUrlChange(actualUrl);
@@ -500,9 +501,56 @@ export function GatewaySetupStep({
         );
       }
 
-      updateSettings({ gatewayUrl: actualUrl, gatewayToken: trimmedToken });
+      // Step 1: Save settings (await to ensure keychain write completes)
+      await updateSettings({ gatewayUrl: actualUrl, gatewayToken: trimmedToken });
 
-      // Save progress (token NOT stored here - goes to keychain via updateSettings)
+      // Check if cancelled
+      if (isCancelledRef.current || !isMountedRef.current) return;
+
+      // Step 2: Verify token was saved by reading it back
+      const { getGatewayToken } = await import("../../../lib/keychain");
+      const savedToken = await getGatewayToken();
+      
+      if (savedToken !== trimmedToken) {
+        throw new Error(
+          `Token verification failed: saved token doesn't match. ` +
+          `Expected ${trimmedToken.length} chars, got ${savedToken.length} chars. ` +
+          `This may be a keychain access issue.`
+        );
+      }
+
+      // Check if cancelled
+      if (isCancelledRef.current || !isMountedRef.current) return;
+
+      // Step 3: Disconnect test connection
+      await invoke("disconnect");
+
+      // Check if cancelled
+      if (isCancelledRef.current || !isMountedRef.current) return;
+
+      // Step 4: Reconnect using saved settings (simulates what main app will do)
+      const verifyResult = await invoke<ConnectResult>("connect", {
+        url: actualUrl,
+        token: savedToken, // Use token from keychain, not the one we typed
+      });
+
+      if (!verifyResult.success) {
+        throw new Error("Verification reconnect failed - settings may not be saved correctly");
+      }
+
+      // Check if cancelled
+      if (isCancelledRef.current || !isMountedRef.current) return;
+
+      // Step 5: Fetch models to verify full communication
+      const models = await invoke<ModelInfo[]>("get_models");
+      if (models && models.length > 0 && isMountedRef.current) {
+        useStore.getState().setAvailableModels(models);
+      }
+
+      // ALL VERIFICATION PASSED - Now we can declare success!
+      setConnectionState("success");
+
+      // Save progress
       localStorage.setItem(
         "Moltz-onboarding-progress",
         JSON.stringify({
@@ -511,17 +559,6 @@ export function GatewaySetupStep({
           timestamp: Date.now(),
         }),
       );
-
-      // Fetch models (but don't block on it)
-      invoke<ModelInfo[]>("get_models")
-        .then((models) => {
-          if (models && models.length > 0 && isMountedRef.current) {
-            useStore.getState().setAvailableModels(models);
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to fetch models:", err);
-        });
 
       // Auto-advance (if still mounted and not cancelled)
       setTimeout(() => {
@@ -831,7 +868,7 @@ export function GatewaySetupStep({
 
             <motion.button
               onClick={() => {
-                if (connectionState === "testing") {
+                if (connectionState === "testing" || connectionState === "verifying") {
                   // Cancel the test
                   isCancelledRef.current = true;
                   setConnectionState("idle");
@@ -839,29 +876,29 @@ export function GatewaySetupStep({
                   handleTestConnection();
                 }
               }}
-              disabled={!gatewayUrl.trim() && connectionState !== "testing"}
+              disabled={!gatewayUrl.trim() && connectionState !== "testing" && connectionState !== "verifying"}
               onMouseEnter={() => setIsButtonHovered(true)}
               onMouseLeave={() => setIsButtonHovered(false)}
               whileHover={
-                connectionState !== "testing"
+                connectionState !== "testing" && connectionState !== "verifying"
                   ? { scale: 1.02, y: -2 }
                   : undefined
               }
               whileTap={
-                connectionState !== "testing"
+                connectionState !== "testing" && connectionState !== "verifying"
                   ? { scale: 0.98, y: 0 }
                   : undefined
               }
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
               className={cn(
                 "w-full px-6 py-4 rounded-lg font-semibold text-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background",
-                connectionState === "testing"
+                (connectionState === "testing" || connectionState === "verifying")
                   ? isButtonHovered
                     ? "bg-red-500 text-white cursor-pointer hover:bg-red-600 focus:ring-red-500"
                     : "bg-muted text-muted-foreground cursor-pointer focus:ring-muted"
                   : "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 focus:ring-blue-500",
                 !gatewayUrl.trim() &&
-                  connectionState !== "testing" &&
+                  connectionState !== "testing" && connectionState !== "verifying" &&
                   "opacity-50 cursor-not-allowed",
               )}
               aria-live="polite"
@@ -870,11 +907,15 @@ export function GatewaySetupStep({
                   ? isButtonHovered
                     ? "Cancel connection test"
                     : "Testing connection..."
+                  : connectionState === "verifying"
+                  ? isButtonHovered
+                    ? "Cancel verification"
+                    : "Verifying setup..."
                   : "Test Gateway connection"
               }
             >
               <AnimatePresence mode="wait">
-                {connectionState === "testing" ? (
+                {(connectionState === "testing" || connectionState === "verifying") ? (
                   isButtonHovered ? (
                     <motion.span
                       key="cancel"
@@ -933,7 +974,7 @@ export function GatewaySetupStep({
                         animate={{ opacity: [0.5, 1, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        Testing Connection...
+                        {connectionState === "verifying" ? "Verifying Setup..." : "Testing Connection..."}
                       </motion.span>
                     </motion.span>
                   )
@@ -970,10 +1011,10 @@ export function GatewaySetupStep({
         >
           <button
             onClick={onBack}
-            disabled={connectionState === "testing"}
+            disabled={connectionState === "testing" || connectionState === "verifying"}
             className={cn(
               "px-6 py-3 rounded-lg text-sm font-medium border border-border hover:bg-muted transition-colors",
-              connectionState === "testing" && "opacity-50 cursor-not-allowed",
+              (connectionState === "testing" || connectionState === "verifying") && "opacity-50 cursor-not-allowed",
             )}
           >
             ← Back
@@ -981,10 +1022,10 @@ export function GatewaySetupStep({
 
           <button
             onClick={onSkip}
-            disabled={connectionState === "testing"}
+            disabled={connectionState === "testing" || connectionState === "verifying"}
             className={cn(
               "text-sm text-muted-foreground hover:text-foreground transition-colors",
-              connectionState === "testing" && "opacity-50 cursor-not-allowed",
+              (connectionState === "testing" || connectionState === "verifying") && "opacity-50 cursor-not-allowed",
             )}
           >
             Skip (you can browse, but won't be able to chat yet)
