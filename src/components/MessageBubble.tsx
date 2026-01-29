@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, KeyboardEvent, memo } from "react";
 import { Message, Attachment } from "../stores/store";
 import { cn } from "../lib/utils";
-import { formatDistanceToNow } from "date-fns";
+import { safeFormatDistanceToNow } from "../lib/safe-date";
 import {
   User,
   Copy,
@@ -114,7 +114,7 @@ export const MessageBubble = memo(function MessageBubble({
       onMouseEnter={() => setShowTimestamp(true)}
       onMouseLeave={() => setShowTimestamp(false)}
       role="article"
-      aria-label={`Message from ${isUser ? "You" : "Moltz"} sent ${formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}`}
+      aria-label={`Message from ${isUser ? "You" : "Moltz"} sent ${safeFormatDistanceToNow(message.timestamp, { addSuffix: true })}`}
     >
       {/* Avatar */}
       <div
