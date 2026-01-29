@@ -8,12 +8,6 @@ interface NoGatewayStepProps {
   onSkip: () => void;
 }
 
-const INSTALL_COMMANDS = {
-  windows: "npm install -g clawdbot",
-  macos: "npm install -g clawdbot",
-  linux: "npm install -g clawdbot",
-};
-
 export function NoGatewayStep({
   onRetryDetection,
   onManualSetup,
@@ -21,34 +15,10 @@ export function NoGatewayStep({
   onSkip,
 }: NoGatewayStepProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [platform, setPlatform] = useState<"windows" | "macos" | "linux">(
-    "windows",
-  );
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
-
-    // Detect platform
-    const userAgent = navigator.userAgent.toLowerCase();
-    if (userAgent.includes("mac")) {
-      setPlatform("macos");
-    } else if (userAgent.includes("linux")) {
-      setPlatform("linux");
-    } else {
-      setPlatform("windows");
-    }
   }, []);
-
-  const handleCopyCommand = async () => {
-    try {
-      await navigator.clipboard.writeText(INSTALL_COMMANDS[platform]);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
 
   return (
     <div className="flex-1 flex flex-col items-center p-8 overflow-y-auto">
