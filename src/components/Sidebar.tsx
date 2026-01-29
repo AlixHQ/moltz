@@ -50,6 +50,18 @@ interface SidebarProps {
   onSettingsClosed?: () => void;
 }
 
+// PERF: Define selector outside component to maintain stable reference and prevent infinite loops
+const sidebarSelector = (state: any) => ({
+  conversations: state.conversations,
+  conversationsLoading: state.conversationsLoading,
+  currentConversationId: state.currentConversationId,
+  createConversation: state.createConversation,
+  selectConversation: state.selectConversation,
+  deleteConversation: state.deleteConversation,
+  pinConversation: state.pinConversation,
+  connected: state.connected,
+});
+
 export function Sidebar({ 
   onToggle: _onToggle, 
   onRerunSetup, 
@@ -67,19 +79,7 @@ export function Sidebar({
     deleteConversation,
     pinConversation,
     connected,
-  } = useStore(
-    (state) => ({
-      conversations: state.conversations,
-      conversationsLoading: state.conversationsLoading,
-      currentConversationId: state.currentConversationId,
-      createConversation: state.createConversation,
-      selectConversation: state.selectConversation,
-      deleteConversation: state.deleteConversation,
-      pinConversation: state.pinConversation,
-      connected: state.connected,
-    }),
-    shallow
-  );
+  } = useStore(sidebarSelector, shallow);
   const [searchQuery, setSearchQuery] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);

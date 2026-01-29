@@ -52,6 +52,18 @@ const FALLBACK_MODELS: ModelInfo[] = [
   },
 ];
 
+// PERF: Define selector outside component to maintain stable reference and prevent infinite loops
+const settingsSelector = (state: any) => ({
+  settings: state.settings,
+  updateSettings: state.updateSettings,
+  connected: state.connected,
+  setConnected: state.setConnected,
+  availableModels: state.availableModels,
+  setAvailableModels: state.setAvailableModels,
+  modelsLoading: state.modelsLoading,
+  setModelsLoading: state.setModelsLoading,
+});
+
 export function SettingsDialog({
   open,
   onClose,
@@ -67,19 +79,7 @@ export function SettingsDialog({
     setAvailableModels,
     modelsLoading,
     setModelsLoading,
-  } = useStore(
-    (state) => ({
-      settings: state.settings,
-      updateSettings: state.updateSettings,
-      connected: state.connected,
-      setConnected: state.setConnected,
-      availableModels: state.availableModels,
-      setAvailableModels: state.setAvailableModels,
-      modelsLoading: state.modelsLoading,
-      setModelsLoading: state.setModelsLoading,
-    }),
-    shallow
-  );
+  } = useStore(settingsSelector, shallow);
   const { showSuccess, showError: showToastError } = useToast();
   const [formData, setFormData] = useState(settings);
   const [connectionStatus, setConnectionStatus] = useState<

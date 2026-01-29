@@ -76,10 +76,29 @@ None currently running - all completed or aborted.
 | moltz-animations | Message animations, transitions | 🔄 Running |
 | moltz-error-ux | Human-friendly errors | 🔄 Running |
 
-### Committed
-- da43a02: Overnight work (connection, streaming, a11y) - +3985 lines
+### Committed (since 05:00)
+**moltz-repo:**
+- 92c69b4 fix: friendly error translation in ChatView
+- 3f1f3df perf: lazy load MarkdownRenderer (340 kB saved!)
+- 3ada17c style: button hover effects
+- 341df7a style: message appear animation
+- da43a02 overnight polish (+3985 lines)
 
-### Action Items
-- Monitor every 5 min
-- Respawn immediately on completion
-- Commit after each agent finishes
+**clawd-client:**
+- 2ce99d4 refactor: centralize constants
+- 1e1058c fix: resolve all ESLint issues
+
+### Completed Agents
+- moltz-animations: 5 commits - message animations, button hover, shimmer loading
+- moltz-test-fix: Fixed 23 tests, found blocking setState bug
+- moltz-error-ux: 7 commits - friendly error messages, retry buttons
+
+### Active Agents (05:39)
+- moltz-infinite-loop-fix: Fixing setState infinite loop (BLOCKING)
+- moltz-app-perf: Bundle analysis with lazy loading
+- clawd-client-polish: Looking for duplicate code patterns
+
+### Overnight Skill Applied
+- compound-review cron at 22:30
+- auto-compound cron at 23:00
+- pm-checkin every 30 min (ACTIVE management, no HEARTBEAT_OK)
