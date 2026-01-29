@@ -212,7 +212,7 @@ export function ExportDialog({
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-xl transition-all active:scale-[0.95]"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5" aria-hidden="true" />
@@ -237,9 +237,9 @@ export function ExportDialog({
                     aria-checked={selectedFormat === format.value}
                     onClick={() => setSelectedFormat(format.value)}
                     className={cn(
-                      "flex items-start gap-3 p-3 rounded-lg border text-left transition-all",
+                      "flex items-start gap-3 p-3 rounded-xl border text-left transition-all active:scale-[0.98]",
                       selectedFormat === format.value
-                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        ? "border-primary bg-primary/5 ring-1 ring-primary shadow-sm"
                         : "border-border hover:border-primary/50 hover:bg-muted/50",
                     )}
                   >
@@ -307,7 +307,7 @@ export function ExportDialog({
 
             {/* Error message */}
             {error && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-destructive/20 flex items-center justify-center mt-0.5">
                     <AlertTriangle
