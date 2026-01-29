@@ -608,12 +608,10 @@ async fn try_connect_with_fallback(
                                 retry_after: Some(Duration::from_millis(BACKOFF_INITIAL_MS)),
                             })
                         }
-                        Err(_) => {
-                            Err(GatewayError::Timeout {
-                                timeout_secs: timeout_duration.as_secs(),
-                                request_id: None,
-                            })
-                        }
+                        Err(_) => Err(GatewayError::Timeout {
+                            timeout_secs: timeout_duration.as_secs(),
+                            request_id: None,
+                        }),
                     }
                 } else {
                     // No safe alternate available (was already wss://)
