@@ -1029,6 +1029,14 @@ async fn handle_validated_frame(
                     };
 
                     if let Ok(json) = serde_json::to_string(&connect_req) {
+                        log_protocol_error(
+                            "Sending CONNECT request",
+                            &format!(
+                                "client.id={}, role=operator, token_len={}",
+                                "clawdbot-control-ui",
+                                token.len()
+                            ),
+                        );
                         let _ = tx.send(OutgoingMessage::Raw(json)).await;
                     }
                 }
@@ -1122,7 +1130,18 @@ async fn handle_validated_frame(
             // Check if this is hello-ok (connect response)
             if let Some(payload) = &payload {
                 if payload.get("type").and_then(|t| t.as_str()) == Some("hello-ok") {
+                    log_protocol_error("CONNECT SUCCESS", "Received hello-ok from gateway");
                     let _ = app.emit("gateway:connected", ());
+                }
+            }
+
+            // Log error responses for debugging
+            if !ok {
+                if let Some(err) = &error {
+                    log_protocol_error(
+                        "Gateway ERROR response",
+                        &format!("code={}, message={}", err.code, err.message),
+                    );
                 }
             }
 
