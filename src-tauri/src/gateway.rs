@@ -967,6 +967,9 @@ async fn connect_internal(
             match msg {
                 Ok(WsMessage::Text(text)) => {
                     let text_str = text.to_string();
+                    
+                    // DEBUG: Log incoming message
+                    log_protocol_error("INCOMING MSG", &format!("len={} preview={}", text_str.len(), &text_str[..text_str.len().min(200)]));
 
                     // Validate and parse frame
                     match validate_frame(&text_str) {
@@ -1050,10 +1053,10 @@ async fn handle_validated_frame(
                                 min_protocol: PROTOCOL_VERSION,
                                 max_protocol: PROTOCOL_VERSION,
                                 client: ClientInfo {
-                                    id: "clawdbot-control-ui".to_string(), // Must match gateway schema
+                                    id: "openclaw-control-ui".to_string(), // Must match gateway schema
                                     version: env!("CARGO_PKG_VERSION").to_string(),
                                     platform: get_platform(),
-                                    mode: "cli".to_string(), // Must be "webchat", "cli", "ui", "backend", "probe", or "test"
+                                    mode: "ui".to_string(), // Must be "webchat", "cli", "ui", "backend", "probe", or "test"
                                 },
                                 role: "operator".to_string(),
                                 scopes: vec![
@@ -1076,10 +1079,12 @@ async fn handle_validated_frame(
                             "Sending CONNECT request",
                             &format!(
                                 "client.id={}, role=operator, token_len={}",
-                                "clawdbot-control-ui",
+                                "openclaw-control-ui",
                                 token.len()
                             ),
                         );
+                        // DEBUG: Print full JSON for debugging
+                        log_protocol_error("CONNECT JSON", &json);
                         let _ = tx.send(OutgoingMessage::Raw(json)).await;
                     }
                 }
@@ -1708,7 +1713,7 @@ mod tests {
             min_protocol: 3,
             max_protocol: 3,
             client: ClientInfo {
-                id: "clawdbot-control-ui".to_string(),
+                id: "openclaw-control-ui".to_string(),
                 version: "0.1.0".to_string(),
                 platform: "windows".to_string(),
                 mode: "cli".to_string(),
@@ -1726,7 +1731,7 @@ mod tests {
         let json = serde_json::to_string(&params).unwrap();
         assert!(json.contains("minProtocol"));
         assert!(json.contains("maxProtocol"));
-        assert!(json.contains("clawdbot-control-ui"));
+        assert!(json.contains("openclaw-control-ui"));
         assert!(json.contains("operator"));
         assert!(json.contains("operator.read"));
     }

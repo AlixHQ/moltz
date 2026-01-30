@@ -191,7 +191,7 @@ function getErrorHint(
     const baseHint =
       urlType === "tailscale"
         ? "Connection timed out. Check that Tailscale is connected on both devices."
-        : "Connection timed out — Gateway may be down.";
+        : "Connection timed out ï¿½ Gateway may be down.";
     return {
       hint: baseHint,
       action: "Check Gateway status",
@@ -715,7 +715,7 @@ export function GatewaySetupStep({
               />
               <div className="flex items-center justify-between mt-1.5">
                 <p className="text-xs text-muted-foreground">
-                  ?? Most people use:{" "}
+                  ðŸ’¡ Most people use:{" "}
                   <button
                     onClick={() => onGatewayUrlChange("ws://localhost:18789")}
                     className="text-primary hover:underline font-medium"
@@ -763,19 +763,19 @@ export function GatewaySetupStep({
                       <p className="font-medium mb-1">Where to find it:</p>
                       <ul className="text-sm text-muted-foreground space-y-1 mb-3">
                         <li>
-                          • Run{" "}
+                          ï¿½ Run{" "}
                           <code className="px-1 py-0.5 bg-muted rounded text-xs font-mono">
                             OpenClaw gateway status
                           </code>
                         </li>
                         <li>
-                          • Check your{" "}
+                          ï¿½ Check your{" "}
                           <code className="px-1 py-0.5 bg-muted rounded text-xs font-mono">
                             OpenClaw.json
                           </code>{" "}
                           config
                         </li>
-                        <li>• Ask your Gateway admin</li>
+                        <li>ï¿½ Ask your Gateway admin</li>
                       </ul>
                       <p className="text-xs text-muted-foreground/70">
                         The token is stored securely in your system keychain.

@@ -30,11 +30,11 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
 
   return (
     <div
-      className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto"
+      className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-y-auto"
       role="main"
       aria-labelledby="welcome-heading"
     >
-      <div className="max-w-2xl w-full text-center space-y-8">
+      <div className="max-w-2xl w-full text-center space-y-4 sm:space-y-8">
         {/* Animated Moltz Logo */}
         <motion.div
           initial={{ opacity: 0, y: 32, scale: 0.9 }}
@@ -45,13 +45,13 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
           }}
         >
           <motion.div
-            className="inline-flex items-center justify-center w-32 h-32 rounded-3xl bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 shadow-2xl shadow-orange-500/30 mb-8"
+            className="inline-flex items-center justify-center w-20 h-20 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 shadow-2xl shadow-orange-500/30 mb-4 sm:mb-8"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             aria-label="Moltz logo"
           >
             <motion.span
-              className="text-7xl drop-shadow-lg"
+              className="text-5xl sm:text-7xl drop-shadow-lg"
               animate={{
                 rotate: [0, -10, 10, -10, 10, 0],
               }}
@@ -81,11 +81,11 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
         >
           <h1
             id="welcome-heading"
-            className="text-6xl font-bold bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent mb-4"
+            className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent mb-2 sm:mb-4"
           >
             Welcome to Moltz
           </h1>
-          <p className="text-xl text-muted-foreground max-w-lg mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-lg mx-auto leading-relaxed px-4 sm:px-0">
             Your AI assistant that doesn't just chat—it actually{" "}
             <span className="font-semibold text-foreground">
               gets things done
@@ -96,7 +96,7 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
 
         {/* Feature highlights */}
         <div
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto px-4 sm:px-0"
           role="list"
           aria-label="Moltz features"
         >
@@ -135,13 +135,13 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
                 transition: { type: "spring", stiffness: 400, damping: 25 },
               }}
               className={cn(
-                "p-6 rounded-xl bg-gradient-to-br border",
+                "p-4 sm:p-6 rounded-xl bg-gradient-to-br border",
                 feature.gradient,
                 feature.border,
               )}
             >
               <div
-                className="text-3xl mb-3"
+                className="text-2xl sm:text-3xl mb-2 sm:mb-3"
                 role="img"
                 aria-label={feature.label}
               >
@@ -169,7 +169,7 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98, y: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="group px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold text-lg shadow-xl shadow-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-background"
+            className="group px-6 py-3 sm:px-8 sm:py-4 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold text-base sm:text-lg shadow-xl shadow-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-background"
             aria-label="Get started with Moltz setup"
           >
             <span className="flex items-center gap-2">

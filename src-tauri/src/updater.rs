@@ -108,9 +108,23 @@ pub async fn dismiss_update<R: Runtime>(app: AppHandle<R>) -> Result<(), String>
 async fn perform_update_check<R: Runtime>(app: &AppHandle<R>) -> Result<UpdateInfo, String> {
     use tauri_plugin_updater::UpdaterExt;
 
-    let updater = app.updater_builder().build().map_err(|e| e.to_string())?;
-
     let current_version = app.package_info().version.to_string();
+
+    // Try to build the updater - if it fails, updates are disabled
+    let updater = match app.updater_builder().build() {
+        Ok(u) => u,
+        Err(e) => {
+            // Updater not configured or disabled - this is fine
+            eprintln!("Updater not available: {}", e);
+            return Ok(UpdateInfo {
+                available: false,
+                version: current_version.clone(),
+                current_version,
+                body: None,
+                date: None,
+            });
+        }
+    };
 
     match updater.check().await {
         Ok(Some(update)) => {
@@ -145,6 +159,23 @@ async fn perform_update_check<R: Runtime>(app: &AppHandle<R>) -> Result<UpdateIn
             })
         }
         Err(e) => {
+            // Handle common "no releases" error gracefully
+            let error_msg = e.to_string();
+            if error_msg.contains("Could not fetch a valid release JSON") 
+                || error_msg.contains("404")
+                || error_msg.contains("not found") 
+            {
+                // No releases published yet - this is expected for development
+                eprintln!("No releases found (expected during development): {}", e);
+                return Ok(UpdateInfo {
+                    available: false,
+                    version: current_version.clone(),
+                    current_version,
+                    body: None,
+                    date: None,
+                });
+            }
+            
             eprintln!("Update check failed: {}", e);
             Err(format!("Failed to check for updates: {}", e))
         }
