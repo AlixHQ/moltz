@@ -27,32 +27,7 @@ interface ConnectResult {
   protocol_switched: boolean;
 }
 
-// Fallback models when Gateway doesn't provide a list
-const FALLBACK_MODELS: ModelInfo[] = [
-  {
-    id: "anthropic/claude-sonnet-4-5",
-    name: "Claude Sonnet 4.5",
-    provider: "anthropic",
-  },
-  {
-    id: "anthropic/claude-opus-4-5",
-    name: "Claude Opus 4.5",
-    provider: "anthropic",
-  },
-  {
-    id: "anthropic/claude-haiku-4",
-    name: "Claude Haiku 4",
-    provider: "anthropic",
-  },
-  { id: "openai/gpt-4o", name: "GPT-4o", provider: "openai" },
-  { id: "openai/gpt-4o-mini", name: "GPT-4o mini", provider: "openai" },
-  { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "google" },
-  {
-    id: "google/gemini-2.5-flash",
-    name: "Gemini 2.5 Flash",
-    provider: "google",
-  },
-];
+// Models are fetched from Gateway only - no fallbacks
 
 export function SettingsDialog({
   open,
@@ -124,11 +99,10 @@ export function SettingsDialog({
     setModelsLoading(true);
     try {
       const models = await invoke<ModelInfo[]>("get_models");
-      if (models && models.length > 0) {
-        setAvailableModels(models);
-      }
+      setAvailableModels(models ?? []);
     } catch {
-      // Could not fetch models from Gateway, using fallbacks
+      // Could not fetch models from Gateway
+      setAvailableModels([]);
     } finally {
       setModelsLoading(false);
     }
@@ -263,8 +237,9 @@ export function SettingsDialog({
     }
   };
 
-  // Use available models from Gateway, or fall back to defaults
-  const models = availableModels.length > 0 ? availableModels : FALLBACK_MODELS;
+  // Use available models from Gateway only
+  const hasModels = availableModels.length > 0;
+  const models = availableModels;
 
   // Group models by provider
   const modelsByProvider = models.reduce(
@@ -552,7 +527,7 @@ export function SettingsDialog({
                     availableModels.length === 0 &&
                     connected && (
                       <span className="text-xs text-muted-foreground">
-                        Using common models
+                        No models available
                       </span>
                     )}
                 </div>
@@ -562,7 +537,8 @@ export function SettingsDialog({
                   <>
                     <select
                       id="default-model"
-                      value={formData.defaultModel}
+                      value={hasModels ? formData.defaultModel : ""}
+                      disabled={!hasModels}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
@@ -570,21 +546,29 @@ export function SettingsDialog({
                         })
                       }
                       aria-describedby={!connected ? "model-hint" : undefined}
-                      className="w-full px-3 py-2 rounded-xl border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors"
+                      className="w-full px-3 py-2 rounded-xl border border-border bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors disabled:opacity-50"
                     >
-                      {Object.entries(modelsByProvider).map(
-                        ([provider, providerModels]) => (
-                          <optgroup
-                            key={provider}
-                            label={providerNames[provider] || provider}
-                          >
-                            {providerModels.map((model) => (
-                              <option key={model.id} value={model.id}>
-                                {model.name}
-                              </option>
-                            ))}
-                          </optgroup>
-                        ),
+                      {hasModels ? (
+                        Object.entries(modelsByProvider).map(
+                          ([provider, providerModels]) => (
+                            <optgroup
+                              key={provider}
+                              label={providerNames[provider] || provider}
+                            >
+                              {providerModels.map((model) => (
+                                <option key={model.id} value={model.id}>
+                                  {model.name}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ),
+                        )
+                      ) : (
+                        <option value="" disabled>
+                          {connected
+                            ? "No models available"
+                            : "Connect to Gateway to load models"}
+                        </option>
                       )}
                     </select>
                     {!connected && (

@@ -1804,7 +1804,8 @@ pub async fn get_models(
             } else if let Some(error) = response.error {
                 return Err(format!("Gateway error: {}", error.message));
             }
-            Ok(get_fallback_models())
+            // No models available from gateway - return empty list
+            Ok(Vec::new())
         }
         Ok(Err(_)) => {
             state
@@ -1813,7 +1814,8 @@ pub async fn get_models(
                 .lock()
                 .await
                 .remove(&request_id);
-            Ok(get_fallback_models())
+            // Request failed - return empty list
+            Ok(Vec::new())
         }
         Err(_) => {
             state
@@ -1822,38 +1824,10 @@ pub async fn get_models(
                 .lock()
                 .await
                 .remove(&request_id);
-            Ok(get_fallback_models())
+            // Timeout - return empty list
+            Ok(Vec::new())
         }
     }
-}
-
-fn get_fallback_models() -> Vec<ModelInfo> {
-    vec![
-        ModelInfo {
-            id: "anthropic/claude-sonnet-4-5".to_string(),
-            name: "Claude Sonnet 4.5".to_string(),
-            provider: "anthropic".to_string(),
-            is_default: true,
-            context_window: Some(200000),
-            reasoning: Some(false),
-        },
-        ModelInfo {
-            id: "anthropic/claude-opus-4-5".to_string(),
-            name: "Claude Opus 4.5".to_string(),
-            provider: "anthropic".to_string(),
-            is_default: false,
-            context_window: Some(200000),
-            reasoning: Some(true),
-        },
-        ModelInfo {
-            id: "anthropic/claude-sonnet-3-5".to_string(),
-            name: "Claude Sonnet 3.5".to_string(),
-            provider: "anthropic".to_string(),
-            is_default: false,
-            context_window: Some(200000),
-            reasoning: Some(false),
-        },
-    ]
 }
 
 // ============================================================================

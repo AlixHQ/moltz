@@ -77,9 +77,26 @@ export function ModelSelector({ compact = false }: ModelSelectorProps) {
     setOpen(false);
   };
 
-  // Don't render if no models available
+  // Render a disabled control when no models are available
   if (availableModels.length === 0) {
-    return null;
+    return (
+      <div className="relative">
+        <button
+          ref={buttonRef}
+          disabled
+          className={cn(
+            "flex items-center gap-1.5 rounded-md transition-colors",
+            "opacity-60 cursor-not-allowed",
+            compact ? "px-2 py-1 text-xs" : "px-2.5 py-1.5 text-sm"
+          )}
+          aria-label="No models available"
+        >
+          <Cpu className="w-3.5 h-3.5" />
+          <span className="font-medium truncate max-w-[120px]">No models</span>
+          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      </div>
+    );
   }
 
   const getModelIcon = (model: ModelInfo) => {
