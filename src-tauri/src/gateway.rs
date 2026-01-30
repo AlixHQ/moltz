@@ -993,8 +993,8 @@ async fn connect_internal(
                 Ok(WsMessage::Text(text)) => {
                     let text_str = text.to_string();
                     
-                    // DEBUG: Log incoming message
-                    log_protocol_error("INCOMING MSG", &format!("len={} preview={}", text_str.len(), &text_str[..text_str.len().min(200)]));
+                    // Log message length only (no content for privacy)
+                    log_protocol_error("INCOMING MSG", &format!("len={}", text_str.len()));
 
                     // Validate and parse frame
                     match validate_frame(&text_str) {
@@ -1158,8 +1158,7 @@ async fn handle_validated_frame(
                                 token.len()
                             ),
                         );
-                        // DEBUG: Print full JSON for debugging
-                        log_protocol_error("CONNECT JSON", &json);
+                        // Note: Not logging full JSON to avoid leaking auth token
                         let _ = tx.send(OutgoingMessage::Raw(json)).await;
                     }
                 }
